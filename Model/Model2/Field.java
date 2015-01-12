@@ -1,4 +1,4 @@
-package Model;
+package Model2;
 
 public class Field {
 
