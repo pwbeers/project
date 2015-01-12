@@ -1,19 +1,47 @@
 package Model;
 
+/**
+ * Extends Observable
+ */
 public class Game {
-	
-	private Field[][] board;
-	
-	/**
-	 * Bij aanroepen wordt een nieuw board gemaakt met een kolom van 7 en 6 rijen
-	 * in elke kolom.
-	 */
-	public Game()	{
-		board = new Field[7][6];
-		for (int i = 0; i < board.length; i++) {
-			for (int j = 0; j < board[i].length; j++) {
-				board[i][j] = new Field();
-			}
-		}
+
+	private Board board;
+
+	public Game() {
+		// TODO - implement Game.Game
+		throw new UnsupportedOperationException();
 	}
+
+	/**
+	 * 
+	 * @param player
+	 */
+	public boolean onTurn(int player) {
+		// TODO - implement Game.onTurn
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * 
+	 * @param player
+	 */
+	public boolean isWinner(int player) {
+		// TODO - implement Game.isWinner
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * 
+	 * @param column
+	 */
+	public boolean isLegalMove(int column) {
+		// TODO - implement Game.isLegalMove
+		throw new UnsupportedOperationException();
+	}
+
+	public void endGame() {
+		// TODO - implement Game.endGame
+		throw new UnsupportedOperationException();
+	}
+
 }
