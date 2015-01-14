@@ -2,13 +2,13 @@ package Server;
 
 import java.util.List;
 
-import View.GUI;
+import View.ClientGUI;
 
 public class ServerController {
 
 	private List<ConnectionHandler> connections;
 	private List<ConnectionHandler> games;
-	private GUI view;
+	private ClientGUI view;
 	private Listener listener;
 
 	public ServerController() {
