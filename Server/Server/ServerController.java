@@ -9,7 +9,7 @@ public class ServerController {
 	private List<ConnectionHandler> connections;
 	private List<ConnectionHandler> games;
 	private ClientGUI view;
-	private Listener listener;
+	private ServerSocketListener listener;
 
 	public ServerController() {
 		// TODO - implement ServerController.ServerController
