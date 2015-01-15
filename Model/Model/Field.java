@@ -1,43 +1,46 @@
 package Model;
 
 /**
- * Deze klasse houdt de waarde bij van een veld. De waarde kan
- * leeg, gevuld door speler 1 of gevuld door speler 2 zijn.
+ * This class keeps track of the status of field. This status can be
+ * empty, filled by player 1 or filled by player 2.
  * @author peter
  */
 public class Field {
 
 	private int status;
+	private final int EMPTY = 0;
+	private final int PLAYERONE = 1;
+	private final int PLAYERTWO = 2;
 
 	/**
-	 * Maakt een nieuw field aan met de standaard waarde van een leeg veld.
+	 * Makes a new field with the status <code>EMPTY</code>
 	 */
 	public Field() {
 		throw new UnsupportedOperationException();
 	}
 
 	/**
-	 * Controleert of het veld leeg is of niet
-	 * @return If <code>true</code> dan is het veld leeg, if <code>false</code>
-	 * 		   dan is het veld bezet door één van de twee spelers.
+	 * Checks if the field is <code>EMPTY</code> or filled by a player.
+	 * @return If <code>true</code> then the field is <code>EMPTY</code>, if 
+	 * 		   <code>false</code> then the field is filled by a player.
 	 */
 	public boolean isEmpty() {
 		throw new UnsupportedOperationException();
 	}
 
 	/**
-	 * Maakt een veld bezet door de meegegeven speler
-	 * @param player = 0 || 1
+	 * Changes the status of the field to filled by the given player.
+	 * @param <code>player == PLAYERONE || PLAYERTWO</code>
 	 */
 	public void setField(int player) {
 		throw new UnsupportedOperationException();
 	}
 
 	/**
-	 * Controleert of het veld bezet is door de meegegeven speler of niet
-	 * @param player = 0 || 1
-	 * @return If <code>true</code> dan is het veld bezet door de meegegeven speler, 
-	 * 		   if <code>false</code> dan is het veld niet bezet door de meegegeven speler
+	 * Checks if the field is filled by the given player
+	 * @param <code>player == PLAYERONE || PLAYERTWO</code>
+	 * @return If <code>true</code> then the field is filled by <code>player</code>, 
+	 * 		   if <code>false</code> then the field is not filled by <code>player</code>.
 	 */
 	public boolean isField(int player) {
 		throw new UnsupportedOperationException();
