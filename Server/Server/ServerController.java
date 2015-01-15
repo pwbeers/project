@@ -1,37 +1,78 @@
 package Server;
 
-import java.util.List;
+/**
+ * This Class initializes all other Classes and hence facilitates the creation of games,
+ * houses the logic for the GUI, creates the ServerSocketListener for the serversocket 
+ * and will implement the functionalities of any of the facultative extensions.
+ * @author Stephan
+ */
 
-import View.ClientGUI;
+import java.util.List;
+import java.util.Map;
+
+import View.ServerGUI;
 
 public class ServerController {
-
-	private List<ConnectionHandler> connections;
-	private List<ConnectionHandler> games;
-	private ClientGUI view;
-	private ServerSocketListener listener;
-
-	public ServerController() {
+	
+	// ------------------ Instance variables ----------------
+	private Map<String, ConnectionHandler> Connections; //Keeps track of all current connections and their nicknames
+	private Map<GameController, List<ConnectionHandler>> Games; //Keeps track of alle current games and their respective ConnectionHandlers
+	private ServerGUI View;
+	private ServerSocketListener ServerSocketListener;
+	
+	// ------------------ Constructor ------------------------
+	/**
+	 * Initializes a ServerSocketListener on <code>portNumber</code> and creates a ServerGui class. 
+	 * Initializes all Instance Variables.
+	 * @param portNumber the port the server uses for connections
+	 */
+	public ServerController(int portNumber) {
 		// TODO - implement ServerController.ServerController
 		throw new UnsupportedOperationException();
 	}
-
-	public void startListener() {
+	// ------------------ Queries --------------------------
+	// ------------------ Commands --------------------------
+	/**
+	 * Creates a ServerSocketListeren object on port <code>portNumber</code>
+	 * @param portNumber the number on what port the listener should wait for connections
+	 */
+	public void startServerSocketListener(int portNumber) {
 		// TODO - implement ServerController.startListener
 		throw new UnsupportedOperationException();
 	}
 
-	public void startGame() {
+	/**
+	 * Creates a GameController object which starts a game with players <code>player1</code> and <code>player2</code>
+	 * @param player1 the first player 
+	 * @param player2 the second player
+	 */
+	public void startGame(ConnectionHandler player1, ConnectionHandler player2) {
 		// TODO - implement ServerController.startGame
 		throw new UnsupportedOperationException();
 	}
-
-	public void addConnectionHandler() {
+	
+	/**
+	 * Creates a new ServerGUI object
+	 */
+	public void buildServerGUI(){
+		// TODO - implement ServerController.startGame
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Adds a ConnectionHandler to the Connections Map
+	 * @param newPlayer the ConnectionHandler to be added
+	 */
+	public void addConnectionHandler(ConnectionHandler newPlayer) {
 		// TODO - implement ServerController.addConnectionHandler
 		throw new UnsupportedOperationException();
 	}
 
-	public void removeConnectionHandler() {
+	/**
+	 * Removes a ConnectionHandler from the Connections Map
+	 * @param removePlayer the ConnectionHandler to be removed 
+	 */
+	public void removeConnectionHandler(ConnectionHandler removePlayer) {
 		// TODO - implement ServerController.removeConnectionHandler
 		throw new UnsupportedOperationException();
 	}
