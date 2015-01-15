@@ -22,7 +22,7 @@ public class ServerController {
 	
 	// ------------------ Constructor ------------------------
 	/**
-	 * Initializes a ServerSocketListener on <code>portNumber</code> and creates a ServerGui class. 
+	 * Creates a ServerSocketListener on <code>portNumber</code> and creates a ServerGui class. 
 	 * Initializes all Instance Variables.
 	 * @param portNumber the port the server uses for connections
 	 */
@@ -37,7 +37,7 @@ public class ServerController {
 	 * @param portNumber the number on what port the listener should wait for connections
 	 */
 	public void startServerSocketListener(int portNumber) {
-		// TODO - implement ServerController.startListener
+		// TODO - implement ServerController.startServerSocketListener
 		throw new UnsupportedOperationException();
 	}
 
@@ -55,7 +55,7 @@ public class ServerController {
 	 * Creates a new ServerGUI object
 	 */
 	public void buildServerGUI(){
-		// TODO - implement ServerController.startGame
+		// TODO - implement ServerController.buildServerGUI
 		throw new UnsupportedOperationException();
 	}
 	

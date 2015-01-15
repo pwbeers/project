@@ -7,11 +7,13 @@ import java.net.Socket;
  */
 public class ConnectionHandler {
 
+	// ------------------ Instance variables ----------------
 	private ServerController controller;
 	private Socket socket;
 	private String name;
 	private GameController gameController;
 
+	// ------------------ Constructor ------------------------
 	/**
 	 * 
 	 * @param controller
@@ -22,6 +24,8 @@ public class ConnectionHandler {
 		throw new UnsupportedOperationException();
 	}
 
+	// ------------------ Queries --------------------------
+	// ------------------ Commands --------------------------
 	public void setGameController() {
 		// TODO - implement ConnectionHandler.setGameController
 		throw new UnsupportedOperationException();

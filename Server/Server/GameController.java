@@ -6,9 +6,11 @@ import Model.Model;
 
 public class GameController {
 
+	// ------------------ Instance variables ----------------
 	private List<ConnectionHandler> connections;
 	private Model game;
 
+	// ------------------ Constructor ------------------------
 	/**
 	 * 
 	 * @param connectionX
@@ -18,7 +20,9 @@ public class GameController {
 		// TODO - implement GameController.GameController
 		throw new UnsupportedOperationException();
 	}
-
+	
+	// ------------------ Queries --------------------------
+	// ------------------ Commands --------------------------
 	public void startGame() {
 		// TODO - implement GameController.startGame
 		throw new UnsupportedOperationException();
