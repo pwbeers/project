@@ -38,7 +38,7 @@ public class Board {
 	/**
 	 * Places a stone by the given player in the given column on the board.
 	 * @param column <code>=> MOSTLEFTCOLUMN && column <= MOSTRIGHTCOLUMN</code>
-	 * @param player <code>== 0 || 1</code>
+	 * @param player <code>== 1 || player == 2</code>
 	 */
 	//@ requires column >= MOSTLEFTCOLUMN && column <= MOSTRIGHTCOLUMN;
 	//@ requires player == 1 || player == 2;
@@ -50,7 +50,7 @@ public class Board {
 	/**
 	 * Checks if the board has a horizontal line of <code>STONES</code>
 	 * stones for the given player.
-	 * @param player <code>== 0 || 1</code>
+	 * @param player <code>== 1 || player == 2</code>
 	 * @return If <code>true</code> then the board has a winner for the given player with 
 	 * 		   a horizontal line, if <code>false</code> then the board has no winner for 
 	 * 		   the given player with a horizontal line.
@@ -63,7 +63,7 @@ public class Board {
 	/**
 	 * Checks if the board has a vertical line of <code>STONES</code>
 	 * stones for the given player.
-	 * @param player <code>== 0 || 1</code>
+	 * @param player <code>== 1 || player == 2</code>
 	 * @return If <code>true</code> then the board has a winner for the given player with 
 	 * 		   a vertical line, if <code>false</code> then the board has no winner for 
 	 * 		   the given player with a vertical line.
@@ -76,7 +76,7 @@ public class Board {
 	/**
 	 * Checks if the board has a diagonal line of <code>STONES</code>
 	 * stones for the given player.
-	 * @param player <code>== 0 || 1</code>
+	 * @param player <code>== 1 || player == 2</code>
 	 * @return If <code>true</code> then the board has a winner for the given player with 
 	 * 		   a diagonal line, if <code>false</code> then the board has no winner for 
 	 * 		   the given player with a diagonal line.
