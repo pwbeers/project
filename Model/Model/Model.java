@@ -1,12 +1,28 @@
 package Model;
 
+import java.util.Observer;
+
+/**
+ * An interface that gives functionality for the interaction with the model.
+ * @author peter
+ */
 public interface Model {
 
 	/**
-	 * 
-	 * @param column
-	 * @param player
+	 * Places a stone in the given column for the given player if the move is legal
+	 * and the player is on turn. Then checks if the board has a winner,draw, or no winner.
+	 * If 0 is returned then the player is not on turn or the player made an illegal move.
+	 * If 1 is returned then the player has won.
+	 * If 2 is returned then there is no winner.
+	 * @param column <code> => 0 && column <= 6</code>
+	 * @param player <code> == 1 || player == 2</code>
 	 */
 	int doMove(int column, int player);
+	
+	/**
+	 * Adds an Observer to the Observable
+	 * @param o is an Observer && <code>0 != null</code>
+	 */
+	public void addObserver(Observer o);
 
 }
