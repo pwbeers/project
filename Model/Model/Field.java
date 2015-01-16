@@ -50,6 +50,7 @@ public class Field {
 	 * 		   if <code>false</code> then the field is not filled by <code>player</code>.
 	 */
 	//@ requires player == 1 || player == 2;
+	//@ pure;
 	public boolean isField(int player) {
 		boolean result = false;
 		if(status == player)	{
