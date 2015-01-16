@@ -1,6 +1,5 @@
 package Model;
 
-import java.util.List;
 import java.util.Observable;
 
 /**
@@ -14,7 +13,6 @@ public class Game extends Observable implements Model	{
 	private /*@ spec_public @*/ int currentTurn; //the Player who is currently on turn	
 	private /*@ spec_public @*/ int numberOfTurns; //the number of turns played in this game, used to 
 	//-assign who is on turn	
-	private /*@ spec_public @*/ List<Field> winningFields; //A list of the four fields which form the winning line 
 	
 	/*@public invariant board != null; @*/ //class invariant
 	/*@public invariant currentTurn == 1 || currentTurn == 2; @*/ //class invariant
@@ -52,15 +50,11 @@ public class Game extends Observable implements Model	{
 	 */
 	//@ requires player == 1 || player == 2;	
 	public boolean isWinner(int player) {
-	// TODO there should be a function which enables the GUI to display which fields makup the winning four streak
 		if(board.horizontalWinner(player) == true){
-			// TODO add the four wining stones in the winingFields list
 			return true;
 		}else if (board.diagonalWinner(player) == true){
-			// TODO add the four wining stones in the winingFields list
 			return true;
 		}else if (board.verticalWinner(player) == true){
-			// TODO add the four wining stones in the winingFields list
 			return true;
 		}else {
 			return false;
@@ -78,15 +72,6 @@ public class Game extends Observable implements Model	{
 		}else{
 			return false;
 		}
-	}
-
-	/**
-	 * Returns the list with four winning fields
-	 * @return List<Field> winningFields
-	 */
-	//@ requires winningFields.isEmpty() == false;
-	public List<Field> getWinningFields(){
-		return winningFields;
 	}
 
 	/**
@@ -113,10 +98,8 @@ public class Game extends Observable implements Model	{
 			board.doMove(column, player);
 		}
 		if (isWinner(player)){ //Check if after the mover there is a winner.
-			endGame();
 			return 1;
 		}else if (board.isBoardFull() == true){  //Check is the game is over because this was the last move.
-			endGame();
 			return 2;
 		}else { //The Game continues.
 			nextTurn();
@@ -135,13 +118,5 @@ public class Game extends Observable implements Model	{
 	private void nextTurn() {
 		currentTurn = (numberOfTurns % 2) + 1;
 		numberOfTurns++;
-	}
-
-	/**
-	 *There is no need for this class because it doesn't use finite (non-)memory resources like 
-	 *readers, sockets or filehandles. And it is GC'd automatically after the game object is nullified
-	 *in GameController. Any information needed is reached through getWinningFields
-	 */
-	public void endGame() {	
 	}
 }
