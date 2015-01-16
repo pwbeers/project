@@ -3,17 +3,33 @@ package Client;
 import Model.Model;
 import Server.*;
 
+/**
+ * Is an interface that is there for multiple leves of AI to be started on.
+ * @author peter
+ */
 public interface AI {
 
 	/**
-	 * 
-	 * @param modelCopy
-	 * @param controller
+	 * Starts an implementation of this interface with a given model and controller.
+	 * @param modelCopy is a copy of the board from the model
+	 * @param controller is the clientcontroller
 	 */
-	void AI(Model modelCopy, ClientController controller);
+	//@ requires modelCopy != null && controller != null;
+	public void AI(Model modelCopy, ClientController controller);
 
-	String doMove();
+	/**
+	 * Tells the AI a move has been done and tells the AI to put this
+	 * in its own board version.
+	 */
+	//@ ensures move != null && move.length() > 0;
+	public void doMove(String move);
 
-	String getHint();
+	/**
+	 * Asks the AI for a possible move to play in the current
+	 * game that is on the board and legal.
+	 * @return a legal move, \result != null && \result.length() > 0
+	 */
+	//@ ensures \result != null && \result.length() > 0;
+	public String getMove();
 
 }

@@ -1,10 +1,12 @@
 package View;
 
+import java.awt.event.ActionListener;
+
 import javax.swing.event.AncestorListener;
 
 public interface GUI {
 
-	void printTekst();
+	void printTekst(String message);
 
 	void startScherm();
 
@@ -12,6 +14,6 @@ public interface GUI {
 	 * 
 	 * @param controller
 	 */
-	void addController(AncestorListener controller);
+	void addController(ActionListener controller);
 
 }
