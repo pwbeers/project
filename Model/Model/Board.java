@@ -20,7 +20,13 @@ public class Board {
 	 */
 	//@ ensures fields != null && fields.length == COLUMNS && fields[MOSTRIGHTCOLUMN].length == ROWS;
 	public Board() {
-		throw new UnsupportedOperationException();
+		//TODO loop invariant toevoegen.
+		fields = new Field[COLUMNS][ROWS];
+		for (int i = 0; i < fields.length; i++) {
+			for (int j = 0; j < fields[i].length; j++) {
+				fields[i][j] = new Field();
+			}
+		}
 	}
 
 	/**
@@ -32,7 +38,11 @@ public class Board {
 	 */
 	//@ requires column >= MOSTLEFTCOLUMN && column <= MOSTRIGHTCOLUMN;
 	public boolean legalMove(int column) {
-		throw new UnsupportedOperationException();
+		boolean result = false;
+		if(nextEmptyRowInColumn(column) != 6)	{
+			result = true;
+		}
+		return result;
 	}
 
 	/**
@@ -44,7 +54,7 @@ public class Board {
 	//@ requires player == 1 || player == 2;
 	//@ ensures fields[column][nextEmptyRowInColumn(column)-1].isField(player);
 	public void doMove(int column, int player) {
-		throw new UnsupportedOperationException();
+		fields[column][nextEmptyRowInColumn(column)].setField(player);
 	}
 
 	/**
@@ -57,7 +67,19 @@ public class Board {
 	 */
 	//@ requires player == 1 || player == 2;
 	public boolean horizontalWinner(int player) {
-		throw new UnsupportedOperationException();
+		boolean result = false;
+		for (int row = 0; row < fields[row].length && !result; row++) {
+			for (int i = 0; i < 4 && !result; i++) {
+				boolean winner = true;
+				for (int j = 0; j < 4 && winner; j++) {
+					winner = fields[row][i+j].isField(player);
+				}
+				if(winner == true)	{
+					result = true;
+				}
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -70,7 +92,19 @@ public class Board {
 	 */
 	//@ requires player == 1 || player == 2;
 	public boolean verticalWinner(int player) {
-		throw new UnsupportedOperationException();
+		boolean result = false;
+		for (int column = 0; column < fields.length - 4 && !result; column++) {
+			for (int i = 0; i < 3 && !result; i++) {
+				boolean winner = true;
+				for (int j = 0; j < fields[j].length && winner; j++) {
+					winner = fields[i+j][column].isField(player);
+				}
+				if(winner == true)	{
+					result = true;
+				}
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -83,17 +117,35 @@ public class Board {
 	 */
 	//@ requires player == 1 || player == 2;
 	public boolean diagonalWinner(int player) {
-		throw new UnsupportedOperationException();
+		boolean result = false;
+		for (int row = 0; row < fields[row].length - 4 && !result; row++) {
+			for (int i = 0; i < 4 && !result; i++) {
+				boolean winner = true;
+				for (int j = 0; j < 4 && winner; j++) {
+					winner = fields[j+i][j+row].isField(player);
+				}
+				if(winner == true)	{
+					result = true;
+				}
+			}
+		}
+		//TODO andere kant afmaken van Board
+		return result;
 	}
 	
 	/**
 	 * Gives the bottommost row that is empty in the given column.
+	 * And returns 6 if the column is filled completely.
 	 * @param column >= MOSTLEFTCOLUMN && column <= MOSTRIGHTCOLUMN
-	 * @return >= 0 && return <= 5
+	 * @return >= 0 && return <= 6
 	 */
 	//@ requires column >= MOSTLEFTCOLUMN && column <= MOSTRIGHTCOLUMN;
-	//@ ensures \result >= 0 && \result <= ROWS -1;
+	//@ ensures \result >= 0 && \result <= ROWS;
 	private /*@ spec_public @*/ int nextEmptyRowInColumn(int column)	{
+		throw new UnsupportedOperationException();
+	}
+	
+	public boolean isBoardFull()	{
 		throw new UnsupportedOperationException();
 	}
 
