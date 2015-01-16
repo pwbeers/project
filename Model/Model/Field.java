@@ -9,8 +9,6 @@ public class Field {
 
 	private /*@ spec_public @*/ int status;
 	private /*@ spec_public @*/ final int EMPTY = 0;
-	private /*@ spec_public @*/ final int PLAYERONE = 1;
-	private /*@ spec_public @*/ final int PLAYERTWO = 2;
 	
 	/*@public invariant 0 <= status && status <= 2; @*/ //class invariant
 
@@ -19,7 +17,7 @@ public class Field {
 	 */
 	//@ ensures status == EMPTY;
 	public Field() {
-		throw new UnsupportedOperationException();
+		status = EMPTY;
 	}
 
 	/**
@@ -28,28 +26,36 @@ public class Field {
 	 * 		   <code>false</code> then the field is filled by a player.
 	 */
 	public boolean isEmpty() {
-		throw new UnsupportedOperationException();
+		boolean result = false;
+		if(status == EMPTY)	{
+			result = true;
+		}
+		return result;
 	}
 
 	/**
 	 * Changes the status of the field to filled by the given player.
-	 * @param <code>player == PLAYERONE || PLAYERTWO</code>
+	 * @param <code>player == 1 || 2</code>
 	 */
-	//@ requires player == PLAYERONE || player == PLAYERTWO;
+	//@ requires player == 1 || player == 2;
 	//@ ensures status == player;
 	public void setField(int player) {
-		throw new UnsupportedOperationException();
+		status = player;
 	}
 
 	/**
 	 * Checks if the field is filled by the given player
-	 * @param <code>player == PLAYERONE || PLAYERTWO</code>
+	 * @param <code>player == 1 || 2</code>
 	 * @return If <code>true</code> then the field is filled by <code>player</code>, 
 	 * 		   if <code>false</code> then the field is not filled by <code>player</code>.
 	 */
-	//@ requires player == PLAYERONE || player == PLAYERTWO;
+	//@ requires player == 1 || player == 2;
 	public boolean isField(int player) {
-		throw new UnsupportedOperationException();
+		boolean result = false;
+		if(status == player)	{
+			result = true;
+		}
+		return result;
 	}
 
 }
