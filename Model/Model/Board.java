@@ -4,6 +4,8 @@ package Model;
  * Keeps track of a board with multiple fields in it.
  * @author peter
  */
+// TODO there should be a function which enables the GUI to display which fields makup the winning four streak
+
 public class Board {
 
 	private /*@ spec_public @*/ Field[][] fields;
