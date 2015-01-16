@@ -11,6 +11,8 @@ public class Field {
 	private /*@ spec_public @*/ final int EMPTY = 0;
 	private /*@ spec_public @*/ final int PLAYERONE = 1;
 	private /*@ spec_public @*/ final int PLAYERTWO = 2;
+	
+	/*@public invariant 0 <= status && status <= 2; @*/ //class invariant
 
 	/**
 	 * Makes a new field with the status <code>EMPTY</code>
