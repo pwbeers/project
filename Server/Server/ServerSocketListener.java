@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 
 /**
  * 
- * The ServerSocketListener immediately starts waiting for new connections and when they arise 
+ * The ServerSocketListener starts waiting for new connections and when they arise 
  * immediately assigns them a ConnectionHandler. The ServerSocketListener is also responsible for 
  * appropriately closing of all connections. 
  * @author Stephan
@@ -14,9 +14,9 @@ import java.net.ServerSocket;
 public class ServerSocketListener extends Thread {
 
 	// ------------------ Instance variables ----------------
-	private ServerController Controller;
+	private ServerController controller;
 	private Socket newSocket; //Holder for a socket when it is created when a new connection is established
-	private ServerSocket ServerSocket; //the ServerSocket this ServerSocketListener listens to 
+	private ServerSocket serverSocket; //the ServerSocket this ServerSocketListener listens to 
 	
 
 	// ------------------ Constructor ------------------------

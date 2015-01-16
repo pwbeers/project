@@ -15,10 +15,10 @@ import View.ServerGUI;
 public class ServerController {
 	
 	// ------------------ Instance variables ----------------
-	private Map<String, ConnectionHandler> Connections; //Keeps track of all current connections and their nicknames
-	private Map<GameController, List<ConnectionHandler>> Games; //Keeps track of alle current games and their respective ConnectionHandlers
-	private ServerGUI View;
-	private ServerSocketListener ServerSocketListener;
+	private Map<String, ConnectionHandler> connections; //Keeps track of all current connections and their nicknames
+	private Map<GameController, List<ConnectionHandler>> games; //Keeps track of alle current games and their respective ConnectionHandlers
+	private ServerGUI view;
+	private ServerSocketListener serverSocketListener;
 	
 	// ------------------ Constructor ------------------------
 	/**
