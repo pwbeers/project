@@ -7,18 +7,16 @@ package Model;
 public class Board {
 
 	private /*@ spec_public @*/ Field[][] fields;
-	private /*@ spec_public @*/ final int MOSTLEFTCOLUMN = 0;
-	private /*@ spec_public @*/ final int MOSTRIGHTCOLUMN = 6;
 	private /*@ spec_public @*/ final int STONES = 4;
 	private /*@ spec_public @*/ final int COLUMNS = 7;
 	private /*@ spec_public @*/ final int ROWS = 6;
 
-	/*@public invariant fields.length == COLUMNS && fields[MOSTRIGHTCOLUMN].length == ROWS; @*/ //class invariant
+	/*@public invariant fields.length == COLUMNS && fields[COLUMNS - 1].length == ROWS; @*/ //class invariant
 	
 	/**
 	 * Makes a new board filled with empty fields.
 	 */
-	//@ ensures fields != null && fields.length == COLUMNS && fields[MOSTRIGHTCOLUMN].length == ROWS;
+	//@ ensures fields != null && fields.length == COLUMNS && fields[COLUMNS - 1].length == ROWS;
 	public Board() {
 		//TODO loop invariant toevoegen.
 		fields = new Field[COLUMNS][ROWS];
@@ -32,11 +30,11 @@ public class Board {
 	/**
 	 * Checks the board if the move in the given <code>column</code> is 
 	 * a valid move.
-	 * @param column <code>=> MOSTLEFTCOLUMN && column <= MOSTRIGHTCOLUMN</code>
+	 * @param column <code>=> 0 && column <= COLUMNS - 1</code>
 	 * @return If <code>true</code> then the move is legal<code>EMPTY</code>, if 
 	 * 		   <code>false</code> then the move is illegal.
 	 */
-	//@ requires column >= MOSTLEFTCOLUMN && column <= MOSTRIGHTCOLUMN;
+	//@ requires column >= 0 && column <= COLUMNS - 1;
 	public boolean legalMove(int column) {
 		boolean result = false;
 		if(nextEmptyRowInColumn(column) != 6)	{
@@ -47,10 +45,10 @@ public class Board {
 
 	/**
 	 * Places a stone by the given player in the given column on the board.
-	 * @param column <code>=> MOSTLEFTCOLUMN && column <= MOSTRIGHTCOLUMN</code>
+	 * @param column <code>=> 0 && column <= COLUMNS - 1</code>
 	 * @param player <code>== 1 || player == 2</code>
 	 */
-	//@ requires column >= MOSTLEFTCOLUMN && column <= MOSTRIGHTCOLUMN;
+	//@ requires column >= 0 && column <= COLUMNS - 1;
 	//@ requires player == 1 || player == 2;
 	//@ ensures fields[column][nextEmptyRowInColumn(column)-1].isField(player);
 	public void doMove(int column, int player) {
@@ -68,11 +66,11 @@ public class Board {
 	//@ requires player == 1 || player == 2;
 	public boolean horizontalWinner(int player) {
 		boolean result = false;
-		for (int row = 0; row < fields[row].length && !result; row++) {
-			for (int i = 0; i < 4 && !result; i++) {
+		for (int yBegin = 0; yBegin < fields[yBegin].length && !result; yBegin++) {
+			for (int xBegin = 0; xBegin < 4 && !result; xBegin++) {
 				boolean winner = true;
-				for (int j = 0; j < 4 && winner; j++) {
-					winner = fields[row][i+j].isField(player);
+				for (int j = 0; j < STONES && winner; j++) {
+					winner = fields[xBegin + j][yBegin].isField(player);
 				}
 				if(winner == true)	{
 					result = true;
@@ -93,11 +91,11 @@ public class Board {
 	//@ requires player == 1 || player == 2;
 	public boolean verticalWinner(int player) {
 		boolean result = false;
-		for (int column = 0; column < fields.length - 4 && !result; column++) {
-			for (int i = 0; i < 3 && !result; i++) {
+		for (int xBegin = 0; xBegin < fields.length - STONES && !result; xBegin++) {
+			for (int yBegin = 0; yBegin < 3 && !result; yBegin++) {
 				boolean winner = true;
 				for (int j = 0; j < fields[j].length && winner; j++) {
-					winner = fields[i+j][column].isField(player);
+					winner = fields[xBegin][yBegin + j].isField(player);
 				}
 				if(winner == true)	{
 					result = true;
@@ -118,35 +116,65 @@ public class Board {
 	//@ requires player == 1 || player == 2;
 	public boolean diagonalWinner(int player) {
 		boolean result = false;
-		for (int row = 0; row < fields[row].length - 4 && !result; row++) {
-			for (int i = 0; i < 4 && !result; i++) {
+		//Checks if there is a diagonal winner from left to right
+		for (int yBegin = 0; yBegin < fields[yBegin].length - STONES && !result; yBegin++) {
+			for (int xBegin = 0; xBegin < 4 && !result; xBegin++) {
 				boolean winner = true;
-				for (int j = 0; j < 4 && winner; j++) {
-					winner = fields[j+i][j+row].isField(player);
+				for (int j = 0; j < STONES && winner; j++) {
+					winner = fields[j+xBegin][j+yBegin].isField(player);
 				}
 				if(winner == true)	{
 					result = true;
 				}
 			}
 		}
-		//TODO andere kant afmaken van Board
+		//Checks if there is a diagonal winner from right to left
+		for (int yBegin = 0; yBegin < fields[yBegin].length - STONES && !result; yBegin++) {
+			for (int xBegin = fields.length - 1; xBegin > 2 && !result; xBegin--) {
+				boolean winner = true;
+				for (int j = 0; j < STONES && winner; j++) {
+					winner = fields[j+xBegin][j+yBegin].isField(player);
+				}
+				if(winner == true)	{
+					result = true;
+				}
+			}
+		}
 		return result;
 	}
 	
 	/**
 	 * Gives the bottommost row that is empty in the given column.
 	 * And returns 6 if the column is filled completely.
-	 * @param column >= MOSTLEFTCOLUMN && column <= MOSTRIGHTCOLUMN
+	 * @param column >= 0 && column <= COLUMNS - 1
 	 * @return >= 0 && return <= 6
 	 */
-	//@ requires column >= MOSTLEFTCOLUMN && column <= MOSTRIGHTCOLUMN;
+	//@ requires column >= 0 && column <= COLUMNS - 1;
 	//@ ensures \result >= 0 && \result <= ROWS;
 	private /*@ spec_public @*/ int nextEmptyRowInColumn(int column)	{
-		throw new UnsupportedOperationException();
+		int result = ROWS;
+		for (int i = 0; i < fields[column].length && result == 6; i++) {
+			if(fields[column][i].isEmpty())	{
+				result = i;
+			}
+		}
+		return result;
 	}
 	
+	/**
+	 * Determines if the board is full or empty
+	 * @return If <code>true</code> then the board is full, if <code>false</code> 
+	 * 		   then the board has no winner for the given player with a diagonal line.
+	 */
+	//@ requires fields != null;
 	public boolean isBoardFull()	{
-		throw new UnsupportedOperationException();
+		boolean result = false;
+		for (int x = 0; x < fields.length && !result; x++) {
+			for (int y = 0; y < fields[x].length && !result; y++) {
+				result = fields[x][y].isEmpty();
+			}
+		}
+		return result;
 	}
 
 }
