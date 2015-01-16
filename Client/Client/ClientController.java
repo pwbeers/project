@@ -2,11 +2,11 @@ package Client;
 
 import Model.Model;
 import Server.*;
-import View.ClientGUI;
+import View.GUI;
 
 public class ClientController {
 
-	private ClientGUI view;
+	private GUI view;
 	private Model game;
 	private ClientConnectionHandler connection;
 

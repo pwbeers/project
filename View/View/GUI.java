@@ -2,7 +2,7 @@ package View;
 
 import javax.swing.event.AncestorListener;
 
-public interface ClientGUI {
+public interface GUI {
 
 	void printTekst();
 
