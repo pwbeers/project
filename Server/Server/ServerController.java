@@ -10,14 +10,14 @@ package Server;
 import java.util.List;
 import java.util.Map;
 
-import View.ServerGUI;
+import View.GUI;
 
 public class ServerController {
 	
 	// ------------------ Instance variables ----------------
 	private Map<String, ConnectionHandler> connections; //Keeps track of all current connections and their nicknames
 	private Map<GameController, List<ConnectionHandler>> games; //Keeps track of alle current games and their respective ConnectionHandlers
-	private ServerGUI view;
+	private GUI view;
 	private ServerSocketListener serverSocketListener;
 	
 	// ------------------ Constructor ------------------------
