@@ -58,11 +58,13 @@ public class ClientGUI implements GUI {
 	private JTextField connectionIPText;
 	private JButton[] board; 
 	private JTextField gameName;
+	private ActionListener controller;
 
 	/**
-	 * Starts the ClientGUI
+	 * Starts the ClientGUI and saves the given controller.
 	 */
-	public ClientGUI() {
+	public ClientGUI(ActionListener controller) {
+		this.controller = controller;
 		initialize();
 		frmFour.setVisible(true);
 	}
@@ -89,6 +91,7 @@ public class ClientGUI implements GUI {
 		challengePanel.add(challengeText, BorderLayout.CENTER);
 		
 		JButton challengeButton = new JButton("Challenge");
+		challengeButton.addActionListener(controller);
 		challengePanel.add(challengeButton, BorderLayout.SOUTH);
 		
 		JPanel boardPanel = new JPanel();
@@ -112,6 +115,8 @@ public class ClientGUI implements GUI {
 			board[i].setContentAreaFilled(false);
 			board[i].setBorderPainted(false);
 			board[i].setPreferredSize(new Dimension(75, 75));
+			board[i].setActionCommand(Integer.toString(i));
+			board[i].addActionListener(controller);
 			boardButtons.add(board[i]);
 		}
 		
@@ -136,6 +141,7 @@ public class ClientGUI implements GUI {
 		connectionIPText.setColumns(10);
 		
 		JButton connectionButton = new JButton("Connect");
+		connectionButton.addActionListener(controller);
 		connectionPanel.add(connectionButton);
 		
 		JPanel chatPanel = new JPanel();
@@ -146,8 +152,11 @@ public class ClientGUI implements GUI {
 		JTextPane chatTextScreen = new JTextPane();
 		chatPanel.add(chatTextScreen);
 		
-		JTextPane chatTextField = new JTextPane();
+		JTextField chatTextField = new JTextField();
+		chatTextField.setActionCommand("chatText");
+		chatTextField.addActionListener(controller);
 		chatTextField.setText("Vul een bericht in...");
+		
 		chatTextField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		chatPanel.add(chatTextField, BorderLayout.SOUTH);
 		
@@ -178,6 +187,7 @@ public class ClientGUI implements GUI {
 		gamePanel.add(gameAISlider);
 		
 		JButton gameStartGame = new JButton("StartGame");
+		gameStartGame.addActionListener(controller);
 		gameStartGame.setPreferredSize(new Dimension(160, 30));
 		gamePanel.add(gameStartGame);
 		
@@ -186,6 +196,7 @@ public class ClientGUI implements GUI {
 		frmFour.getContentPane().add(hintPanel);
 		
 		JButton hintButton = new JButton("Hint");
+		hintButton.addActionListener(controller);
 		hintPanel.add(hintButton);
 		
 		JPanel leaderboardPanel = new JPanel();
@@ -193,6 +204,7 @@ public class ClientGUI implements GUI {
 		frmFour.getContentPane().add(leaderboardPanel);
 		
 		JButton leaderboardButton = new JButton("LeaderBoard");
+		leaderboardButton.addActionListener(controller);
 		leaderboardPanel.add(leaderboardButton);
 
 	}
@@ -205,11 +217,6 @@ public class ClientGUI implements GUI {
 		// TODO Auto-generated method stub
 	}
 
-	public void addController(ActionListener controller) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	public void update(Observable arg0, Object arg1) {
 		// TODO Auto-generated method stub
 		

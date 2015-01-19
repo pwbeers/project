@@ -10,11 +10,4 @@ public interface GUI extends Observer	{
 	void printTekst(String message);
 
 	void startScherm();
-
-	/**
-	 * 
-	 * @param controller
-	 */
-	void addController(ActionListener controller);
-
 }

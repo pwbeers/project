@@ -27,8 +27,7 @@ public class ClientController implements ActionListener	{
 	 */
 	//@ ensures view != null && game != null;
 	public ClientController() {
-		view = new ClientGUI();
-		view.addController(this);
+		view = new ClientGUI(this);
 		game = new Game();
 		game.addObserver(view);
 	}
@@ -40,10 +39,31 @@ public class ClientController implements ActionListener	{
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
+	/**
+	 * Receives actions from the GUI and responds accordingly to them.
+	 */
 	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		String command = arg0.getActionCommand();
+		if(command.matches("[0-9]+"))	{
+			System.out.println("yes");
+		}
+		else if(command.equals("Connect"))	{
+			System.out.println("yes");
+		}
+		else if(command.equals("Challenge"))	{
+			System.out.println("yes");
+		}
+		else if(command.equals("chatText"))	{
+			System.out.println("yes");
+		}
+		else if(command.equals("StartGame"))	{
+			System.out.println("yes");
+		}
+		else if(command.equals("Hint"))	{
+			System.out.println("yes");
+		}
+		else if(command.equals("LeaderBoard"))	{
+			System.out.println("yes");
+		}
 	}
-
 }
