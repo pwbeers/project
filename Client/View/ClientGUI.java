@@ -27,6 +27,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.SystemColor;
 import java.io.File;
+import java.util.Observable;
 
 import javax.swing.ImageIcon;
 
@@ -40,10 +41,17 @@ import javax.swing.border.Border;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+
 import javax.swing.JToggleButton;
 import javax.swing.JSlider;
 
-public class ClientGUI {
+import Client.ClientController;
+
+/**
+ * A ClientGUI that shows an graphical interface for the client/user to use.
+ * @author peter
+ */
+public class ClientGUI implements GUI {
 
 	private JFrame frmFour;
 	private JTextField connectionPortText;
@@ -52,26 +60,11 @@ public class ClientGUI {
 	private JTextField gameName;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ClientGUI window = new ClientGUI();
-					window.frmFour.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the application.
+	 * Starts the ClientGUI
 	 */
 	public ClientGUI() {
 		initialize();
+		frmFour.setVisible(true);
 	}
 
 	/**
@@ -203,21 +196,22 @@ public class ClientGUI {
 		leaderboardPanel.add(leaderboardButton);
 
 	}
-	private static void addPopup(Component component, final JPopupMenu popup) {
-		component.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			private void showMenu(MouseEvent e) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-		});
+
+	public void printTekst(String message) {
+		// TODO Auto-generated method stub
+	}
+
+	public void startScherm() {
+		// TODO Auto-generated method stub
+	}
+
+	public void addController(ActionListener controller) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		// TODO Auto-generated method stub
+		
 	}
 }

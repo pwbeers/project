@@ -1,6 +1,11 @@
 package Client;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import Model.Game;
 import Model.Model;
+import View.ClientGUI;
 import View.GUI;
 
 /**
@@ -8,7 +13,7 @@ import View.GUI;
  * between them.
  * @author peter
  */
-public class ClientController {
+public class ClientController implements ActionListener	{
 
 	private /*@ spec_public @*/ GUI view;
 	private /*@ spec_public @*/ Model game;
@@ -16,14 +21,16 @@ public class ClientController {
 
 	/*@public invariant view != null; @*/ //class invariant
 	/*@public invariant game != null; @*/ //class invariant
-	/*@public invariant connection != null; @*/ //class invariant
 	
 	/**
-	 * Makes a new Model, GUI and ClienConnectionHandler.
+	 * Makes a new Model and GUI. Also adds the GUI observer to the Model.
 	 */
-	//@ ensures view != null && game != null && connection != null;
+	//@ ensures view != null && game != null;
 	public ClientController() {
-		throw new UnsupportedOperationException();
+		view = new ClientGUI();
+		view.addController(this);
+		game = new Game();
+		game.addObserver(view);
 	}
 
 	/**
@@ -31,6 +38,12 @@ public class ClientController {
 	 */
 	public void commandProducer() {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
