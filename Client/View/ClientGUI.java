@@ -27,6 +27,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.SystemColor;
 import java.io.File;
+import java.util.NoSuchElementException;
 import java.util.Observable;
 
 import javax.swing.ImageIcon;
@@ -220,5 +221,21 @@ public class ClientGUI implements GUI {
 	public void update(Observable arg0, Object arg1) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public String[] getConnection()	{
+		throw new UnsupportedOperationException();
+	}
+	
+	public String getChallenge()	{
+		throw new UnsupportedOperationException();
+	}
+	
+	public String getMessage()	{
+		throw new UnsupportedOperationException();
+	}
+	
+	public String[] getStartGame()	{
+		throw new UnsupportedOperationException();
 	}
 }
