@@ -1,11 +1,14 @@
 package Server;
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
-import com.sun.java_cup.internal.runtime.Scanner;
 
 /**
  * Manages a single TCP connection with a Player. It handles some of the logic
@@ -16,27 +19,53 @@ import com.sun.java_cup.internal.runtime.Scanner;
 public class ConnectionHandler extends Thread {
 
 	// ------------------ Instance variables ----------------
-	private ServerController controller;
-	private Socket socket;
+	private ServerController controller; //the current ServerController
+	private Socket socket; //the socket of this particular connection
 	private String nickName; //the nickname of the player connected to this handler
-	private GameController gameController;
+	private GameController gameController; //the gameController the connection is in, if there is one
+	private String extensions; //the extensions supported by the Server
 	
-	private PrintWriter writer; //for writing back over the socket
-	private BufferedReader bufferedReader; //for reading from the socket
-	private Scanner scanner; //scanner for the switch, reading the commands
-	private String newCommand; //command for switch
-	private ArrayList<String> arguments; //Argument for switch
+	private PrintWriter writer; //printwriter for writing back over the socket to the client
+	private BufferedReader bufferedReader; //Bufferedreader for reading from the socket
+	private Scanner scanner; //scanner for the switch reading the commands in a single line
+	private String newLine; //a new line recieved on th esocket
+	
+	private boolean listenForCommands; //Flag for the while loop in run(), if this is set to false the class shutsdown
 
 	// ------------------ Constructor ------------------------
 	/**
 	 * Creates a BufferedReader connected to the inputstream of this socket.
 	 * Creates a PrintWriter for writing to the Client.
+	 * Retrieves the supported extensions from servercontroller
+	 * Sends EXTENSIONS command to start communication
+	 * Sets the Flag for the run() method to true
+	 * Sets the gameController to null to allow checking if a MOVE command is correct
+	 * Sets nickName to nickName Unknown
 	 * @param controller //the current ServerController
 	 * @param socket /the socket created by the ServerController
 	 */
-	public ConnectionHandler(ServerController controller, Socket socket) {
-		// TODO - implement ConnectionHandler.ConnectionHandler
-		throw new UnsupportedOperationException();
+	public ConnectionHandler(ServerController newController, Socket newSocket) {
+		controller = newController;
+		socket = newSocket;
+		extensions = controller.getExtensions();
+		listenForCommands = true;
+		gameController = null;
+		nickName = "nickName unknown";
+		
+		//Create a Buffered Read and a PrintWriter
+		try {
+			bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			writer = new PrintWriter(socket.getOutputStream(), true);
+			
+			//The client is waiting for the AMULET EXTENSIONS command to begin communication
+			((PrintWriter) writer).println("EXTENSIONS " + extensions);
+			
+		} catch (IOException e) {
+			//TODO send error to error class
+			/*getInPutStream throws an IOException if an I/O error occurs when creating 
+			the input stream, the socket is closed, getOutPutStream throws one when creating
+			the output stream or if the socket is not connected.*/
+		}
 	}
 
 	// ------------------ Queries --------------------------
@@ -45,8 +74,7 @@ public class ConnectionHandler extends Thread {
 	 * @return the current Game Controller
 	 */
 	public GameController getGameController() {
-		// TODO - implement ConnectionHandler.getGameController
-		throw new UnsupportedOperationException();
+		return gameController;
 	}
 	
 	/**
@@ -54,25 +82,49 @@ public class ConnectionHandler extends Thread {
 	 * @return the current NickName
 	 */
 	public String getNickName() {
-		// TODO - implement ConnectionHandler.getNickName
-		throw new UnsupportedOperationException();
+		return nickName;
 	}
 	// ------------------ Commands --------------------------
 	/**
-	 * Waits for a new line. When one is received sends it to the commandReader
+	 * Waits for a new line. When one is received sends it to the commandReader.
+	 * Is only active when listenForCommands == true. If it is set to false the bufferedReader, 
+	 * writer and socket are closed and the connection is removed from the ServerController
 	 */
 	public void run(){
-		// TODO - implement ConnectionHandler.run
-		throw new UnsupportedOperationException();
+		while (listenForCommands == true){
+			try {
+				//Wait for new Command.
+				newLine = bufferedReader.readLine();
+			}catch (IOException e) {
+				//An I/O error occured in readLine() The thread is closed.
+				listenForCommands = false;
+				//TODO send error to error class
+			}
+			//Pass the newCommand to the commandReader.
+			commandReader(newLine);
+		}
+		/*if listenForCommands has been set to false the thread needs to be closed
+		and the resources must be freed*/
+		try{
+			controller.removeConnectionHandler(this);
+			gameController = null;
+			bufferedReader.close();
+			writer.close();
+			socket.close();
+		}catch (IOException e){
+			//TODO send error to error class
+			controller.writeToGUI("ERROR[FFFF00]: There was  a read(), ready(), mark(), reset(),"
+					+ " or skip() invocation on a closed BufferedReader or an I/O error has occured"
+					+ " while closing the socket in the  thread of "+ nickName);
+		}
 		
 	}
 	/**
 	 * Sets the GameController attribute for referencing when in a game
-	 * @param gameController the current GameController
+	 * @param newGameController the current GameController
 	 */
-	public void setGameController(GameController gameController) {
-		// TODO - implement ConnectionHandler.setGameController
-		throw new UnsupportedOperationException();
+	public void setGameController(GameController newGameController) {
+		gameController = newGameController;
 	}
 
 	/**
@@ -80,20 +132,61 @@ public class ConnectionHandler extends Thread {
 	 * @param name the NickName
 	 */
 	public void setNickName(String name) {
-		// TODO - implement ConnectionHandler.setName
-		throw new UnsupportedOperationException();
+		nickName = name;
 	}
-
+	
+	/** Send a message to the client
+	 * @param message the messeage to be send
+	 */
+	public void writeToClient(String message){
+		((PrintWriter) writer).println(message);
+	}
+	
 	/**
 	 * Switches all the commands in the AMULET protocol to the right parts of the system using a switch
 	 * 
 	 * @param newCommand a new Command which has been detected
 	 */
-	public void commandReader(String newCommand) {
-		// TODO - implement ConnectionHandler.commandReader
-		throw new UnsupportedOperationException();
+	public void commandReader(String newLine) {
+		scanner = new Scanner(newLine);
+		String command;
+		ArrayList <String> arguments = new ArrayList<String>();
+		
+		//Separate the AMULET command from the arguments and put them in an ArrayList.
+		command = scanner.next();
+		while(scanner.hasNext()){
+			arguments.add(scanner.next());
+		}
+		
+		switch (command){
+		case "EXTENSIONS":
+			//The ServerController handles the logic for matching which extensions can be used 
+			controller.matchExtensions(arguments, this);
+			break;
+		case "JOINREQ":
+			//We now now the NickName of this client. This should also be be made known to the ServerController
+			nickName = arguments.get(0);
+			controller.addConnectionHandler(nickName, this);
+			break;
+		case "MOVE":
+			/*We pass any Move commands through to the game controller.
+			If there is no gameController the client is kicked*/
+			if(gameController == null){
+				writeToClient("ERROR COMMAND NOT RECOGNIZED. YOUR CONNECTION WILL NOW BE TERMINATED");
+				listenForCommands = false;
+				break;
+			}else {
+				gameController.newMove(this, arguments);
+				break;
+			}	
+		case "DEBUG":
+			controller.writeToGUI("[" +nickName+"]:DEBUG" + arguments);
+			break;
+		default:
+			//Any other commands are illegal in AMULET and the connection will be severed
+			writeToClient("ERROR COMMAND NOT RECOGNIZED. YOUR CONNECTION WILL NOW BE TERMINATED");
+			listenForCommands = false;
+			break;
+		}
 	}
-
-	
-
 }

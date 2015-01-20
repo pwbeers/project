@@ -1,5 +1,6 @@
 package Server;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import Model.Model;
@@ -54,6 +55,17 @@ public class GameController {
 	 */
 	public void gameCommandReader(String line) {
 		// TODO - implement GameController.gameCommandReader
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Handles the AMULET protocol for doing a move
+	 * @param connectionHandler
+	 * @param arguments
+	 */
+	public void newMove(ConnectionHandler connectionHandler, ArrayList<String> arguments) {
+		// TODO Auto-generated method stub
+		//make a new move and feedback what the result is, wrong move = error normal move = nothing endgame = endgame
 		throw new UnsupportedOperationException();
 	}
 

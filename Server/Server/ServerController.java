@@ -7,6 +7,7 @@ package Server;
  * @author Stephan
  */
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,7 @@ public class ServerController {
 	private Map<GameController, List<ConnectionHandler>> games; //Keeps track of alle current games and their respective ConnectionHandlers
 	private GUI view;
 	private ServerSocketListener serverSocketListener;
+	private final String EXTENSIONS ="NONE"; //The AMULET value for which extensions are supported
 	
 	// ------------------ Constructor ------------------------
 	/**
@@ -31,6 +33,13 @@ public class ServerController {
 		throw new UnsupportedOperationException();
 	}
 	// ------------------ Queries --------------------------
+	/**
+	 * Returns the AMULET value for which extensions are supported.
+	 * @return
+	 */
+	public String getExtensions(){
+		return EXTENSIONS;
+	}
 	// ------------------ Commands --------------------------
 	/**
 	 * Creates a ServerSocketListeren object on port <code>portNumber</code>
@@ -42,11 +51,24 @@ public class ServerController {
 	}
 
 	/**
-	 * Creates a GameController object which starts a game with players <code>player1</code> and <code>player2</code>
+	 * This methods handles the situation when there is a new player without challange capabilities
+	 * It looks for any other players which are not in a game and selects one randomly
+	 * It puts them both in a GameController
 	 * @param player1 the first player 
 	 * @param player2 the second player
 	 */
-	public void startGame(ConnectionHandler player1, ConnectionHandler player2) {
+	public void startGame(ConnectionHandler player1) {
+		// TODO - implement ServerController.startGame
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Creates a GameController object which starts a game with players <code>player1</code> and <code>player2</code>
+	 * Used when both players are known.
+	 * @param player1 the first player 
+	 * @param player2 the second player
+	 */
+	public void startChallangeGame(ConnectionHandler player1, ConnectionHandler player2) {
 		// TODO - implement ServerController.startGame
 		throw new UnsupportedOperationException();
 	}
@@ -62,10 +84,12 @@ public class ServerController {
 	/**
 	 * Adds a ConnectionHandler to the Connections Map
 	 * @param newPlayer the ConnectionHandler to be added
+	 * @param nickName the Nickname of the player
 	 */
-	public void addConnectionHandler(ConnectionHandler newPlayer) {
+	public void addConnectionHandler(String nickName, ConnectionHandler newPlayer) {
 		// TODO - implement ServerController.addConnectionHandler
 		throw new UnsupportedOperationException();
+		//because there is a new connection it should now be placed in a game
 	}
 
 	/**
@@ -75,6 +99,29 @@ public class ServerController {
 	public void removeConnectionHandler(ConnectionHandler removePlayer) {
 		// TODO - implement ServerController.removeConnectionHandler
 		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Prints a message to the GUI
+	 * @param string
+	 */
+	public void writeToGUI(String string) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();		
+	}
+	
+	/**
+	 * Because of the AMULET protocol the extensions which a client supports must be kept track of.
+	 * The ServerController puts the connectionHandler in the  different extention sets
+	 * @param extensions the ArrayList housing the extensions
+	 * @param connectionHandler
+	 */
+	public void matchExtensions(ArrayList<String> extensions,
+			ConnectionHandler connectionHandler) {
+		// TODO Auto-generated method stub
+		// sort the connection handler into the differen extention sets
+		//write extensions reader
+		
 	}
 
 }
