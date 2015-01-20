@@ -6,9 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
-
+import Error.Error;
 
 /**
  * Manages a single TCP connection with a Player. It handles some of the logic
@@ -104,6 +103,7 @@ public class ConnectionHandler extends Thread {
 			try {
 			commandReader(newLine);
 			}catch (Error commandError){
+				//There was a violation of the AMULET guidlines. The connection needs to be severed.
 				writeToClient(commandError.getMessage());
 				listenForCommands = false;
 			}
@@ -174,11 +174,13 @@ public class ConnectionHandler extends Thread {
 			controller.addConnectionHandler(nickName, this);
 			break;
 		case "MOVE":
-			/*We pass any Move commands through to the game controller.
-			If there is no gameController the client is kicked*/
+			/*We pass any Move commands through to the GameController.
+			If there is no gameController the client is kicked
+			GameController throws his own exceptions to kick the user*/
 			if(gameController == null){
 				throw new Error("ERROR COMMAND NOT RECOGNIZED. YOUR CONNECTION WILL NOW BE TERMINATED");
 			}else {
+				//If newMove cannot be completed an error wil be thrown which is handled in the run method
 				gameController.newMove(this, arguments);
 				break;
 			}	
