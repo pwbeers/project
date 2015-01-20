@@ -45,22 +45,30 @@ public class ClientConnectionHandler extends Thread {
 		while(scan.hasNext())	{
 			command.add(scan.next());
 		}
+		scan.close();
 		switch(command.get(0))	{
 			case "EXTENSIONS": 
-				//TODO fouten in extensies afhandelen
 				String[] extensions = new String[command.size()-1];
 				for (int i = 1; i < command.size(); i++) {
-					//Veranderen
-					throw new Error("Argument is fout");
-					extensions[i - 1] = command.get(i);
+					if(command.get(i).equals("NONE") || command.get(i).equals("CHAT") || command.get(i).equals("CHALLENGE") || command.get(i).equals("LEADERBOARD"))	{
+						extensions[i - 1] = command.get(i);
+					}
+					else	{
+						throw new Error("Arguments after EXTENSIONS are illegal");
+					}
 				}
 				controller.addServerExtensions(extensions);
 				break;
 			case "GAME": 
-				//start game
+				if(command.size() == 2 && !command.get(1).equals(""))	{
+					controller.startGame(command.get(1));
+				}
+				else	{
+					throw new Error("Arguments after EXTENSIONS are illegal");
+				}
 				break;
 			case "TURN": 
-				
+				controller.onTurn();
 				break;
 			case "MOVEUPDATE": 
 				
@@ -124,6 +132,7 @@ public class ClientConnectionHandler extends Thread {
 				commandReader(in.readLine());
 			} catch (Error e)	{
 				System.out.println(e.getMessage());
+				//TODO kick server
 			
 			} catch (IOException e) {
 				//TODO exception netjes afvangen

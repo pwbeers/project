@@ -123,4 +123,22 @@ public class ClientController implements ActionListener	{
 		//TODO
 		throw new UnsupportedOperationException();
 	}
+	
+	/**
+	 * Start a game against the given player
+	 * @param name is the name of the player against who the game is played
+	 */
+	public void startGame(String name)	{
+		//TODO
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * This method is called when the player is on turn and 
+	 * is asked to do a move
+	 */
+	public void onTurn()	{
+		//TODO
+		throw new UnsupportedOperationException();
+	}
 }

@@ -69,6 +69,7 @@ public class Game extends Observable implements Model	{
 	 */
 	//@ requires column >= 0 && column <= 6;
 	public boolean isLegalMove(int column) {
+		//TODO Controle of deze aan de beurt is toevoegen
 		if(board.legalMove(column) == true){
 			return true;
 		}else{
@@ -80,18 +81,16 @@ public class Game extends Observable implements Model	{
 	 * Places a stone in the given column for the given player if the move is legal
 	 * and the player is on turn. Then checks if the board has a winner,draw, or no winner.
 	 * Then changes the turn of the player.
-	 * If 0 is returned then the player is not on turn or the player made an illegal move.
+	 * If 0 is returned then there the game can continue and the other player is on turn.
 	 * If 1 is returned then the player has won.
 	 * If 2 is returned then there is a draw.
-	 * If 3 is returned then there the game can continue and the other player is on turn.
 	 * @param column <code>=> 0 && column <= 6</code>
 	 * @param player <code>== 1 || player == 2</code>
 	 */
 	//@ requires column >= 0 && column <= 6;
 	//@ requires player == 1 || player == 2;
 	//@ ensures \result == 0 || \result == 1 || \result == 2;
-	public int doMove(int column, int player) {
-		
+	public int doMove(int column, int player) {		
 		if (onTurn(player) == false){ //Check if it's actually the players turn.
 			return 0;
 		}else if (isLegalMove(column) == false){ //Check if the move is legal.
