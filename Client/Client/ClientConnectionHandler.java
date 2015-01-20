@@ -106,11 +106,11 @@ public class ClientConnectionHandler extends Thread {
 				break;
 			case "ERROR": 
 				//TODO netjes afhandelen van disconnect door server
-				String message = command.get(1);
+				String error = command.get(1);
 				for (int i = 2; i < command.size(); i++) {
-					message = message + " " + command.get(i);
+					error = error + " " + command.get(i);
 				}
-				controller.error(message);
+				controller.error(error);
 				break;
 			case "DEBUG": 
 				if(command.size() > 1)	{
@@ -122,35 +122,57 @@ public class ClientConnectionHandler extends Thread {
 				}
 				break;
 			case "LEADERBOARD": 
-				//Later
+				String[] leaderboard = new String[command.size()-1];
+				for (int i = 0; i < command.size() - 1; i++) {
+					leaderboard[i] = command.get(i+1);
+				}
+				controller.leaderboard(leaderboard);
 				break;
 			case "MESSAGE": 
-				//Later
+				String message = "";
+				for (int i = 1; i < command.size(); i++) {
+					message = message + " " + command.get(i);
+				}
+				controller.message(message);
 				break;
 			case "BROADCAST": 
-				//Later
+				String broadcast = "";
+				for (int i = 1; i < command.size(); i++) {
+					broadcast = broadcast + " " + command.get(i);
+				}
+				controller.broadcast(broadcast);
 				break;
 			case "PLAYERUPDATE": 
-				
+				String[] update = new String[command.size()-1];
+				for (int i = 0; i < command.size() - 1; i++) {
+					update[i] = command.get(i+1);
+				}
+				controller.update(update);
 				break;
 			case "CHALLENGE": 
-				//Later
+				if(command.size() == 2)	{
+					String challengePlayer = command.get(1);
+					controller.challenged(challengePlayer);
+				}
+				else	{
+					throw new Error("Argument after CHALLENGE is illegal");
+				}
 				break;
 			case "CHALLENGERESP": 
 				//Later
 				break;
 			case "DISCONNECTED": 
-				//Later
+				//TODO Ends a game if being played with the player
+				//TODO Removes the player out of the list
 				break;
 			case "AUTHENTICATE": 
-				//Later
+				controller.authenticate();
 				break;
 			case "JOIN": 
-				//Later
+				//TODO JOIN N en JOIN Y toepassen
 				break;	
 			default	:
-				
-				break;	
+				throw new Error("No such command, illegal command has been send");
 		}
 		
 	}

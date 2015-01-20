@@ -103,6 +103,7 @@ public class ClientController implements ActionListener	{
 				if(name != null && !name.equals(""))	{
 					String message = "JOINREQ " + name;
 					connection.sendMessage(message);
+					connection.setName(name);
 				}
 				else	{
 					gui.printTekst("Give a player name.");
@@ -114,7 +115,12 @@ public class ClientController implements ActionListener	{
 		}
 		else if(command.equals("Hint"))	{
 			if(connection != null)	{
-				System.out.println("yes");
+				if(game != null)	{
+					hint();
+				}
+				else	{
+					gui.printTekst("First a game must be started.");
+				}
 			}
 			else	{
 				gui.printTekst("First a connection must be made.");
@@ -122,14 +128,16 @@ public class ClientController implements ActionListener	{
 		}
 		else if(command.equals("LeaderBoard"))	{
 			if(connection != null)	{
-				System.out.println("yes");
+					String message = "LEADERBOARDREQ";
+					connection.sendMessage(message);
 			}
 			else	{
 				gui.printTekst("First a connection must be made.");
 			}
 		}
 		else if(command.equals("End Game"))	{
-			System.out.println("yes");
+			//TODO tells the server the game is ended
+			//TODO deletes the current game and makes the client ready to be restarted
 		}
 	}
 	
@@ -190,7 +198,8 @@ public class ClientController implements ActionListener	{
 	 * @param arguments
 	 */
 	public void serverMove(String[] arguments)	{
-		
+		//TODO
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
@@ -199,7 +208,8 @@ public class ClientController implements ActionListener	{
 	 * @param arguments
 	 */
 	public void gameEnd(String[] arguments)	{
-		
+		//TODO
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
@@ -208,6 +218,68 @@ public class ClientController implements ActionListener	{
 	 * @param message
 	 */
 	public void error(String message)	{
-		
+		//TODO
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Gets a hint from the AI and gives this to the gui.
+	 */
+	public void hint()	{
+		//TODO
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Gets a leaderboard as argument and passes this on to the gui.
+	 * @param leaderboard
+	 */
+	public void leaderboard(String[] leaderboard)	{
+		//TODO
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Prints a personal message to the client.
+	 * @param message
+	 */
+	public void message(String message)	{
+		//TODO
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Prints a broadcast message to the client.
+	 * @param broadcast
+	 */
+	public void broadcast(String broadcast)	{
+		//TODO
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Updates the list of extensions from the other clients
+	 * @param updates
+	 */
+	public void update(String[] updates)	{
+		//TODO
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Receives a challenge from the player and responds by accepting or declining.
+	 * @param player
+	 */
+	public void challenged(String player)	{
+		//TODO
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Authenticate with the server by sending a password.
+	 */
+	public void authenticate()	{
+		//TODO
+		throw new UnsupportedOperationException();
 	}
 }
