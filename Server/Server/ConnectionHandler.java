@@ -101,7 +101,12 @@ public class ConnectionHandler extends Thread {
 				//TODO send error to error class
 			}
 			//Pass the newCommand to the commandReader.
+			try {
 			commandReader(newLine);
+			}catch (Error commandError){
+				writeToClient(commandError.getMessage());
+				listenForCommands = false;
+			}
 		}
 		/*if listenForCommands has been set to false the thread needs to be closed
 		and the resources must be freed*/
@@ -147,7 +152,7 @@ public class ConnectionHandler extends Thread {
 	 * 
 	 * @param newCommand a new Command which has been detected
 	 */
-	public void commandReader(String newLine) {
+	public void commandReader(String newLine) throws Error{
 		scanner = new Scanner(newLine);
 		String command;
 		ArrayList <String> arguments = new ArrayList<String>();
@@ -172,8 +177,7 @@ public class ConnectionHandler extends Thread {
 			/*We pass any Move commands through to the game controller.
 			If there is no gameController the client is kicked*/
 			if(gameController == null){
-				throw new AMULETCommandException();
-				break;
+				throw new Error("ERROR COMMAND NOT RECOGNIZED. YOUR CONNECTION WILL NOW BE TERMINATED");
 			}else {
 				gameController.newMove(this, arguments);
 				break;
@@ -183,13 +187,7 @@ public class ConnectionHandler extends Thread {
 			break;
 		default:
 			//Any other commands are illegal in AMULET and the connection will be severed
-			throw new AMULETCommandException();
-			break;
-		}
-		catch (AMULETCommandException e){
-			writeToClient("ERROR COMMAND NOT RECOGNIZED. YOUR CONNECTION WILL NOW BE TERMINATED");
-			listenForCommands = false;
-
+			throw new Error("ERROR COMMAND NOT RECOGNIZED. YOUR CONNECTION WILL NOW BE TERMINATED");
 		}
 	}
 }
