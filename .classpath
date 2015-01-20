@@ -4,6 +4,7 @@
 	<classpathentry kind="src" path="Client"/>
 	<classpathentry kind="src" path="Model"/>
 	<classpathentry kind="src" path="View"/>
+	<classpathentry kind="src" path="Error"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="OPENJML_RUNTIME_LIBRARY"/>
 	<classpathentry kind="output" path="bin"/>

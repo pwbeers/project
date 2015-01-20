@@ -1,4 +1,4 @@
-package Server;
+package Error;
 
 /**
  * Handles the exceptions and errors from all classes in the server

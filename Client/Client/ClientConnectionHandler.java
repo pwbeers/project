@@ -38,7 +38,7 @@ public class ClientConnectionHandler extends Thread {
 	 * @param line is the message received from a server
 	 */
 	//@ requires line != null;
-	public void commandReader(String line) {
+	public void commandReader(String line) throw {
 		Scanner scan = new Scanner(line);
 		//TODO afvangen van geen lege command.next()
 		ArrayList<String> command = new ArrayList<String>();
