@@ -168,11 +168,11 @@ public class ClientConnectionHandler extends Thread {
 		while(true)	{
 			try {
 				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				commandReader(in.readLine());
+				String message = in.readLine();
+				commandReader(message);
 			} catch (Error e)	{
 				System.out.println(e.getMessage());
-				//TODO kick server
-			
+				//TODO kick server			
 			} catch (IOException e) {
 				//TODO exception netjes afvangen
 			}

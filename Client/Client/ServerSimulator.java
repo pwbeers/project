@@ -33,12 +33,18 @@ public class ServerSimulator extends Thread {
 	
 	public void run()	{
 		try {
+			BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+			PrintWriter writer = new PrintWriter(acceptedSocket.getOutputStream());
 			while(true)	{
-				PrintWriter writer = new PrintWriter(acceptedSocket.getOutputStream(), true);
-				writer.println(System.in);
+				System.out.println("reaches");
+			    String s = bufferRead.readLine();
+			    System.out.println("doesn't reach");
+				writer.println(s);
+				System.out.println(s);
+				writer.flush();
 			}
 		} catch (IOException e) {
-
+			System.out.println("oeps");
 		}
 	}
 	 
