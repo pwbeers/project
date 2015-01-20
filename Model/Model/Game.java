@@ -1,6 +1,7 @@
 package Model;
 
 import java.util.Observable;
+import java.util.Observer;
 
 /**
  * This class keeps track of a game from start till finish.
@@ -13,6 +14,7 @@ public class Game extends Observable implements Model	{
 	private /*@ spec_public @*/ int currentTurn; //the Player who is currently on turn	
 	private /*@ spec_public @*/ int numberOfTurns; //the number of turns played in this game, used to 
 	//-assign who is on turn	
+	private Observer GUI;
 	
 	/*@public invariant board != null; @*/ //class invariant
 	/*@public invariant currentTurn == 1 || currentTurn == 2; @*/ //class invariant
@@ -24,7 +26,8 @@ public class Game extends Observable implements Model	{
 	 * sets current Turn to 1
 	 */
 	//@ ensures board != null && numberOfTurns > 0 && currentTurn == 1;
-	public Game() {
+	public Game(Observer newGUI) {
+		GUI = newGUI;
 		board = new Board();
 		currentTurn = 1;
 		numberOfTurns = 1;
@@ -98,7 +101,7 @@ public class Game extends Observable implements Model	{
 			board.doMove(column, player);
 		}
 		if (isWinner(player)){ //Check if after the mover there is a winner.
-			return 1;
+			return 1; // TODO implement board copy and observer notification
 		}else if (board.isBoardFull() == true){  //Check is the game is over because this was the last move.
 			return 2;
 		}else { //The Game continues.
