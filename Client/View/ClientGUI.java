@@ -1,52 +1,25 @@
 package View;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JMenu;
-import javax.swing.JPopupMenu;
-
-import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.FlowLayout;
-
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
-import javax.swing.BoxLayout;
 import javax.swing.JTextPane;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.SystemColor;
-import java.io.File;
-import java.util.NoSuchElementException;
 import java.util.Observable;
-
 import javax.swing.ImageIcon;
-
 import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.GridLayout;
-
 import javax.swing.UIManager;
-import javax.swing.border.Border;
-
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-
 import javax.swing.JToggleButton;
 import javax.swing.JSlider;
-
-import Client.ClientController;
 
 /**
  * A ClientGUI that shows an graphical interface for the client/user to use.
@@ -55,11 +28,14 @@ import Client.ClientController;
 public class ClientGUI implements GUI {
 
 	private JFrame frmFour;
+	private ActionListener controller;
+	
+	//JObjects to be called
 	private JTextField connectionPortText;
 	private JTextField connectionIPText;
 	private JButton[] board; 
 	private JTextField gameName;
-	private ActionListener controller;
+	private JLabel message;
 
 	/**
 	 * Starts the ClientGUI and saves the given controller.
@@ -110,19 +86,21 @@ public class ClientGUI implements GUI {
 		
 		//TODO netter maken
 		board = new JButton[7*6];
-		for (int i = 0; i < 7 * 6; i++) {
-			board[i] = new JButton(new ImageIcon(ClientGUI.class.getResource("/View/Geel.png")));
-			board[i].setOpaque(false);
-			board[i].setContentAreaFilled(false);
-			board[i].setBorderPainted(false);
-			board[i].setPreferredSize(new Dimension(75, 75));
-			board[i].setActionCommand(Integer.toString(i));
-			board[i].addActionListener(controller);
-			boardButtons.add(board[i]);
+		for (int row = 5; row >= 0; row--) {
+			for (int column = 0; column < 7; column++) {
+				board[row * 7 + column] = new JButton(new ImageIcon(ClientGUI.class.getResource("/View/EmptyField.png")));
+				board[row * 7 + column].setOpaque(false);
+				board[row * 7 + column].setContentAreaFilled(false);
+				board[row * 7 + column].setBorderPainted(false);
+				board[row * 7 + column].setPreferredSize(new Dimension(75, 75));
+				board[row * 7 + column].setActionCommand(Integer.toString(row * 7 + column));
+				board[row * 7 + column].addActionListener(controller);
+				boardButtons.add(board[row * 7 + column]);
+			}
 		}
 		
 		JPanel connectionPanel = new JPanel();
-		connectionPanel.setBounds(35, 16, 715, 43);
+		connectionPanel.setBounds(35, 16, 715, 37);
 		frmFour.getContentPane().add(connectionPanel);
 		connectionPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
@@ -207,24 +185,39 @@ public class ClientGUI implements GUI {
 		JButton leaderboardButton = new JButton("LeaderBoard");
 		leaderboardButton.addActionListener(controller);
 		leaderboardPanel.add(leaderboardButton);
+		
+		JPanel messagePanel = new JPanel();
+		messagePanel.setBounds(35, 49, 715, 27);
+		frmFour.getContentPane().add(messagePanel);
+		
+		message = new JLabel("");
+		message.setForeground(Color.RED);
+		messagePanel.add(message);
 
 	}
 
 	public void printTekst(String message) {
-		// TODO Auto-generated method stub
+		this.message.setText(message);
 	}
 
 	public void startScherm() {
-		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
 	}
 
 	public void update(Observable arg0, Object arg1) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException();
 	}
 	
+	/**
+	 * Gives the arguments portnumber and ip adress to the caller. 
+	 * @return length() of return == 2
+	 */
+	//@ ensures \result.length == 2;
 	public String[] getConnection()	{
-		throw new UnsupportedOperationException();
+		String[] result = new String[2];
+		result[0] = connectionPortText.getText();
+		result[1] = connectionIPText.getText();
+		return result;
 	}
 	
 	public String getChallenge()	{
