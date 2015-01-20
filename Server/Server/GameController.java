@@ -1,80 +1,126 @@
 package Server;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import Model.Game;
 import Model.Model;
+import Error.Error;
 
 public class GameController {
 
 	// ------------------ Instance variables ----------------
 	private Model game; //the game that this controller uses
-	private ConnectionHandler player1;
-	private ConnectionHandler player2;
+	private ConnectionHandler player1; //The ConnectionHandler object of Player 1
+	private ConnectionHandler player2; //The ConnectionHandler object of Player 2
+	private final int PLAYER1 = 1; //The Integer representation of Player 1
+	private final int PLAYER2 = 2; //The Integer representation of Player 2
 
 	// ------------------ Constructor ------------------------
 	/**
-	 * Creates a new Game with two players.
+	 * Starts a new Game with two players.
 	 * Fills the Instance Variables
 	 * @param player1
 	 * @param player2
 	 */
 	public GameController(ConnectionHandler newPlayer1, ConnectionHandler newPlayer2) {
-		game = new Game();
 		player1 = newPlayer1;
 		player2 = newPlayer2;
+		startGame();
 	}
 	
 	// ------------------ Queries --------------------------
+	/**
+	 * Returns the Integer representation of the ConnectionHandler Object
+	 * because the Game class uses integers.
+	 * @param player the player to be converted
+	 * @return <code> 1 || 2 </code>
+	 */
+	public int convertHandlerToInt(ConnectionHandler player){
+		if(player == player1){
+			return PLAYER1;
+		}else {
+			return PLAYER2;
+		}
+	}
 	// ------------------ Commands --------------------------
 	/**
 	 * Creates a new Game object
-	 * Send AMULET TURN command to player1
+	 * Sends AMULET TURN command to player1
 	 */
 	public void startGame() {
-		// TODO - implement GameController.startGame
-		throw new UnsupportedOperationException();
-	}
-
-	public void hasWinner() {
-		// TODO - implement GameController.hasWinner
-		throw new UnsupportedOperationException();
-	}
-
-	public void doMove() {
-		// TODO - implement GameController.doMove
-		throw new UnsupportedOperationException();
-	}
-
-	public void illegalMove() {
-		// TODO - implement GameController.illegalMove
-		throw new UnsupportedOperationException();
-	}
-
-	public void draw() {
-		// TODO - implement GameController.draw
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * 
-	 * @param line
-	 */
-	public void gameCommandReader(String line) {
-		// TODO - implement GameController.gameCommandReader
-		throw new UnsupportedOperationException();
-	}
+		game = new Game();
+		player1.writeToClient("TURN");
+		}
 
 	/**
 	 * Handles the AMULET protocol for doing a move
+	 * If the player isn't on turn or the move is illegal
 	 * @param connectionHandler
 	 * @param arguments
 	 */
-	public void newMove(ConnectionHandler connectionHandler, ArrayList<String> arguments) {
-		// TODO Auto-generated method stub
-		//make a new move and feedback what the result is, wrong move = error normal move = nothing endgame = endgame
-		throw new UnsupportedOperationException();
+	public void newMove(ConnectionHandler playerHandler, ArrayList<String> arguments) throws Error {
+		String columnString = arguments.get(0);
+		//Convert from String to Integer
+		int column = Integer.parseInt(columnString);
+		
+		//Convert the handler object to the Integer representation
+		int player = convertHandlerToInt(playerHandler);
+		
+		//Check if player is on turn
+		if (game.onTurn(player) == false){
+			broadcastToPlayers("GAMEEND");
+			throw new Error("ERROR YOU ARE NOT ON TURN. THE CONNECTION WILL BE TERMINATED.");
+		}
+
+		//Check if move is legal
+		if(game.isLegalMove(column) == false){
+			broadcastToPlayers("GAMEEND");
+			throw new Error("ERROR ILLEGAL MOVE. THE CONNECTION WILL BE TERMINATED.");
+		}
+		
+		/*There are three possibilities that can occur, either:
+		 * 0: the game doesn't end and the next player needs to do a move
+		 * 1: this was a winning move
+		 * 2: there is no winner
+		 */
+		switch(game.doMove(column, player)){
+		case 0: //The Game continues. The players need to be notified of a new move 
+			//and a new turn needs to be assigned
+			broadcastToPlayers("MOVEUPDATE " + playerHandler.getNickName() + " " +columnString);
+			assignTurn(player);
+			break;
+		case 1:
+			//send gameend to both players with nickname of playerHandler
+			broadcastToPlayers("GAMEEND " + playerHandler.getNickName());
+			break;
+		case 2:
+			//send gameEnd to bothplayers with no nicjname
+			broadcastToPlayers("GAMEEND DRAW");
+			break;
+		
+		}
+	}
+
+	/**
+	 * Sends the AMULET TURN command to the player that is not the player that is represented by
+	 * the player parameter
+	 * @param player the player that was on turn, but is no longer
+	 */
+	private void assignTurn(int player) {
+		if(player == 1){
+			player2.writeToClient("TURN");
+		}else {
+			player1.writeToClient("TURN");
+		}
+	}
+
+	/**
+	 * Send an AMULET command to both the players of this GameController.
+	 * @param broadcast the message of the broadcast
+	 */
+	private void broadcastToPlayers(String broadcast) {
+		player1.writeToClient(broadcast);
+		player2.writeToClient(broadcast);
 	}
 
 }
