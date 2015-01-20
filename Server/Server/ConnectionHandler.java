@@ -172,8 +172,7 @@ public class ConnectionHandler extends Thread {
 			/*We pass any Move commands through to the game controller.
 			If there is no gameController the client is kicked*/
 			if(gameController == null){
-				writeToClient("ERROR COMMAND NOT RECOGNIZED. YOUR CONNECTION WILL NOW BE TERMINATED");
-				listenForCommands = false;
+				throw new AMULETCommandException();
 				break;
 			}else {
 				gameController.newMove(this, arguments);
@@ -184,9 +183,13 @@ public class ConnectionHandler extends Thread {
 			break;
 		default:
 			//Any other commands are illegal in AMULET and the connection will be severed
+			throw new AMULETCommandException();
+			break;
+		}
+		catch (AMULETCommandException e){
 			writeToClient("ERROR COMMAND NOT RECOGNIZED. YOUR CONNECTION WILL NOW BE TERMINATED");
 			listenForCommands = false;
-			break;
+
 		}
 	}
 }
