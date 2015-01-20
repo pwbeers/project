@@ -165,10 +165,15 @@ public class ClientGUI implements GUI {
 		gameAISlider.setPreferredSize(new Dimension(160, 30));
 		gamePanel.add(gameAISlider);
 		
-		JButton gameStartGame = new JButton("StartGame");
+		JButton gameStartGame = new JButton("Start Game");
 		gameStartGame.addActionListener(controller);
 		gameStartGame.setPreferredSize(new Dimension(160, 30));
 		gamePanel.add(gameStartGame);
+		
+		JButton gameEndGame = new JButton("End Game");
+		gameEndGame.addActionListener(controller);
+		gameEndGame.setPreferredSize(new Dimension(160, 30));
+		gamePanel.add(gameEndGame);
 		
 		JPanel hintPanel = new JPanel();
 		hintPanel.setBounds(35, 591, 350, 37);
@@ -228,7 +233,7 @@ public class ClientGUI implements GUI {
 		throw new UnsupportedOperationException();
 	}
 	
-	public String[] getStartGame()	{
-		throw new UnsupportedOperationException();
+	public String getStartGame()	{
+		return gameName.getText();
 	}
 }

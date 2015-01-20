@@ -3,6 +3,7 @@ package Client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -16,6 +17,8 @@ public class ClientConnectionHandler extends Thread {
 
 	private /*@ spec_public @*/ ClientController controller;
 	private /*@ spec_public @*/ Socket socket;
+	private BufferedReader in;
+	private PrintWriter out;
 
 	/*@public invariant controller != null; @*/ //class invariant
 	/*@public invariant socket != null; @*/ //class invariant
@@ -31,6 +34,13 @@ public class ClientConnectionHandler extends Thread {
 	public ClientConnectionHandler(Socket socket, ClientController controller) {
 		this.socket = socket;
 		this.controller = controller;
+		//TODO hier doen???
+		try {
+			out = new PrintWriter(socket.getOutputStream(),true);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -39,6 +49,7 @@ public class ClientConnectionHandler extends Thread {
 	 */
 	//@ requires line != null;
 	public void commandReader(String line) throws Error	{
+		System.out.println(line);
 		Scanner scan = new Scanner(line);
 		//TODO afvangen van geen lege command.next()
 		ArrayList<String> command = new ArrayList<String>();
@@ -58,29 +69,57 @@ public class ClientConnectionHandler extends Thread {
 					}
 				}
 				controller.addServerExtensions(extensions);
+				//TODO reageer door eigen extensies te versturen
 				break;
 			case "GAME": 
 				if(command.size() == 2 && !command.get(1).equals(""))	{
 					controller.startGame(command.get(1));
 				}
 				else	{
-					throw new Error("Arguments after EXTENSIONS are illegal");
+					throw new Error("Argument after GAME is illegal");
 				}
 				break;
 			case "TURN": 
 				controller.onTurn();
 				break;
 			case "MOVEUPDATE": 
-				
+				if(command.size() == 3 && (command.get(1).equals(getName()) || command.get(1).equals(controller.getOpponent())) && command.get(2).matches("[0-6]"))	{
+					String[] arguments = new String[2];
+					arguments[0] = command.get(1);
+					arguments[1] = command.get(2);
+					controller.serverMove(arguments);
+				}
+				else	{
+					throw new Error("Argument after GAME is illegal");
+				}
 				break;
 			case "GAMEEND": 
-				
+				if(command.size() == 3 && (command.get(1).equals(getName()) || command.get(1).equals(controller.getOpponent())) && command.get(2).matches("[0-6]"))	{
+					String[] arguments = new String[2];
+					arguments[0] = command.get(1);
+					arguments[1] = command.get(2);
+					controller.gameEnd(arguments);
+				}
+				else	{
+					throw new Error("Argument after GAME is illegal");
+				}
 				break;
 			case "ERROR": 
-				
+				//TODO netjes afhandelen van disconnect door server
+				String message = command.get(1);
+				for (int i = 2; i < command.size(); i++) {
+					message = message + " " + command.get(i);
+				}
+				controller.error(message);
 				break;
 			case "DEBUG": 
-				
+				if(command.size() > 1)	{
+					String debug = command.get(1);
+					for (int i = 2; i < command.size(); i++) {
+						debug = debug + " " + command.get(i);
+					}
+					controller.error(debug);
+				}
 				break;
 			case "LEADERBOARD": 
 				//Later
@@ -122,13 +161,13 @@ public class ClientConnectionHandler extends Thread {
 	 */
 	//@ requires message != null;
 	public void sendMessage(String message) {
-		throw new UnsupportedOperationException();
+		out.println(message);
 	}
 	
 	public void run()	{
 		while(true)	{
 			try {
-				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				commandReader(in.readLine());
 			} catch (Error e)	{
 				System.out.println(e.getMessage());
