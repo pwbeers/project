@@ -32,8 +32,7 @@ public class ClientController implements ActionListener	{
 	//@ ensures view != null && game != null;
 	public ClientController() {
 		view = new ClientGUI(this);
-		game = new Game();
-		game.addObserver(view);
+		game = new Game(view);
 	}
 
 	/**
