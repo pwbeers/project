@@ -8,13 +8,14 @@ public class Error extends Exception{
 	// ------------------ Instance variables ----------------
 	private String errorMesssage; //A message to be displayed or send to a clien
 	//------------------ Constructor ------------------------
+	
 	/**
 	 * Sets up the variables
 	 */
-	public Error(){
-		// TODO - implement Error.Error
-		throw new UnsupportedOperationException();
+	public Error(String message){
+		super(message);
 	}
+	
 	// ------------------ Queries --------------------------
 	// ------------------ Commands --------------------------
 	/**

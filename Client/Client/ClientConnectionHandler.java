@@ -38,7 +38,7 @@ public class ClientConnectionHandler extends Thread {
 	 * @param line is the message received from a server
 	 */
 	//@ requires line != null;
-	public void commandReader(String line) throw {
+	public void commandReader(String line) throws Error	{
 		Scanner scan = new Scanner(line);
 		//TODO afvangen van geen lege command.next()
 		ArrayList<String> command = new ArrayList<String>();
@@ -50,7 +50,8 @@ public class ClientConnectionHandler extends Thread {
 				//TODO fouten in extensies afhandelen
 				String[] extensions = new String[command.size()-1];
 				for (int i = 1; i < command.size(); i++) {
-					
+					//Veranderen
+					throw new Error("Argument is fout");
 					extensions[i - 1] = command.get(i);
 				}
 				controller.addServerExtensions(extensions);
@@ -121,6 +122,9 @@ public class ClientConnectionHandler extends Thread {
 			try {
 				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				commandReader(in.readLine());
+			} catch (Error e)	{
+				System.out.println(e.getMessage());
+			
 			} catch (IOException e) {
 				//TODO exception netjes afvangen
 			}
