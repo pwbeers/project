@@ -93,7 +93,7 @@ public class ClientGUI implements GUI {
 				board[row * 7 + column].setContentAreaFilled(false);
 				board[row * 7 + column].setBorderPainted(false);
 				board[row * 7 + column].setPreferredSize(new Dimension(75, 75));
-				board[row * 7 + column].setActionCommand(Integer.toString(row * 7 + column));
+				board[row * 7 + column].setActionCommand(Integer.toString(column));
 				board[row * 7 + column].addActionListener(controller);
 				boardButtons.add(board[row * 7 + column]);
 			}
@@ -107,7 +107,7 @@ public class ClientGUI implements GUI {
 		JLabel connectionPortLabel = new JLabel("   Port:");
 		connectionPanel.add(connectionPortLabel);
 		
-		connectionPortText = new JTextField();
+		connectionPortText = new JTextField("2220");
 		connectionPanel.add(connectionPortText);
 		connectionPortText.setColumns(10);
 		

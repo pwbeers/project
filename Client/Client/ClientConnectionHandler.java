@@ -1,17 +1,21 @@
 package Client;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Starts and keeps a connection running with a server and passes messages 
  * on over this connection.
  * @author peter
  */
-public class ClientConnectionHandler {
+public class ClientConnectionHandler extends Thread {
 
 	private /*@ spec_public @*/ ClientController controller;
 	private /*@ spec_public @*/ Socket socket;
-	private /*@ spec_public @*/ String name;
 
 	/*@public invariant controller != null; @*/ //class invariant
 	/*@public invariant socket != null; @*/ //class invariant
@@ -25,26 +29,8 @@ public class ClientConnectionHandler {
 	//@ requires socket != null && controller != null;
 	//@ ensures this.controller == controller && this.socket == socket;
 	public ClientConnectionHandler(Socket socket, ClientController controller) {
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * Sets the name of this class with the given name
-	 * @param name is the name of the client
-	 */
-	//@ requires name != null && name.length() > 0;
-	//@ ensures this.name == name;
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/**
-	 * Gives the name of the client.
-	 * @return the name of the client
-	 */
-	//@ ensures \result == name;
-	public String getName() {
-		return this.name;
+		this.socket = socket;
+		this.controller = controller;
 	}
 
 	/**
@@ -53,7 +39,72 @@ public class ClientConnectionHandler {
 	 */
 	//@ requires line != null;
 	public void commandReader(String line) {
-		throw new UnsupportedOperationException();
+		Scanner scan = new Scanner(line);
+		//TODO afvangen van geen lege command.next()
+		ArrayList<String> command = new ArrayList<String>();
+		while(scan.hasNext())	{
+			command.add(scan.next());
+		}
+		switch(command.get(0))	{
+			case "EXTENSIONS": 
+				//TODO fouten in extensies afhandelen
+				String[] extensions = new String[command.size()-1];
+				for (int i = 1; i < command.size(); i++) {
+					
+					extensions[i - 1] = command.get(i);
+				}
+				controller.addServerExtensions(extensions);
+				break;
+			case "GAME": 
+				//start game
+				break;
+			case "TURN": 
+				
+				break;
+			case "MOVEUPDATE": 
+				
+				break;
+			case "GAMEEND": 
+				
+				break;
+			case "ERROR": 
+				
+				break;
+			case "DEBUG": 
+				
+				break;
+			case "LEADERBOARD": 
+				//Later
+				break;
+			case "MESSAGE": 
+				//Later
+				break;
+			case "BROADCAST": 
+				//Later
+				break;
+			case "PLAYERUPDATE": 
+				
+				break;
+			case "CHALLENGE": 
+				//Later
+				break;
+			case "CHALLENGERESP": 
+				//Later
+				break;
+			case "DISCONNECTED": 
+				//Later
+				break;
+			case "AUTHENTICATE": 
+				//Later
+				break;
+			case "JOIN": 
+				//Later
+				break;	
+			default	:
+				
+				break;	
+		}
+		
 	}
 
 	/**
@@ -63,6 +114,17 @@ public class ClientConnectionHandler {
 	//@ requires message != null;
 	public void sendMessage(String message) {
 		throw new UnsupportedOperationException();
+	}
+	
+	public void run()	{
+		while(true)	{
+			try {
+				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				commandReader(in.readLine());
+			} catch (IOException e) {
+				//TODO exception netjes afvangen
+			}
+		}
 	}
 
 }
