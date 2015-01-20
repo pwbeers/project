@@ -11,14 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import View.GUI;
+import View.View;
 
 public class ServerController {
 	
 	// ------------------ Instance variables ----------------
 	private Map<String, ConnectionHandler> connections; //Keeps track of all current connections and their nicknames
 	private Map<GameController, List<ConnectionHandler>> games; //Keeps track of alle current games and their respective ConnectionHandlers
-	private GUI view;
+	private View view;
 	private ServerSocketListener serverSocketListener;
 	private final String EXTENSIONS ="NONE"; //The AMULET value for which extensions are supported
 	

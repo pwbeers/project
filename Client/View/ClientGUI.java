@@ -25,7 +25,7 @@ import javax.swing.JSlider;
  * A ClientGUI that shows an graphical interface for the client/user to use.
  * @author peter
  */
-public class ClientGUI implements GUI {
+public class ClientGUI implements View {
 
 	private JFrame frmFour;
 	private ActionListener controller;
