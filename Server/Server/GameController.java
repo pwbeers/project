@@ -3,29 +3,35 @@ package Server;
 import java.util.ArrayList;
 import java.util.List;
 
+import Model.Game;
 import Model.Model;
 
 public class GameController {
 
 	// ------------------ Instance variables ----------------
-	private List<ConnectionHandler> connections;
-	private Model game;
+	private Model game; //the game that this controller uses
 	private ConnectionHandler player1;
 	private ConnectionHandler player2;
 
 	// ------------------ Constructor ------------------------
 	/**
-	 * Creates a new Game with two players
+	 * Creates a new Game with two players.
+	 * Fills the Instance Variables
 	 * @param player1
 	 * @param player2
 	 */
-	public GameController(ConnectionHandler player1, ConnectionHandler player2) {
-		// TODO - implement GameController.GameController
-		throw new UnsupportedOperationException();
+	public GameController(ConnectionHandler newPlayer1, ConnectionHandler newPlayer2) {
+		game = new Game();
+		player1 = newPlayer1;
+		player2 = newPlayer2;
 	}
 	
 	// ------------------ Queries --------------------------
 	// ------------------ Commands --------------------------
+	/**
+	 * Creates a new Game object
+	 * Send AMULET TURN command to player1
+	 */
 	public void startGame() {
 		// TODO - implement GameController.startGame
 		throw new UnsupportedOperationException();
