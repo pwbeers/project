@@ -26,8 +26,7 @@ public class Game extends Observable implements Model	{
 	 * sets current Turn to 1
 	 */
 	//@ ensures board != null && numberOfTurns > 0 && currentTurn == 1;
-	public Game(Observer newGUI) {
-		GUI = newGUI;
+	public Game() {
 		board = new Board();
 		currentTurn = 1;
 		numberOfTurns = 1;
@@ -100,14 +99,25 @@ public class Game extends Observable implements Model	{
 		}else{
 			board.doMove(column, player);
 		}
-		if (isWinner(player)){ //Check if after the mover there is a winner.
-			return 1; // TODO implement board copy and observer notification
+		if (isWinner(player)){ //Check if after the move there is a winner.
+			Board boardCopy =deepCopyBoard();
+			notifyObservers(boardCopy);
+			return 1;
 		}else if (board.isBoardFull() == true){  //Check is the game is over because this was the last move.
 			return 2;
 		}else { //The Game continues.
 			nextTurn();
 			return 3;
 		}
+	}
+
+	/**
+	 * Makes a deepcopy of the board
+	 * @return
+	 */
+	private Board deepCopyBoard() {
+		//TODO IMPLEMENT THIS METHOD
+		return new Board();
 	}
 
 	// ------------------ Commands --------------------------
@@ -118,8 +128,16 @@ public class Game extends Observable implements Model	{
 	 */
 	//@ requires currentTurn == 1 || currentTurn == 2 && numberOfTurns>0;
 	//@ ensures currentTurn == 1 || currentTurn == 2 && numberOfTurns == \old(numberOfTurns) + 1;
-	private void nextTurn() {
+	public void nextTurn() {
 		currentTurn = (numberOfTurns % 2) + 1;
 		numberOfTurns++;
+	}
+	
+	/**
+	 * Adds an observer to this observable object
+	 * @param newGUI the Observer
+	 */
+	public void addObserver(Observer newGUI){
+		GUI = newGUI;
 	}
 }

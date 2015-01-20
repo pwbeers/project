@@ -10,14 +10,16 @@ public class GameController {
 	// ------------------ Instance variables ----------------
 	private List<ConnectionHandler> connections;
 	private Model game;
+	private ConnectionHandler player1;
+	private ConnectionHandler player2;
 
 	// ------------------ Constructor ------------------------
 	/**
-	 * 
-	 * @param connectionX
-	 * @param connectionY
+	 * Creates a new Game with two players
+	 * @param player1
+	 * @param player2
 	 */
-	public GameController(ConnectionHandler connectionX, ConnectionHandler connectionY) {
+	public GameController(ConnectionHandler player1, ConnectionHandler player2) {
 		// TODO - implement GameController.GameController
 		throw new UnsupportedOperationException();
 	}
