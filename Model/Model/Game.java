@@ -14,7 +14,7 @@ public class Game extends Observable implements Model	{
 	private /*@ spec_public @*/ int currentTurn; //the Player who is currently on turn	
 	private /*@ spec_public @*/ int numberOfTurns; //the number of turns played in this game, used to 
 	//-assign who is on turn	
-	private Observer GUI;
+
 	
 	/*@public invariant board != null; @*/ //class invariant
 	/*@public invariant currentTurn == 1 || currentTurn == 2; @*/ //class invariant
@@ -69,7 +69,6 @@ public class Game extends Observable implements Model	{
 	 */
 	//@ requires column >= 0 && column <= 6;
 	public boolean isLegalMove(int column) {
-		//TODO Controle of deze aan de beurt is toevoegen
 		if(board.legalMove(column) == true){
 			return true;
 		}else{
@@ -90,14 +89,8 @@ public class Game extends Observable implements Model	{
 	//@ requires column >= 0 && column <= 6;
 	//@ requires player == 1 || player == 2;
 	//@ ensures \result == 0 || \result == 1 || \result == 2;
-	public int doMove(int column, int player) {		
-		if (onTurn(player) == false){ //Check if it's actually the players turn.
-			return 0;
-		}else if (isLegalMove(column) == false){ //Check if the move is legal.
-			return 0;
-		}else{
-			board.doMove(column, player);
-		}
+	public int doMove(int column, int player) {	
+		board.doMove(column, player);
 		if (isWinner(player)){ //Check if after the move there is a winner.
 			Board boardCopy =deepCopyBoard();
 			notifyObservers(boardCopy);
@@ -106,7 +99,7 @@ public class Game extends Observable implements Model	{
 			return 2;
 		}else { //The Game continues.
 			nextTurn();
-			return 3;
+			return 0;
 		}
 	}
 
@@ -137,6 +130,6 @@ public class Game extends Observable implements Model	{
 	 * @param newGUI the Observer
 	 */
 	public void addObserver(Observer newGUI){
-		GUI = newGUI;
+		this.addObserver(newGUI);
 	}
 }

@@ -26,4 +26,6 @@ public interface Model {
 	public void addObserver(Observer o);
 
 	public boolean isLegalMove(int column);
+	
+	public boolean onTurn(int player);
 }
