@@ -335,4 +335,13 @@ public class ClientController implements ActionListener	{
 		}
 		return result;
 	}
+	
+	/**
+	 * Tells the GUI that the connection has been broken and a new connection can be made.
+	 * @param message
+	 */
+	public void connectionClosed(String message)	{
+		//TODO
+		throw new UnsupportedOperationException();
+	}
 }

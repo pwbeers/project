@@ -186,6 +186,19 @@ public class ClientConnectionHandler extends Thread {
 		out.println(message);
 	}
 	
+	private void closeConnection(String message)	{
+		sendMessage("DEBUG " + message);
+		controller.connectionClosed(message);
+		out.close();
+		try {
+			in.close();
+			socket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public void run()	{
 		while(true)	{
 			try {
@@ -193,10 +206,9 @@ public class ClientConnectionHandler extends Thread {
 				String message = in.readLine();
 				commandReader(message);
 			} catch (Error e)	{
-				System.out.println(e.getMessage());
-				//TODO kick server			
+				closeConnection(e.getMessage());
 			} catch (IOException e) {
-				//TODO exception netjes afvangen
+				//TODO exception netjes afvangen, server heeft de verbinding verbroken
 			}
 		}
 	}
