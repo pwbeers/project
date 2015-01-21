@@ -27,9 +27,9 @@ public interface AI {
 	/**
 	 * Asks the AI for a possible move to play in the current
 	 * game that is on the board and legal.
-	 * @return a legal move, \result != null && \result.length() > 0
+	 * @return a legal move, \result >= 0 && \result <= 6
 	 */
-	//@ ensures \result != null && \result.length() > 0;
-	public String getMove();
+	//@ ensures \result >= 0 && \result <= 6;
+	public int getMove();
 
 }

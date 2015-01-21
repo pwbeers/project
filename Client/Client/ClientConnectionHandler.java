@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -59,10 +61,10 @@ public class ClientConnectionHandler extends Thread {
 		scan.close();
 		switch(command.get(0))	{
 			case "EXTENSIONS": 
-				String[] extensions = new String[command.size()-1];
+				List<String> extensions = new LinkedList<String>();
 				for (int i = 1; i < command.size(); i++) {
 					if(command.get(i).equals("NONE") || command.get(i).equals("CHAT") || command.get(i).equals("CHALLENGE") || command.get(i).equals("LEADERBOARD"))	{
-						extensions[i - 1] = command.get(i);
+						extensions.add(command.get(i));
 					}
 					else	{
 						throw new Error("Arguments after EXTENSIONS are illegal");

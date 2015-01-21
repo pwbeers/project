@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import Model.Game;
 import Model.Model;
@@ -21,6 +22,7 @@ public class ClientController implements ActionListener	{
 	private /*@ spec_public @*/ ClientGUI gui;
 	private /*@ spec_public @*/ Model game;
 	private /*@ spec_public @*/ ClientConnectionHandler connection;
+	private AI ai;
 	private final int PLAYER = 0;
 	private boolean[] serverExtensions;
 	private String opponentName;
@@ -167,35 +169,13 @@ public class ClientController implements ActionListener	{
 	 * NONE, CHAT, CHALLENGE or LEADERBOARD. The results of the check are saved.
 	 * @param extensions contains the extensions of the server
 	 */
-	public void addServerExtensions(String[] extensions)	{
+	public void addServerExtensions(List<String> extensions)	{
 		serverExtensions = new boolean[4];
-		for (int i = 0; i < serverExtensions.length; i++) {
-			serverExtensions[i] = false;
-		}
-		if(extensions[0].equals("NONE"))	{
-			serverExtensions[0] = true;
-		}
-		else if(extensions[0].equals("CHAT"))	{
-			serverExtensions[1] = true;
-			if(extensions[1].equals("CHALLENGE"))	{
-				serverExtensions[2] = true;
-				if(extensions[2].equals("LEADERBOARD"))	{
-					serverExtensions[3] = true;
-				}
-			}
-			else if(extensions[1].equals("LEADERBOARD"))	{
-				serverExtensions[3] = true;
-			}
-		}
-		else if(extensions[0].equals("CHALLENGE"))	{
-			serverExtensions[2] = true;
-			if(extensions[3].equals("LEADERBOARD"))	{
-				serverExtensions[3] = true;
-			}
-		}
-		else if(extensions[0].equals("LEADERBOARD"))	{
-			serverExtensions[3] = true;
-		}
+		serverExtensions[0] = extensions.contains("NONE");
+		serverExtensions[1] = extensions.contains("CHAT");
+		serverExtensions[2] = extensions.contains("CHALLENGE");
+		serverExtensions[3] = extensions.contains("LEADERBOARD");
+		//TODO testen of dit niet allemaal String dus true oplevert.
 	}
 	
 	/**
@@ -256,16 +236,14 @@ public class ClientController implements ActionListener	{
 	 * @param message
 	 */
 	public void error(String message)	{
-		//TODO
-		throw new UnsupportedOperationException();
+		gui.printTekst("Server gave the following message: " + message);
 	}
 	
 	/**
 	 * Gets a hint from the AI and gives this to the gui.
 	 */
 	public void hint()	{
-		//TODO
-		throw new UnsupportedOperationException();
+		gui.hint(ai.getMove());
 	}
 	
 	/**
@@ -273,8 +251,7 @@ public class ClientController implements ActionListener	{
 	 * @param leaderboard
 	 */
 	public void leaderboard(String[] leaderboard)	{
-		//TODO
-		throw new UnsupportedOperationException();
+		gui.printLeaderboard(leaderboard);
 	}
 	
 	/**

@@ -2,21 +2,27 @@ package View;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
 import java.awt.FlowLayout;
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.JTextPane;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.SystemColor;
 import java.util.Observable;
+
 import javax.swing.ImageIcon;
+
 import java.awt.event.ActionListener;
 import java.awt.GridLayout;
+
 import javax.swing.UIManager;
 import javax.swing.JToggleButton;
 import javax.swing.JSlider;
@@ -235,5 +241,23 @@ public class ClientGUI implements View {
 	
 	public String getStartGame()	{
 		return gameName.getText();
+	}
+	
+	/**
+	 * Is called to give a hint, as given in column, to the gui.
+	 * @param column
+	 */
+	public void hint(int column)	{
+		//TODO
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Starts a leaderboard screen giving the param leaderboard as data.
+	 * @param leaderboard
+	 */
+	public void printLeaderboard(String[] leaderboard)	{
+		//TODO
+		throw new UnsupportedOperationException();
 	}
 }
