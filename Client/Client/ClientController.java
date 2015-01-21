@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
+import Model.Game;
 import Model.Model;
 import View.ClientGUI;
 
@@ -20,6 +22,8 @@ public class ClientController implements ActionListener	{
 	private /*@ spec_public @*/ Model game;
 	private /*@ spec_public @*/ ClientConnectionHandler connection;
 	private final int PLAYER = 0;
+	private boolean[] serverExtensions;
+	private String opponentName;
 
 	/*@public invariant gui != null; @*/ //class invariant
 	/*@public invariant game != null; @*/ //class invariant
@@ -158,12 +162,40 @@ public class ClientController implements ActionListener	{
 	}
 	
 	/**
-	 * Registers the extensions that the server supports
-	 * @param extensions
+	 * Registers the extensions that the server supports in the following way.
+	 * The extensions parameter is checked in the following sequence for containing
+	 * NONE, CHAT, CHALLENGE or LEADERBOARD. The results of the check are saved.
+	 * @param extensions contains the extensions of the server
 	 */
 	public void addServerExtensions(String[] extensions)	{
-		//TODO
-		throw new UnsupportedOperationException();
+		serverExtensions = new boolean[4];
+		for (int i = 0; i < serverExtensions.length; i++) {
+			serverExtensions[i] = false;
+		}
+		if(extensions[0].equals("NONE"))	{
+			serverExtensions[0] = true;
+		}
+		else if(extensions[0].equals("CHAT"))	{
+			serverExtensions[1] = true;
+			if(extensions[1].equals("CHALLENGE"))	{
+				serverExtensions[2] = true;
+				if(extensions[2].equals("LEADERBOARD"))	{
+					serverExtensions[3] = true;
+				}
+			}
+			else if(extensions[1].equals("LEADERBOARD"))	{
+				serverExtensions[3] = true;
+			}
+		}
+		else if(extensions[0].equals("CHALLENGE"))	{
+			serverExtensions[2] = true;
+			if(extensions[3].equals("LEADERBOARD"))	{
+				serverExtensions[3] = true;
+			}
+		}
+		else if(extensions[0].equals("LEADERBOARD"))	{
+			serverExtensions[3] = true;
+		}
 	}
 	
 	/**
@@ -171,26 +203,27 @@ public class ClientController implements ActionListener	{
 	 * @param name is the name of the player against who the game is played
 	 */
 	public void startGame(String name)	{
-		//TODO
-		throw new UnsupportedOperationException();
+		opponentName = name;
+		game = new Game();
+		game.addObserver(gui);
+		gui.printTekst("A game has been started against " + name);
 	}
 	
 	/**
 	 * This method is called when the player is on turn and 
-	 * is asked to do a move
+	 * is asked to do a move.
 	 */
 	public void onTurn()	{
-		//TODO
-		throw new UnsupportedOperationException();
+		gui.printTekst("It's your turn.");
+		//TODO iets om duidelijk de beurt aan te geven toevoegen
 	}
 	
 	/**
-	 * Gives the opponent in the current game
+	 * Gives the name of the opponent in the current game
 	 * @return
 	 */
 	public String getOpponent()	{
-		//TODO
-		throw new UnsupportedOperationException();
+		return opponentName;
 	}
 	
 	/**
@@ -198,8 +231,10 @@ public class ClientController implements ActionListener	{
 	 * @param arguments
 	 */
 	public void serverMove(String[] arguments)	{
-		//TODO
-		throw new UnsupportedOperationException();
+		int player = isPlayer(arguments[0]);
+		int column = Integer.parseInt(arguments[1]);
+		game.doMove(column, player);
+		gui.printTekst("Player " + arguments[0] + " has placed a stone in column " + column);
 	}
 	
 	/**
@@ -208,8 +243,11 @@ public class ClientController implements ActionListener	{
 	 * @param arguments
 	 */
 	public void gameEnd(String[] arguments)	{
-		//TODO
-		throw new UnsupportedOperationException();
+		String winner = arguments[0];
+		int player = isPlayer(winner);
+		int column = Integer.parseInt(arguments[1]);
+		game.doMove(column, player);
+		//TODO GUI is notified of winner and there is an option to start a new game
 	}
 	
 	/**
@@ -281,5 +319,20 @@ public class ClientController implements ActionListener	{
 	public void authenticate()	{
 		//TODO
 		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Tells if the client is the player that is given as an argument.
+	 * @return
+	 */
+	private int isPlayer(String player)	{
+		int result;
+		if(player.equals(connection.getName()))	{
+			result = 1;
+		}
+		else	{
+			result = 2;
+		}
+		return result;
 	}
 }
