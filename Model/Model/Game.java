@@ -107,7 +107,7 @@ public class Game extends Observable implements Model	{
 	 * Makes a deepcopy of the board
 	 * @return
 	 */
-	private Board deepCopyBoard() {
+	public Board deepCopyBoard() {
 		//TODO IMPLEMENT THIS METHOD
 		return new Board();
 	}

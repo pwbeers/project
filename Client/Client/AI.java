@@ -1,21 +1,12 @@
 package Client;
 
-import Model.Model;
-import Server.*;
+import java.util.Observer;
 
 /**
  * Is an interface that is there for multiple leves of AI to be started on.
  * @author peter
  */
-public interface AI {
-
-	/**
-	 * Starts an implementation of this interface with a given model and controller.
-	 * @param modelCopy is a copy of the board from the model
-	 * @param controller is the clientcontroller
-	 */
-	//@ requires modelCopy != null && controller != null;
-	public void AI(Model modelCopy, ClientController controller);
+public interface AI extends Observer	{
 
 	/**
 	 * Tells the AI a move has been done and tells the AI to put this
