@@ -12,6 +12,8 @@ public class Board {
 	private /*@ spec_public @*/ final int STONES = 4;
 	private /*@ spec_public @*/ final int COLUMNS = 7;
 	private /*@ spec_public @*/ final int ROWS = 6;
+	private /*@ spec_public @*/ final int PLAYERONE = 1;
+	private /*@ spec_public @*/ final int PLAYERTWO = 2;
 
 	/*@public invariant fields.length == COLUMNS && fields[COLUMNS - 1].length == ROWS; @*/ //class invariant
 	
@@ -178,6 +180,36 @@ public class Board {
 			}
 		}
 		return result;
+	}
+	
+	/**
+	 * Tells the caller if the given field is filled by player 1 or player 2 or is still empty.
+	 * @param field
+	 * @return is 0 if empty, is 1 if player 1 fills the field, is 2 if player 2 fills the field
+	 */
+	public int isFiledWith(int column, int row)	{
+		int result = 0;
+		if(fields[column][row].isField(PLAYERONE))	{
+			result = 1;
+		}
+		else if(fields[column][row].isField(PLAYERTWO))	{
+			result = 2;
+		}
+		return result;
+	}
+	
+	/**
+	 * Makes a copy of the current board
+	 * @return
+	 */
+	public Board copy()	{
+		Board copyBoard = new Board();
+		for (int i = 0; i < COLUMNS; i++) {
+			for (int j = 0; j < ROWS; j++) {
+				copyBoard.doMove(i, isFiledWith(i, j));
+			}
+		}
+		return copyBoard;
 	}
 
 }
