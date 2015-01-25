@@ -1,7 +1,9 @@
 package Server;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
+import java.net.SocketException;
 
 /**
  * 
@@ -17,7 +19,9 @@ public class ServerSocketListener extends Thread {
 	private ServerController controller;
 	private Socket newSocket; //Holder for a socket when it is created when a new connection is established
 	private ServerSocket serverSocket; //the ServerSocket this ServerSocketListener listens to 
-	
+	private ConnectionHandler newConnectionHandler; //the ConnectionHandler object for a new client
+	private boolean waitForConnections; //Flag for the while loop in run(), if this is set to false the class stops waiting for new connections and frees up its assets 
+
 
 	// ------------------ Constructor ------------------------
 	
@@ -26,9 +30,10 @@ public class ServerSocketListener extends Thread {
 	 * @param serverController the ServerController of this application
 	 * @param ServerSocket the ServerSocket this ServerSocketListener should listen to 
 	 */
-	public ServerSocketListener(ServerController serverController, ServerSocket serverSocket) {
-		// TODO - implement Listener.Listener
-		throw new UnsupportedOperationException();
+	public ServerSocketListener(ServerController newServerController, ServerSocket newServerSocket) {
+		serverSocket = newServerSocket;
+		controller = newServerController;
+		waitForConnections = true;
 	}
 
 	// ------------------ Queries --------------------------
@@ -39,16 +44,37 @@ public class ServerSocketListener extends Thread {
 	 * the Connections map in the ServerController
 	 */
 	public void run(){
-		// TODO - implement Listener.run
-		throw new UnsupportedOperationException();
+		while (waitForConnections == true){
+			try{
+				newSocket = serverSocket.accept(); //Waits till a new TCP connection is made on this ServerSocket
+				
+				newConnectionHandler = new ConnectionHandler(controller, newSocket); //Create a new Connectionhandler for the socket
+				//The ConnectionHanlder notifies it's existence to the ServerController itself so that doesn't need to happen here
+				newConnectionHandler.start();
+			} catch (SocketException s){
+				//TODO find out why this exception is thrown				
+				throw new UnsupportedOperationException();
+				
+			} catch (IOException i){
+				//TODO find out why this exception is thrown				
+				throw new UnsupportedOperationException();
+			}
+		}
 	}
 
 	/**
 	 * Stops the loop in the run method and closes the ServerSocket.
 	 */
 	public void closeListener() {
-		// TODO - implement Listener.closeListener
-		throw new UnsupportedOperationException();
+		waitForConnections = false;
+		
+		try{
+			serverSocket.close();
+		} catch (IOException i){
+			//TODO find out why this exception is thrown				
+			throw new UnsupportedOperationException();
+		}
+
 	}
 
 }

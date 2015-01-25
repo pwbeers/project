@@ -29,7 +29,7 @@ public class ConnectionHandler extends Thread {
 	private Scanner scanner; //scanner for the switch reading the commands in a single line
 	private String newLine; //a new line recieved on th esocket
 	
-	private boolean listenForCommands; //Flag for the while loop in run(), if this is set to false the class shutsdown
+	private boolean listenForCommands; //Flag for the while loop in run(), if this is set to false the class stops handling the communication and frees up its assets
 
 	// ------------------ Constructor ------------------------
 	/**
