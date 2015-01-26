@@ -4,8 +4,6 @@ package Model;
  * Keeps track of a board with multiple fields in it.
  * @author peter
  */
-// TODO there should be a function which enables the GUI to display which fields makup the winning four streak
-
 public class Board {
 
 	private /*@ spec_public @*/ Field[][] fields;
@@ -13,6 +11,7 @@ public class Board {
 	private /*@ spec_public @*/ final int ROWS = 6;
 	private /*@ spec_public @*/ final int PLAYERONE = 1;
 	private /*@ spec_public @*/ final int PLAYERTWO = 2;
+	private /*@ spec_public @*/ final int STONES = 4;
 
 	/*@public invariant fields.length == COLUMNS && fields[COLUMNS - 1].length == ROWS; @*/ //class invariant
 	
@@ -21,7 +20,6 @@ public class Board {
 	 */
 	//@ ensures fields != null && fields.length == COLUMNS && fields[COLUMNS - 1].length == ROWS;
 	public Board() {
-		//TODO loop invariant toevoegen.
 		fields = new Field[COLUMNS][ROWS];
 		for (int i = 0; i < fields.length; i++) {
 			for (int j = 0; j < fields[i].length; j++) {
@@ -67,10 +65,9 @@ public class Board {
 	 * 		   the given player with a horizontal line.
 	 */
 	//@ requires player == 1 || player == 2;
-	//TODO javadoc en uml updaten
 	public boolean horizontalWinner(int player) {
 		boolean result = false;
-		int amount = horizontalStoneCount(player, 4);
+		int amount = horizontalStoneCount(player, STONES);
 		if(amount > 0)	{
 			result = true;
 		}
@@ -85,10 +82,10 @@ public class Board {
 	 * 		   a vertical line, if <code>false</code> then the board has no winner for 
 	 * 		   the given player with a vertical line.
 	 */
-	//TODO javadoc en uml updaten
+	//@ requires player == 1 || player == 2;
 	public boolean verticalWinner(int player) {
 		boolean result = false;
-		int amount = verticalStoneCount(player, 4);
+		int amount = verticalStoneCount(player, STONES);
 		if(amount > 0)	{
 			result = true;
 		}
@@ -106,7 +103,7 @@ public class Board {
 	//@ requires player == 1 || player == 2;
 	public boolean diagonalWinner(int player) {
 		boolean result = false;
-		int amount = diagonalStoneCount(player, 4);
+		int amount = diagonalStoneCount(player, STONES);
 		if(amount > 0)	{
 			result = true;
 		}
@@ -137,7 +134,6 @@ public class Board {
 	 * @return If <code>true</code> then the board is full, if <code>false</code> 
 	 * 		   then the board has no winner for the given player with a diagonal line.
 	 */
-	//@ requires fields != null;
 	public boolean isBoardFull()	{
 		boolean result = false;
 		for (int x = 0; x < fields.length && !result; x++) {
@@ -150,9 +146,13 @@ public class Board {
 	
 	/**
 	 * Tells the caller if the given field is filled by player 1 or player 2 or is still empty.
-	 * @param field
+	 * @param column >= 0 && column <= COLUMNS - 1
+	 * @param row >= 0 && row <= ROWS - 1
 	 * @return is 0 if empty, is 1 if player 1 fills the field, is 2 if player 2 fills the field
 	 */
+	//@ requires column >= 0 && column <= COLUMNS - 1;
+	//@ requires row >= 0 && row <= ROWS - 1;
+	//@ ensures \result >= 0 && \result <= 2;
 	public int isFiledWith(int column, int row)	{
 		int result = 0;
 		if(fields[column][row].isField(PLAYERONE))	{
@@ -166,8 +166,9 @@ public class Board {
 	
 	/**
 	 * Makes a copy of the current board
-	 * @return
+	 * @return a new Board that has the same values as the current board
 	 */
+	//@ ensures \result != null;
 	public Board copy()	{
 		Board copyBoard = new Board();
 		for (int i = 0; i < COLUMNS; i++) {
