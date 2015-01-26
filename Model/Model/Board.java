@@ -9,7 +9,6 @@ package Model;
 public class Board {
 
 	private /*@ spec_public @*/ Field[][] fields;
-	private /*@ spec_public @*/ final int STONES = 4;
 	private /*@ spec_public @*/ final int COLUMNS = 7;
 	private /*@ spec_public @*/ final int ROWS = 6;
 	private /*@ spec_public @*/ final int PLAYERONE = 1;
@@ -68,18 +67,12 @@ public class Board {
 	 * 		   the given player with a horizontal line.
 	 */
 	//@ requires player == 1 || player == 2;
+	//TODO javadoc en uml updaten
 	public boolean horizontalWinner(int player) {
 		boolean result = false;
-		for (int yBegin = 0; yBegin < fields[yBegin].length && !result; yBegin++) {
-			for (int xBegin = 0; xBegin < 4 && !result; xBegin++) {
-				boolean winner = true;
-				for (int j = 0; j < STONES && winner; j++) {
-					winner = fields[xBegin + j][yBegin].isField(player);
-				}
-				if(winner == true)	{
-					result = true;
-				}
-			}
+		int amount = horizontalStoneCount(player, 4);
+		if(amount > 0)	{
+			result = true;
 		}
 		return result;
 	}
@@ -92,19 +85,12 @@ public class Board {
 	 * 		   a vertical line, if <code>false</code> then the board has no winner for 
 	 * 		   the given player with a vertical line.
 	 */
-	//@ requires player == 1 || player == 2;
+	//TODO javadoc en uml updaten
 	public boolean verticalWinner(int player) {
 		boolean result = false;
-		for (int xBegin = 0; xBegin < fields.length - STONES && !result; xBegin++) {
-			for (int yBegin = 0; yBegin < 3 && !result; yBegin++) {
-				boolean winner = true;
-				for (int j = 0; j < fields[j].length && winner; j++) {
-					winner = fields[xBegin][yBegin + j].isField(player);
-				}
-				if(winner == true)	{
-					result = true;
-				}
-			}
+		int amount = verticalStoneCount(player, 4);
+		if(amount > 0)	{
+			result = true;
 		}
 		return result;
 	}
@@ -120,29 +106,9 @@ public class Board {
 	//@ requires player == 1 || player == 2;
 	public boolean diagonalWinner(int player) {
 		boolean result = false;
-		//Checks if there is a diagonal winner from left to right
-		for (int yBegin = 0; yBegin < fields[yBegin].length - STONES && !result; yBegin++) {
-			for (int xBegin = 0; xBegin < 4 && !result; xBegin++) {
-				boolean winner = true;
-				for (int j = 0; j < STONES && winner; j++) {
-					winner = fields[j+xBegin][j+yBegin].isField(player);
-				}
-				if(winner == true)	{
-					result = true;
-				}
-			}
-		}
-		//Checks if there is a diagonal winner from right to left
-		for (int yBegin = 0; yBegin < fields[yBegin].length - STONES && !result; yBegin++) {
-			for (int xBegin = fields.length - 1; xBegin > 2 && !result; xBegin--) {
-				boolean winner = true;
-				for (int j = 0; j < STONES && winner; j++) {
-					winner = fields[j+xBegin][j+yBegin].isField(player);
-				}
-				if(winner == true)	{
-					result = true;
-				}
-			}
+		int amount = diagonalStoneCount(player, 4);
+		if(amount > 0)	{
+			result = true;
 		}
 		return result;
 	}
@@ -211,5 +177,97 @@ public class Board {
 		}
 		return copyBoard;
 	}
-
+	
+	/**
+	 * Counts the amount of times that given amount of stones of given player are next to 
+	 * eachother without interruption by an empty field or another players stones on a 
+	 * horizontal line.
+	 * @param player
+	 * @param length
+	 * @return
+	 */
+	public int horizontalStoneCount(int player, int amount) {
+		int result = 0;
+		for (int yBegin = 0; yBegin < ROWS; yBegin++) {
+			for (int xBegin = 0; xBegin < COLUMNS - (amount - 1); xBegin++) {
+				int correct = 0;
+				for (int j = 0; j < amount; j++) {
+					if(fields[xBegin + j][yBegin].isField(player))	{
+						correct++;
+					}
+				}
+				if(correct == amount)	{
+					result++;
+				}
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Counts the amount of times that given amount of stones of given player are next to 
+	 * eachother without interruption by an empty field or another players stones on a vertical
+	 * line.
+	 * @param player
+	 * @param length
+	 * @return
+	 */
+	public int verticalStoneCount(int player, int amount)	{
+		int result = 0;
+		for (int xBegin = 0; xBegin < COLUMNS; xBegin++) {
+			for (int yBegin = 0; yBegin < ROWS - (amount - 1); yBegin++) {
+				int correct = 0;
+				for (int j = 0; j < amount; j++) {
+					if(fields[xBegin][yBegin + j].isField(player))	{
+						correct++;
+					}
+				}
+				if(correct == amount)	{
+					result++;
+				}
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Counts the amount of times that given amount of stones of given player are diagonal to 
+	 * eachother without interruption by an empty field or another players stones on a diagonal
+	 * line.
+	 * @param player
+	 * @param length
+	 * @return
+	 */
+	public int diagonalStoneCount(int player, int amount)	{
+		int result = 0;
+		//Checks if there is a diagonal winner from left to right
+		 for (int yBegin = 0; yBegin < ROWS - (amount - 1); yBegin++) {
+			for (int xBegin = 0; xBegin < COLUMNS - (amount - 1); xBegin++) {
+				int correct = 0;
+				for (int j = 0; j < amount; j++) {
+					if(fields[xBegin + j][yBegin + j].isField(player))	{
+						correct++;
+					}
+				}
+				if(correct == amount)	{
+					result++;
+				}
+			}
+		}
+		//Checks if there is a diagonal winner from right to left
+		for (int yBegin = 0; yBegin < ROWS - (amount - 1); yBegin++) {
+			for (int xBegin = COLUMNS - 1; xBegin >= (amount - 1); xBegin--) {
+				int correct = 0;
+				for (int j = 0; j < amount; j++) {
+					if(fields[xBegin - j][yBegin + j].isField(player))	{
+						correct++;
+					}
+				}
+				if(correct == amount)	{
+					result++;
+				}
+			}
+		}
+		return result;
+	}
 }

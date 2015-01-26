@@ -28,15 +28,39 @@ public class SmartAI implements AI	{
 	}
 	
 	private int minimax(Board board, int depth, boolean maximizingPlayer)	{
-		int result;
+		int result = 0;
 		int player;
+		if(maximizingPlayer)	{
+			player = 1;
+		}
+		else	{
+			player = 2;
+		}
 		if(depth == 0 || board.isBoardFull())	{
-			//TODO Add values to the situation on the board
+			int otherPlayer = (player % 2) + 1;
+			//Add values to the situation on the board
+			if(board.horizontalWinner(player) || board.verticalWinner(player) || board.diagonalWinner(player))	{
+				result = 1000;
+			}
+			else if(board.horizontalWinner(otherPlayer) || board.verticalWinner(otherPlayer) || board.diagonalWinner(otherPlayer)){
+				result = -1000;
+			}
+			else	{
+				//three stones on a row
+				result = result + 25 * (board.diagonalStoneCount(player, 3) + board.horizontalStoneCount(player, 3) + board.verticalStoneCount(player, 3));
+				result = result - 25 * (board.diagonalStoneCount(otherPlayer, 3) + board.horizontalStoneCount(otherPlayer, 3) + board.verticalStoneCount(otherPlayer, 3));
+				//two stones on a row
+				result = result + 5 * (board.diagonalStoneCount(player, 2) + board.horizontalStoneCount(player, 2) + board.verticalStoneCount(player, 2));
+				result = result - 5 * (board.diagonalStoneCount(otherPlayer, 2) + board.horizontalStoneCount(otherPlayer, 2) + board.verticalStoneCount(otherPlayer, 2));
+				//single stones
+				result = result + 1 * (board.diagonalStoneCount(player, 1) + board.horizontalStoneCount(player, 1) + board.verticalStoneCount(player, 1));
+				result = result - 1 * (board.diagonalStoneCount(otherPlayer, 1) + board.horizontalStoneCount(otherPlayer, 1) + board.verticalStoneCount(otherPlayer, 1));
+			}
+
 			result = 0;
 		}
 		else	{
 			if(maximizingPlayer)	{
-				player = 1;
 				result = -1000;
 				List<Integer> legalMoves = new LinkedList<Integer>();
 				for (int i = 0; i < COLUMNS; i++) {
@@ -52,7 +76,6 @@ public class SmartAI implements AI	{
 				}
 			}
 			else	{
-				player = 2;
 				result = 1000;
 				List<Integer> legalMoves = new LinkedList<Integer>();
 				for (int i = 0; i < COLUMNS; i++) {
