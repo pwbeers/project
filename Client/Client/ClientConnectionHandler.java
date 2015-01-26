@@ -200,9 +200,9 @@ public class ClientConnectionHandler extends Thread {
 	
 	public void closeConnection(String message)	{
 		//TODO Debug verwijderen en vervangen door iets anders
-		sendMessage("DEBUG " + message);
-		out.close();
 		try {
+			sendMessage("DEBUG " + message);
+			out.close();
 			in.close();
 			socket.close();
 		} catch (IOException e) {

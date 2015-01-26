@@ -87,7 +87,7 @@ public class ClientController implements ActionListener	{
 		}
 		else if(command.equals("Challenge"))	{
 			if(connection != null)	{
-				System.out.println("yes");
+				//TODO
 			}
 			else	{
 				gui.printTekst("First a connection must be made.");
@@ -95,7 +95,7 @@ public class ClientController implements ActionListener	{
 		}
 		else if(command.equals("chatText"))	{
 			if(connection != null)	{
-				System.out.println("yes");
+				//TODO
 			}
 			else	{
 				gui.printTekst("First a connection must be made.");
@@ -266,7 +266,7 @@ public class ClientController implements ActionListener	{
 	 * Gets a hint from the AI and gives this to the gui.
 	 */
 	public void hint()	{
-		gui.hint(aiSimple.getMove());
+		gui.hint(aiSimple.getMove(3));
 	}
 	
 	/**

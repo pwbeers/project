@@ -32,6 +32,8 @@ import javax.swing.JSlider;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
+import Model.Board;
+
 /**
  * A ClientGUI that shows an graphical interface for the client/user to use.
  * @author peter
@@ -40,6 +42,7 @@ public class ClientGUI implements View,Observer {
 
 	private JFrame frmFour;
 	private ActionListener controller;
+	private LeaderboardGUI leaderboard;
 	
 	private final Icon EMPTYFIELD = new ImageIcon(ClientGUI.class.getResource("/View/EmptyField.png"));
 	private final Icon YELLOWFIELD = new ImageIcon(ClientGUI.class.getResource("/View/Geel.png"));
@@ -277,12 +280,17 @@ public class ClientGUI implements View,Observer {
 	}
 	
 	/**
-	 * Starts a leaderboard screen giving the param leaderboard as data.
+	 * Starts a leaderboard screen giving the data as an argument
 	 * @param leaderboard
 	 */
 	public void printLeaderboard(String[] leaderboard)	{
-		//TODO
-		throw new UnsupportedOperationException();
+		if(this.leaderboard == null)	{
+			this.leaderboard = new LeaderboardGUI(leaderboard);
+			this.leaderboard.start();	
+		}
+		else	{
+			this.leaderboard.updateData(leaderboard);
+		}
 	}
 	
 	/**
@@ -316,10 +324,17 @@ public class ClientGUI implements View,Observer {
 		}
 	}
 
-	@Override
+	/**
+	 * Updates the board with a new field
+	 */
 	public void update(Observable o, Object arg) {
-		//TODO
-		throw new UnsupportedOperationException();		
+		Board newBoard = (Board) arg;
+		for (int i = 0; i < this.board.length; i++) {
+			//TODO onderstaande afmaken
+			if(this.board[i].getIcon().equals(EMPTYFIELD))	{
+				
+			}
+		}
 	}
 	
 	/**
