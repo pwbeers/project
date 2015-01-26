@@ -229,7 +229,6 @@ public class ClientController implements ActionListener	{
 		int player = isPlayer(arguments[0]);
 		int column = Integer.parseInt(arguments[1]);
 		game.doMove(column, player);
-		aiSimple.doMove(column, player);
 		gui.printTekst("Player " + arguments[0] + " has placed a stone in column " + column);
 	}
 	
@@ -267,7 +266,7 @@ public class ClientController implements ActionListener	{
 	 * Gets a hint from the AI and gives this to the gui.
 	 */
 	public void hint()	{
-		gui.hint(aiSimple.getMove());
+		gui.hint(aiSimple.getMove(3));
 	}
 	
 	/**
