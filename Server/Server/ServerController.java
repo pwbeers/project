@@ -155,7 +155,7 @@ public class ServerController implements ActionListener{
 	 */
 	public void writeToGUI(String string) {
 		// TODO Make thread safe
-		serverGUI.printTekst(string);
+		serverGUI.printText(string);
 	}
 	
 	/**
@@ -183,7 +183,7 @@ public class ServerController implements ActionListener{
 			} else if (extensions.get(1).equals("LEADERBOARD")){
 				leaderboardPlayers.add(player);
 			} else { //Something other than LEADERBOARD followed which isn't allowed
-				throw new Error();
+				throw new Error("ERROR AMULET EXTENSION PROTOCOL NOT FOLLOWED. YOUR CONNECTION WILL BE TERMINATED");
 			}
 		} else if (extensions.get(0).equals("CHALLENGE") && extensions.size() > 3){ //CHALLENGE and or LEADERBOARD are supported
 			challengePlayers.add(player);
@@ -195,10 +195,10 @@ public class ServerController implements ActionListener{
 		}  else if (extensions.get(0).equals("LEADERBOARD") && extensions.size() == 1){//only LEADERBOARD can be supported
 			leaderboardPlayers.add(player);			
 		} else { //Extensions aren't given following the format
-			throw new Error();
+			throw new Error("ERROR AMULET EXTENSION PROTOCOL NOT FOLLOWED. YOUR CONNECTION WILL BE TERMINATED");
 		}
-		
 	}
+	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
