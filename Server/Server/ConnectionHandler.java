@@ -170,6 +170,7 @@ public class ConnectionHandler extends Thread {
 			break;
 		case "JOINREQ":
 			//We now now the NickName of this client. This should also be be made known to the ServerController
+			//TODO check if player is a security player and communicate this to ServerController
 			nickName = arguments.get(0);
 			controller.addConnectionHandler(nickName, this);
 			break;
