@@ -151,6 +151,7 @@ public class ConnectionHandler extends Thread {
 	 */
 	public void writeToClient(String message){
 		writer.println(message + "\n");
+		controller.writeToGUI("To [" + nickName + "]: " + message);
 	}
 	
 	/**

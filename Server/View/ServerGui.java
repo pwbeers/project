@@ -61,12 +61,18 @@ import java.awt.CardLayout;
 
 public class ServerGui implements View {
 
-	private JFrame serverFrame;
 	private ActionListener controller;
+	
+	private JFrame serverFrame;
+	
 	private JPanel addresErrorPanel;
+	
 	private JTextField manualInTextField;
 	private JTextField portTestField;
+	
 	private JTextArea errorTextArea;
+	private JTextArea currentGamesTextArea;
+	private JTextArea connectedClientsTextArea;
 
 	/**
 	 * Create the application.
@@ -74,7 +80,7 @@ public class ServerGui implements View {
 	public ServerGui(ActionListener newController) {
 		controller = newController;
 		initialize();
-		System.out.println("ServerGUI initialized");
+		//System.out.println("ServerGUI initialized");
 	}
 
 	/**
@@ -119,6 +125,7 @@ public class ServerGui implements View {
 		iNetPanel.add(iNetAdresLabel);
 		iNetAdresLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		
+		//TODO get local inet
 		JLabel iNetLabel = new JLabel("INetAdress");
 		iNetLabel.setBounds(25, 11, 54, 14);
 		iNetPanel.add(iNetLabel);
@@ -208,7 +215,7 @@ public class ServerGui implements View {
 		connectedClientsLabel.setBounds(0, 0, 348, 29);
 		connectedClientsPanel.add(connectedClientsLabel);
 		
-		JTextArea connectedClientsTextArea = new JTextArea();
+		connectedClientsTextArea = new JTextArea();
 		connectedClientsTextArea.setBounds(0, 29, 348, 128);
 		connectedClientsPanel.add(connectedClientsTextArea);
 		
@@ -220,7 +227,7 @@ public class ServerGui implements View {
 		currentGamesLabel.setBounds(0, 0, 348, 24);
 		currentGamesPanel.add(currentGamesLabel);
 		
-		JTextArea currentGamesTextArea = new JTextArea();
+		currentGamesTextArea = new JTextArea();
 		currentGamesTextArea.setBounds(0, 25, 348, 152);
 		currentGamesPanel.add(currentGamesTextArea);
 		
@@ -248,6 +255,14 @@ public class ServerGui implements View {
 	
 	public void printText(String message){
 		errorTextArea.append(message);		
+	}
+	
+	public void appendActivePlayers(String player){
+		connectedClientsTextArea.append(player + "\n");
+	}
+	
+	public void appendCurrentGames(String game){
+		currentGamesTextArea.append(game + "\n");	
 	}
 
 	public void startScherm(){

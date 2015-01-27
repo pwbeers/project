@@ -46,17 +46,21 @@ public class ServerController implements ActionListener{
 	 */
 	public ServerController() {
 		serverGUI = new ServerGui(this);
-		System.out.println("ServerGUI created");
+		writeToGUI("ServerGUI has been created");
+		
 		extensions = "NONE"; //We hardcode the extensions for now, they can be enabled and disabled in the GUI
 		connections = new TreeMap<String, ConnectionHandler>();
 		games = new HashMap<GameController, List<ConnectionHandler>>();
+		
 		//the serverSocketListener gets made after a button is pressed in the GUI so it isn't initialized here
 		try {
 			serverSocket = new ServerSocket(2200);
+			writeToGUI("ServerSocket has been created");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		serverSocketListener = new ServerSocketListener(this, serverSocket);
 		serverSocketListener.start();
 		
@@ -75,6 +79,7 @@ public class ServerController implements ActionListener{
 		// TODO Make thread safe
 		return extensions;
 	}
+	
 	// ------------------ Commands --------------------------
 	/**
 	 * Creates a ServerSocketListeren object on port <code>portNumber</code>
@@ -103,12 +108,12 @@ public class ServerController implements ActionListener{
 		String randomKey = connectionKeys.get(random.nextInt(connectionKeys.size()));
 		
 		ConnectionHandler randomPlayer = connections.get(randomKey);
-		System.out.println(randomPlayer.getNickName() + "is selected for a game");
 		
 		GameController newGame = new GameController(player1, randomPlayer);
 		player1.setGameController(newGame);
 		randomPlayer.setGameController(newGame);
-		System.out.println("new game has been started");
+		
+		writeToGUI("A new game has been started between players " + player1.getNickName() + "and " + randomPlayer.getNickName());
 
 		
 		List<ConnectionHandler> playerList = new ArrayList<ConnectionHandler>();
@@ -143,7 +148,8 @@ public class ServerController implements ActionListener{
 	public void addConnectionHandler(String nickName, ConnectionHandler newPlayer) {
 		// TODO make thread safe
 		//TODO update GUI
-		connections.put(nickName, newPlayer);	
+		connections.put(nickName, newPlayer);
+		updateActivePlayers();
 		
 		//TODO start game properly
 		if (connections.size() > 1) {
@@ -158,16 +164,17 @@ public class ServerController implements ActionListener{
 	public void removeConnectionHandler(ConnectionHandler removePlayer) {
 		// TODO Make thread safe
 		connections.remove(removePlayer.getNickName());
+		updateActivePlayers();
 	}
 	
 	public void addGame(GameController newGame,List<ConnectionHandler> playerList) {
 		games.put(newGame, playerList);
-		//TODO Update GUI
+		updateCurrentGames();
 	}
 	
 	public void deleteGame(GameController game) {
 		games.remove(game);
-		//TODO Update GUI
+		updateCurrentGames();
 	}
 
 	
@@ -175,9 +182,26 @@ public class ServerController implements ActionListener{
 	 * Prints a message to the GUI
 	 * @param string
 	 */
-	public void writeToGUI(String string) {
+	public void writeToGUI(String message) {
 		// TODO Make thread safe
-		serverGUI.printText(string);
+		serverGUI.printText(message + "\n");
+	}
+	
+	public void updateActivePlayers(){
+		List<String> activePlayers = new ArrayList<String>(connections.keySet());
+		for (int i = 0; i < activePlayers.size(); i++){
+			((ServerGui) serverGUI).appendActivePlayers(activePlayers.get(i));
+		}
+	}
+
+	public void updateCurrentGames(){
+		List<List <ConnectionHandler>> playersInGames = new ArrayList<List <ConnectionHandler>>(games.values());
+		
+		for (int i = 0; i < playersInGames.size(); i++){
+			List<ConnectionHandler> game = new ArrayList<ConnectionHandler>(playersInGames.get(i));
+			String gameName = game.get(0).getNickName() + " v.s. " + game.get(1).getNickName();
+			((ServerGui) serverGUI).appendCurrentGames(i + ": " + gameName);
+		}
 	}
 	
 	/**
