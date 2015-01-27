@@ -28,6 +28,7 @@ public class ClientController implements ActionListener	{
 	private String opponentName;
 	private ArrayList<String[]> otherClientExtensions;
 	private String[] clientExtension;
+	private boolean turn;
 
 	/*@public invariant gui != null; @*/ //class invariant
 	/*@public invariant game != null; @*/ //class invariant
@@ -45,6 +46,7 @@ public class ClientController implements ActionListener	{
 		clientExtension[0] = "CHAT";
 		clientExtension[1] = "CHALLENGE";
 		clientExtension[2] = "LEADERBOARD";
+		turn = false;
 	}
 
 	/**
@@ -68,7 +70,6 @@ public class ClientController implements ActionListener	{
 			else	{
 				gui.printText("You must first start make a connection and start a game.");
 			}
-			System.out.println(command);
 		}
 		else if(command.equals("Connect"))	{
 			String[] arguments = gui.getConnection();
@@ -161,7 +162,7 @@ public class ClientController implements ActionListener	{
 			Socket socket = new Socket(ip, port);
 			gui.printText("A connection has been made to the server.");
 			//TODO Aanpassen
-			//gui.setConnectionScreen();
+			gui.setConnectionScreen();
 			connection = new ClientConnectionHandler(socket, this);
 			connection.start();
 		} catch (IOException e)	{
@@ -195,7 +196,8 @@ public class ClientController implements ActionListener	{
 	public void startGame(String name)	{
 		opponentName = name;
 		game = new Game();
-		aiSimple = new SimpleAI();
+		//TODO verander dat dit wordt ingesteld door de gui
+		aiSimple = new SmartAI();
 		game.addObserver(gui);
 		game.addObserver(aiSimple);
 		//TODO vervangen door slimme game voor hint
@@ -209,7 +211,14 @@ public class ClientController implements ActionListener	{
 	 * is asked to do a move.
 	 */
 	public void onTurn()	{
-		gui.printText("It's your turn.");
+		turn = true;
+		//TODO
+		if(/*ai is aangezet*/false)	{
+			
+		}
+		else	{
+			gui.printText("It's your turn.");
+		}
 	}
 	
 	/**

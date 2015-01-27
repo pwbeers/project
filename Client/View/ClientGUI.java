@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 import java.awt.FlowLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -75,7 +76,7 @@ public class ClientGUI implements View,Observer {
 		this.controller = controller;
 		initialize();
 		frmFour.setVisible(true);
-		//beforeConnectionScreen();
+		beforeConnectionScreen();
 	}
 
 	/**
@@ -147,7 +148,7 @@ public class ClientGUI implements View,Observer {
 		connectionIPLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		connectionPanel.add(connectionIPLabel);
 		
-		connectionIPText = new JTextField("130.89.95.239");
+		connectionIPText = new JTextField("130.89.95.188");
 		connectionPanel.add(connectionIPText);
 		connectionIPText.setColumns(10);
 		
@@ -232,6 +233,11 @@ public class ClientGUI implements View,Observer {
 		message.setForeground(Color.RED);
 		messagePanel.add(message);
 
+		ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup.add(gameHumanButton);
+		gameHumanButton.setSelected(true);
+		buttonGroup.add(gameAIButton);
+		gameAIButton.setSelected(false);
 	}
 
 	public void printText(String message) {
@@ -448,5 +454,8 @@ public class ClientGUI implements View,Observer {
 		connectionButton.setEnabled(false);
 		connectionIPText.setEnabled(false);
 		connectionPortText.setEnabled(false);
+		for (int i = 0; i < board.length; i++) {
+			board[i].setEnabled(true);
+		}
 	}
 }
