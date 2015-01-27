@@ -49,7 +49,8 @@ public class ClientConnectionHandler extends Thread {
 	 */
 	//@ requires line != null;
 	public void commandReader(String line) throws Error	{
-		System.out.println(line);
+		//TODO verwijderen
+		System.out.println("Server: " + line);
 		Scanner scan = new Scanner(line);
 		ArrayList<String> command = new ArrayList<String>();
 		while(scan.hasNext())	{
@@ -195,11 +196,12 @@ public class ClientConnectionHandler extends Thread {
 	 */
 	//@ requires message != null;
 	public void sendMessage(String message) {
+		//TODO verwijderen
+		System.out.println("Client: " + message);
 		out.println(message);
 	}
 	
 	public void closeConnection(String message)	{
-		//TODO Debug verwijderen en vervangen door iets anders
 		try {
 			sendMessage("DEBUG " + message);
 			out.close();
@@ -223,7 +225,7 @@ public class ClientConnectionHandler extends Thread {
 				String message = "The connection has been broken by the server";
 				out.close();
 				controller.connectionClosed(message);
-			}
+			} 
 		}
 	}
 
