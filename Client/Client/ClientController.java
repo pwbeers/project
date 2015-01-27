@@ -68,7 +68,6 @@ public class ClientController implements ActionListener	{
 			else	{
 				gui.printTekst("You must first start make a connection and start a game.");
 			}
-			System.out.println(command);
 		}
 		else if(command.equals("Connect"))	{
 			String[] arguments = gui.getConnection();
@@ -102,19 +101,14 @@ public class ClientController implements ActionListener	{
 			}
 		}
 		else if(command.equals("Start Game"))	{
-			if(connection != null)	{
-				String name = gui.getStartGame();
-				if(name != null && !name.equals(""))	{
-					String message = "JOINREQ " + name;
-					connection.sendMessage(message);
-					connection.setName(name);
-				}
-				else	{
-					gui.printTekst("Give a player name.");
-				}
+			String name = gui.getStartGame();
+			if(name != null && !name.equals(""))	{
+				String message = "JOINREQ " + name;
+				connection.sendMessage(message);
+				connection.setName(name);
 			}
 			else	{
-				gui.printTekst("First a connection must be made.");
+				gui.printTekst("Give a player name.");
 			}
 		}
 		else if(command.equals("Hint"))	{
@@ -165,6 +159,8 @@ public class ClientController implements ActionListener	{
 		try {
 			Socket socket = new Socket(ip, port);
 			gui.printTekst("A connection has been made to the server.");
+			//TODO Aanpassen
+			//gui.setConnectionScreen();
 			connection = new ClientConnectionHandler(socket, this);
 			connection.start();
 		} catch (IOException e)	{
@@ -203,6 +199,8 @@ public class ClientController implements ActionListener	{
 		game.addObserver(aiSimple);
 		//TODO vervangen door slimme game voor hint
 		gui.printTekst("A game has been started against " + name);
+		//TODO aanpassen		
+		gui.gameStartScreen();
 	}
 	
 	/**
