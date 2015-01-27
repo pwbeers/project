@@ -62,11 +62,11 @@ public class ClientController implements ActionListener	{
 					connection.sendMessage(message);
 				}
 				else	{
-					gui.printTekst("Unvalid move, please make another.");
+					gui.printText("Unvalid move, please make another.");
 				}
 			}
 			else	{
-				gui.printTekst("You must first start make a connection and start a game.");
+				gui.printText("You must first start make a connection and start a game.");
 			}
 			System.out.println(command);
 		}
@@ -78,11 +78,11 @@ public class ClientController implements ActionListener	{
 					InetAddress ip = InetAddress.getByName(arguments[1]);
 					startConnection(port, ip);
 				} catch (UnknownHostException e) {
-					gui.printTekst("The ip adress is of an illegal format.");
+					gui.printText("The ip adress is of an illegal format.");
 				}
 			}
 			else	{
-				gui.printTekst("An illegal port has been given.");
+				gui.printText("An illegal port has been given.");
 			}
 		}
 		else if(command.equals("Challenge"))	{
@@ -90,7 +90,7 @@ public class ClientController implements ActionListener	{
 				//TODO
 			}
 			else	{
-				gui.printTekst("First a connection must be made.");
+				gui.printText("First a connection must be made.");
 			}
 		}
 		else if(command.equals("chatText"))	{
@@ -98,7 +98,7 @@ public class ClientController implements ActionListener	{
 				//TODO
 			}
 			else	{
-				gui.printTekst("First a connection must be made.");
+				gui.printText("First a connection must be made.");
 			}
 		}
 		else if(command.equals("Start Game"))	{
@@ -110,11 +110,11 @@ public class ClientController implements ActionListener	{
 					connection.setName(name);
 				}
 				else	{
-					gui.printTekst("Give a player name.");
+					gui.printText("Give a player name.");
 				}
 			}
 			else	{
-				gui.printTekst("First a connection must be made.");
+				gui.printText("First a connection must be made.");
 			}
 		}
 		else if(command.equals("Hint"))	{
@@ -123,11 +123,11 @@ public class ClientController implements ActionListener	{
 					hint();
 				}
 				else	{
-					gui.printTekst("First a game must be started.");
+					gui.printText("First a game must be started.");
 				}
 			}
 			else	{
-				gui.printTekst("First a connection must be made.");
+				gui.printText("First a connection must be made.");
 			}
 		}
 		else if(command.equals("LeaderBoard"))	{
@@ -136,7 +136,7 @@ public class ClientController implements ActionListener	{
 					connection.sendMessage(message);
 			}
 			else	{
-				gui.printTekst("First a connection must be made.");
+				gui.printText("First a connection must be made.");
 			}
 		}
 		else if(command.equals("End Game"))	{
@@ -164,11 +164,11 @@ public class ClientController implements ActionListener	{
 	private void startConnection(int port, InetAddress ip)	{
 		try {
 			Socket socket = new Socket(ip, port);
-			gui.printTekst("A connection has been made to the server.");
+			gui.printText("A connection has been made to the server.");
 			connection = new ClientConnectionHandler(socket, this);
 			connection.start();
 		} catch (IOException e)	{
-			gui.printTekst("A connection could not be made with the given port and ip address. (Server might be offline)");
+			gui.printText("A connection could not be made with the given port and ip address. (Server might be offline)");
 		}
 	}
 	
@@ -202,7 +202,7 @@ public class ClientController implements ActionListener	{
 		game.addObserver(gui);
 		game.addObserver(aiSimple);
 		//TODO vervangen door slimme game voor hint
-		gui.printTekst("A game has been started against " + name);
+		gui.printText("A game has been started against " + name);
 	}
 	
 	/**
@@ -210,7 +210,7 @@ public class ClientController implements ActionListener	{
 	 * is asked to do a move.
 	 */
 	public void onTurn()	{
-		gui.printTekst("It's your turn.");
+		gui.printText("It's your turn.");
 	}
 	
 	/**
@@ -229,7 +229,7 @@ public class ClientController implements ActionListener	{
 		int player = isPlayer(arguments[0]);
 		int column = Integer.parseInt(arguments[1]);
 		game.doMove(column, player);
-		gui.printTekst("Player " + arguments[0] + " has placed a stone in column " + column);
+		gui.printText("Player " + arguments[0] + " has placed a stone in column " + column);
 	}
 	
 	/**
@@ -259,7 +259,7 @@ public class ClientController implements ActionListener	{
 	 * @param message
 	 */
 	public void error(String message)	{
-		gui.printTekst("Server gave the following message: " + message);
+		gui.printText("Server gave the following message: " + message);
 	}
 	
 	/**

@@ -235,7 +235,7 @@ public class ServerGui implements View {
 
 	}
 	
-	public void printTekst(String message){
+	public void printText(String message){
 		errorTextArea.append(message);		
 	}
 

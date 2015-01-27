@@ -7,7 +7,7 @@ import javax.swing.event.AncestorListener;
 
 public interface View extends Observer	{
 
-	void printTekst(String message);
+	void printText(String message);
 
 	void startScherm();
 }
