@@ -234,7 +234,7 @@ public class ClientGUI implements View,Observer {
 
 	}
 
-	public void printTekst(String message) {
+	public void printText(String message) {
 		this.message.setText(message);
 	}
 
