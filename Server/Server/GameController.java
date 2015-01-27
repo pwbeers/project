@@ -49,7 +49,12 @@ public class GameController {
 	 */
 	public void startGame() {
 		game = new Game();
+		player1.writeToClient("GAME " + player2.getNickName());
+		System.out.println("GAME " + player2.getNickName());
+		player2.writeToClient("GAME " + player1.getNickName());
+		System.out.println("GAME " + player1.getNickName());
 		player1.writeToClient("TURN");
+		System.out.println("TURN " + player1.getNickName());
 		}
 
 	/**
@@ -59,6 +64,8 @@ public class GameController {
 	 * @param arguments
 	 */
 	public void newMove(ConnectionHandler playerHandler, ArrayList<String> arguments) throws Error {
+		System.out.println("Move recieved from " + playerHandler.getNickName());
+
 		String columnString = arguments.get(0);
 		//Convert from String to Integer
 		int column = Integer.parseInt(columnString);
@@ -69,12 +76,14 @@ public class GameController {
 		//Check if player is on turn
 		if (game.onTurn(player) == false){
 			broadcastToPlayers("GAMEEND");
+			System.out.println("GAMEEND");
 			throw new Error("ERROR YOU ARE NOT ON TURN. THE CONNECTION WILL BE TERMINATED.");
 		}
 
 		//Check if move is legal
 		if(game.isLegalMove(column) == false){
 			broadcastToPlayers("GAMEEND");
+			System.out.println("GAMEEND");
 			throw new Error("ERROR ILLEGAL MOVE. THE CONNECTION WILL BE TERMINATED.");
 		}
 		
@@ -87,15 +96,18 @@ public class GameController {
 		case 0: //The Game continues. The players need to be notified of a new move 
 			//and a new turn needs to be assigned
 			broadcastToPlayers("MOVEUPDATE " + playerHandler.getNickName() + " " +columnString);
+			System.out.println("MOVEUPDATE " + playerHandler.getNickName() + " " +columnString);
 			assignTurn(player);
 			break;
 		case 1:
 			//send gameend to both players with nickname of playerHandler
 			broadcastToPlayers("GAMEEND " + playerHandler.getNickName());
+			System.out.println("GAMEEND " + playerHandler.getNickName());
 			break;
 		case 2:
 			//send gameEnd to bothplayers with no nicjname
 			broadcastToPlayers("GAMEEND DRAW");
+			System.out.println("GAMEEND DRAW");
 			break;
 		
 		}
@@ -109,8 +121,10 @@ public class GameController {
 	private void assignTurn(int player) {
 		if(player == 1){
 			player2.writeToClient("TURN");
+			System.out.println(player2.getNickName() + " is on turn");
 		}else {
 			player1.writeToClient("TURN");
+			System.out.println(player1.getNickName() + " is on turn");
 		}
 	}
 

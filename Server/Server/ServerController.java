@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -28,7 +29,7 @@ public class ServerController implements ActionListener{
 	private ServerSocketListener serverSocketListener;
 	
 	private TreeMap<String, ConnectionHandler> connections; //Keeps track of all current connections and their nicknames
-	private TreeMap<GameController, List<ConnectionHandler>> games; //Keeps track of alle current games and their respective ConnectionHandlers
+	private HashMap<GameController, List<ConnectionHandler>> games; //Keeps track of alle current games and their respective ConnectionHandlers
 	
 	private String extensions; //The AMULET value for which extensions are supported
 	private List<ConnectionHandler> normalPlayers;
@@ -45,10 +46,19 @@ public class ServerController implements ActionListener{
 	 */
 	public ServerController() {
 		serverGUI = new ServerGui(this);
+		System.out.println("ServerGUI created");
 		extensions = "NONE"; //We hardcode the extensions for now, they can be enabled and disabled in the GUI
 		connections = new TreeMap<String, ConnectionHandler>();
-		games = new TreeMap<GameController, List<ConnectionHandler>>();
+		games = new HashMap<GameController, List<ConnectionHandler>>();
 		//the serverSocketListener gets made after a button is pressed in the GUI so it isn't initialized here
+		try {
+			serverSocket = new ServerSocket(2200);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		serverSocketListener = new ServerSocketListener(this, serverSocket);
+		serverSocketListener.start();
 		
 		normalPlayers = new ArrayList<ConnectionHandler>();
 		challengePlayers = new ArrayList<ConnectionHandler>();
@@ -85,14 +95,21 @@ public class ServerController implements ActionListener{
 	 */
 	public void startGame(ConnectionHandler player1) {
 		// TODO Make thread safe
+		//TODO make sure player 1 is not selected from the list
 		//We need to select a random key from our connections TreeMap
 		Random random = new Random();
 		List<String> connectionKeys = new ArrayList<String>(connections.keySet());
+		connectionKeys.remove(player1.getNickName());
 		String randomKey = connectionKeys.get(random.nextInt(connectionKeys.size()));
 		
 		ConnectionHandler randomPlayer = connections.get(randomKey);
-
+		System.out.println(randomPlayer.getNickName() + "is selected for a game");
+		
 		GameController newGame = new GameController(player1, randomPlayer);
+		player1.setGameController(newGame);
+		randomPlayer.setGameController(newGame);
+		System.out.println("new game has been started");
+
 		
 		List<ConnectionHandler> playerList = new ArrayList<ConnectionHandler>();
 		playerList.add(player1);
@@ -126,7 +143,12 @@ public class ServerController implements ActionListener{
 	public void addConnectionHandler(String nickName, ConnectionHandler newPlayer) {
 		// TODO make thread safe
 		//TODO update GUI
-		connections.put(nickName, newPlayer);		
+		connections.put(nickName, newPlayer);	
+		
+		//TODO start game properly
+		if (connections.size() > 1) {
+			startGame(newPlayer);
+		}
 	}
 
 	/**

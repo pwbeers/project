@@ -33,23 +33,32 @@ import javax.swing.JTextArea;
 import javax.swing.BoxLayout;
 import javax.swing.JSplitPane;
 import javax.swing.JScrollPane;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
+
 import java.awt.Component;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+
 import com.jgoodies.forms.factories.FormFactory;
+
 import java.awt.CardLayout;
 
 /**
  * A ServerGui that shows a graphical interface for the Server/user to use.
- * @author peter
+ * @author Stephan
  */
+
+//TODO repaint
+
 public class ServerGui implements View {
 
 	private JFrame serverFrame;
@@ -65,6 +74,7 @@ public class ServerGui implements View {
 	public ServerGui(ActionListener newController) {
 		controller = newController;
 		initialize();
+		System.out.println("ServerGUI initialized");
 	}
 
 	/**
@@ -75,6 +85,7 @@ public class ServerGui implements View {
 		serverFrame.setBounds(100, 100, 713, 511);
 		serverFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		serverFrame.getContentPane().setLayout(new GridLayout(0, 2, 0, 0));
+		serverFrame.setVisible(true);
 		
 		addresErrorPanel = new JPanel();
 		serverFrame.getContentPane().add(addresErrorPanel);
@@ -247,7 +258,4 @@ public class ServerGui implements View {
 		throw new UnsupportedOperationException();
 	}
 
-	public  void main(String[] args){
-		initialize();
-	}
 }

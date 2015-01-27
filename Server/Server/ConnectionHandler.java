@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
+
 import Error.Error;
 
 /**
@@ -51,20 +52,22 @@ public class ConnectionHandler extends Thread {
 		gameController = null;
 		nickName = "nickName unknown";
 		
+		System.out.println("ConnectionHandler created");
 		//Create a Buffered Read and a PrintWriter
 		try {
 			bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			writer = new PrintWriter(socket.getOutputStream(), true);
 			
 			//The client is waiting for the AMULET EXTENSIONS command to begin communication
-			((PrintWriter) writer).println("EXTENSIONS " + extensions);
-			
+			writeToClient("EXTENSIONS " + extensions);
+			System.out.println("Extensions sned");
 		} catch (IOException e) {
 			//TODO send error to error class
 			/*getInPutStream throws an IOException if an I/O error occurs when creating 
 			the input stream, the socket is closed, getOutPutStream throws one when creating
 			the output stream or if the socket is not connected.*/
 		}
+		
 	}
 
 	// ------------------ Queries --------------------------
@@ -91,9 +94,11 @@ public class ConnectionHandler extends Thread {
 	 */
 	public void run(){
 		while (listenForCommands == true){
+			System.out.println("listening for commands");
 			try {
 				//Wait for new Command.
 				newLine = bufferedReader.readLine();
+				System.out.println("command recieved");
 			}catch (IOException e) {
 				//An I/O error occured in readLine() The thread is closed.
 				listenForCommands = false;
@@ -104,6 +109,7 @@ public class ConnectionHandler extends Thread {
 			commandReader(newLine);
 			}catch (Error commandError){
 				//There was a violation of the AMULET guidlines. The connection needs to be severed.
+				System.out.println("writing to client");
 				writeToClient(commandError.getMessage());
 				listenForCommands = false;
 			}
@@ -144,7 +150,7 @@ public class ConnectionHandler extends Thread {
 	 * @param message the messeage to be send
 	 */
 	public void writeToClient(String message){
-		((PrintWriter) writer).println(message);
+		writer.println(message + "\n");
 	}
 	
 	/**
@@ -153,15 +159,32 @@ public class ConnectionHandler extends Thread {
 	 * @param newCommand a new Command which has been detected
 	 */
 	public void commandReader(String newLine) throws Error{
+		System.out.println(newLine);
+
 		scanner = new Scanner(newLine);
 		String command;
 		ArrayList <String> arguments = new ArrayList<String>();
 		
+		
 		//Separate the AMULET command from the arguments and put them in an ArrayList.
 		command = scanner.next();
-		while(scanner.hasNext()){
-			arguments.add(scanner.next());
+		System.out.println(command);
+
+		if (command == null){
+			System.out.println("user is beign kicked for empty command");
+			throw new Error("ERROR COMMAND IS EMPTY YOU WILL BE TERMINATED MUTHAFUCKAAA");
+			
+
 		}
+		
+		int i = 0;
+		while(scanner.hasNext()){			
+			arguments.add(scanner.next());
+			System.out.println(arguments.get(i));
+			i++;
+		}
+		
+		
 		
 		switch (command){
 		case "EXTENSIONS":
@@ -178,13 +201,14 @@ public class ConnectionHandler extends Thread {
 			/*We pass any Move commands through to the GameController.
 			If there is no gameController the client is kicked
 			GameController throws his own exceptions to kick the user*/
-			if(gameController == null){
+			//TODO zorg dat in de connenctionhandler de gamecontroller wordt otegevoegt als hij in een game zit
+			/*if(gameController == null){
 				throw new Error("ERROR COMMAND NOT RECOGNIZED. YOUR CONNECTION WILL NOW BE TERMINATED");
-			}else {
+			}else {*/
 				//If newMove cannot be completed an error wil be thrown which is handled in the run method
 				gameController.newMove(this, arguments);
 				break;
-			}	
+			//}	
 		case "DEBUG":
 			controller.writeToGUI("[" +nickName+"]:DEBUG" + arguments);
 			break;
