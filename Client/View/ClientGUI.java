@@ -75,6 +75,7 @@ public class ClientGUI implements View,Observer {
 		this.controller = controller;
 		initialize();
 		frmFour.setVisible(true);
+		//beforeConnectionScreen();
 	}
 
 	/**
@@ -138,7 +139,7 @@ public class ClientGUI implements View,Observer {
 		JLabel connectionPortLabel = new JLabel("   Port:");
 		connectionPanel.add(connectionPortLabel);
 		
-		connectionPortText = new JTextField("2220");
+		connectionPortText = new JTextField("2200");
 		connectionPanel.add(connectionPortText);
 		connectionPortText.setColumns(10);
 		
@@ -146,7 +147,7 @@ public class ClientGUI implements View,Observer {
 		connectionIPLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		connectionPanel.add(connectionIPLabel);
 		
-		connectionIPText = new JTextField();
+		connectionIPText = new JTextField("130.89.95.239");
 		connectionPanel.add(connectionIPText);
 		connectionIPText.setColumns(10);
 		
@@ -392,5 +393,60 @@ public class ClientGUI implements View,Observer {
 		gameHumanButton.setEnabled(false);
 		gameAIButton.setEnabled(false);
 		gameAISlider.setEnabled(false);
+	}
+	
+	/**
+	 * Sets the gui up that only a connection can be made and all
+	 * other buttons are disabled.
+	 */
+	public void beforeConnectionScreen()	{
+		challengeButton.setEnabled(false);
+		chatTextField.setEnabled(false);
+		gameStartGame.setEnabled(false);
+		gameEndGame.setEnabled(false);
+		hintButton.setEnabled(false);
+		gameHumanButton.setEnabled(false);
+		gameAIButton.setEnabled(false);
+		gameAISlider.setEnabled(false);
+		gameName.setEnabled(false);
+		leaderboardButton.setEnabled(false);
+		for (int i = 0; i < board.length; i++) {
+			board[i].setEnabled(false);
+		}
+	}
+	
+	/**
+	 * Sets the gui up with the appropriate functionality after a 
+	 * connection has been made.
+	 */
+	public void setConnectionScreen()	{
+		challengeButton.setEnabled(true);
+		chatTextField.setEnabled(true);
+		gameStartGame.setEnabled(true);
+		gameHumanButton.setEnabled(true);
+		gameAIButton.setEnabled(true);
+		gameAISlider.setEnabled(true);
+		gameName.setEnabled(true);
+		leaderboardButton.setEnabled(true);
+		connectionButton.setEnabled(false);
+		connectionIPText.setEnabled(false);
+		connectionPortText.setEnabled(false);
+	}
+	
+	/**
+	 * Sets the gui up with the appropriate functionality after a 
+	 * game has been started.
+	 */
+	public void gameStartScreen()	{
+		gameStartGame.setEnabled(false);
+		gameHumanButton.setEnabled(false);
+		gameAIButton.setEnabled(false);
+		gameAISlider.setEnabled(true);
+		gameName.setEnabled(false);
+		gameEndGame.setEnabled(true);
+		hintButton.setEnabled(true);
+		connectionButton.setEnabled(false);
+		connectionIPText.setEnabled(false);
+		connectionPortText.setEnabled(false);
 	}
 }

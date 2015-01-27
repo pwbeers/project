@@ -3,6 +3,7 @@ package modelTest;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import Model.Field;
+
 public class FieldTest {
 	
 	@Test

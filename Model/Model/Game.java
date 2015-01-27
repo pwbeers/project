@@ -130,6 +130,6 @@ public class Game extends Observable implements Model	{
 	 * @param newGUI the Observer
 	 */
 	public void addObserver(Observer newGUI){
-		this.addObserver(newGUI);
+		super.addObserver(newGUI);
 	}
 }
