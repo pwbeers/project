@@ -2,9 +2,7 @@ package View;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
 import java.awt.FlowLayout;
-
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
@@ -14,26 +12,23 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.JTextPane;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.SystemColor;
 import java.util.Observable;
 import java.util.Observer;
-
 import javax.swing.ImageIcon;
-
 import java.awt.event.ActionListener;
 import java.awt.GridLayout;
-
 import javax.swing.UIManager;
 import javax.swing.JToggleButton;
 import javax.swing.JSlider;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.StyledDocument;
-
-import Model.Board;
+import javax.swing.text.DefaultCaret;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
 
 /**
  * A ClientGUI that shows an graphical interface for the client/user to use.
@@ -56,8 +51,6 @@ public class ClientGUI implements View,Observer {
 	private JButton[] board; 
 	private JTextField gameName;
 	private JLabel message;
-	private JTextPane chatTextScreen;
-	private StyledDocument chatDocument;
 	private JButton challengeButton;
 	private JTextField chatTextField;
 	private JButton gameStartGame;
@@ -69,6 +62,11 @@ public class ClientGUI implements View,Observer {
 	private JToggleButton gameAIButton;
 	private JSlider gameAISlider;
 	private JPanel boardButtons;
+	private JLabel gameSelectedSliderLable;
+	private JTextArea chatTextArea;
+	private JPanel panel;
+	private JScrollPane scrollPane;
+	private int hintField;
 
 	/**
 	 * Starts the ClientGUI and saves the given controller.
@@ -78,6 +76,7 @@ public class ClientGUI implements View,Observer {
 		initialize();
 		frmFour.setVisible(true);
 		beforeConnectionScreen();
+		hintField = -1;
 	}
 
 	/**
@@ -85,6 +84,7 @@ public class ClientGUI implements View,Observer {
 	 */
 	private void initialize() {
 		frmFour = new JFrame();
+		frmFour.getContentPane().setForeground(Color.BLUE);
 		frmFour.setTitle("Captain\u2019s Mistress");
 		frmFour.setBounds(100, 100, 1200, 700);
 		frmFour.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -141,7 +141,7 @@ public class ClientGUI implements View,Observer {
 		JLabel connectionPortLabel = new JLabel("   Port:");
 		connectionPanel.add(connectionPortLabel);
 		
-		connectionPortText = new JTextField("2200");
+		connectionPortText = new JTextField("2220");
 		connectionPanel.add(connectionPortText);
 		connectionPortText.setColumns(10);
 		
@@ -149,7 +149,7 @@ public class ClientGUI implements View,Observer {
 		connectionIPLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		connectionPanel.add(connectionIPLabel);
 		
-		connectionIPText = new JTextField("192.168.178.18");
+		connectionIPText = new JTextField("130.89.95.188");
 		connectionPanel.add(connectionIPText);
 		connectionIPText.setColumns(10);
 		
@@ -162,10 +162,6 @@ public class ClientGUI implements View,Observer {
 		frmFour.getContentPane().add(chatPanel);
 		chatPanel.setLayout(new BorderLayout(0, 0));
 		
-		chatTextScreen = new JTextPane();
-		chatPanel.add(chatTextScreen);
-		chatTextScreen.setEditable(false);
-		
 		chatTextField = new JTextField();
 		chatTextField.setActionCommand("chatText");
 		chatTextField.addActionListener(controller);
@@ -177,38 +173,87 @@ public class ClientGUI implements View,Observer {
 		JLabel chatTitle = new JLabel("Chat:");
 		chatPanel.add(chatTitle, BorderLayout.NORTH);
 		
+		scrollPane = new JScrollPane();
+		chatPanel.add(scrollPane, BorderLayout.CENTER);
+		
+		panel = new JPanel();
+		scrollPane.setViewportView(panel);
+		panel.setLayout(new BorderLayout(0, 0));
+		
+		chatTextArea = new JTextArea();
+		panel.add(chatTextArea);
+		chatTextArea.setEditable(false);
+		
+		DefaultCaret chatTextAreaCaret = (DefaultCaret) chatTextArea.getCaret();
+		chatTextAreaCaret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		
 		JPanel gamePanel = new JPanel();
 		gamePanel.setBounds(780, 442, 370, 186);
 		frmFour.getContentPane().add(gamePanel);
-		gamePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		gamePanel.setLayout(null);
 		
 		gameHumanButton = new JToggleButton("Human player");
+		gameHumanButton.setBounds(22, 5, 160, 30);
 		gameHumanButton.setPreferredSize(new Dimension(160, 30));
 		gamePanel.add(gameHumanButton);
 		
 		gameAIButton = new JToggleButton("AI speler");
+		gameAIButton.setBounds(187, 5, 160, 30);
 		gameAIButton.setPreferredSize(new Dimension(160, 30));
 		gamePanel.add(gameAIButton);
 		
 		gameName = new JTextField();
+		gameName.setBounds(22, 76, 160, 30);
 		gameName.setText("Spelernaam...");
 		gameName.setPreferredSize(new Dimension(160, 30));
 		gamePanel.add(gameName);
-		gameName.setColumns(10);
 		
-		gameAISlider = new JSlider();
+		gameAISlider = new JSlider(0, 5);
+		gameAISlider.setValue(0);
+		gameAISlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+				int number = gameAISlider.getValue();
+				switch (number) {
+				case 1:
+					gameSelectedSliderLable.setText("Smart AI who thinks 0 steps ahead");
+					break;
+				case 2:
+					gameSelectedSliderLable.setText("Smart AI who thinks 2 steps ahead");
+					break;
+				case 3:
+					gameSelectedSliderLable.setText("Smart AI who thinks 4 steps ahead");					
+					break;
+				case 4:
+					gameSelectedSliderLable.setText("Smart AI who thinks 6 steps ahead");					
+					break;
+				case 5:
+					gameSelectedSliderLable.setText("Smart AI who thinks 8 steps ahead");					
+					break;
+				default:
+					gameSelectedSliderLable.setText("Random AI");
+					break;
+				}
+			}
+		});
+		gameAISlider.setBounds(187, 76, 160, 30);
 		gameAISlider.setPreferredSize(new Dimension(160, 30));
 		gamePanel.add(gameAISlider);
 		
 		gameStartGame = new JButton("Start Game");
+		gameStartGame.setBounds(22, 111, 160, 30);
 		gameStartGame.addActionListener(controller);
 		gameStartGame.setPreferredSize(new Dimension(160, 30));
 		gamePanel.add(gameStartGame);
 		
 		gameEndGame = new JButton("End Game");
+		gameEndGame.setBounds(187, 111, 160, 30);
 		gameEndGame.addActionListener(controller);
 		gameEndGame.setPreferredSize(new Dimension(160, 30));
 		gamePanel.add(gameEndGame);
+		
+		gameSelectedSliderLable = new JLabel("Random AI");
+		gameSelectedSliderLable.setBounds(187, 51, 160, 20);
+		gamePanel.add(gameSelectedSliderLable);
 		
 		JPanel hintPanel = new JPanel();
 		hintPanel.setBounds(35, 591, 350, 37);
@@ -281,8 +326,12 @@ public class ClientGUI implements View,Observer {
 		boolean goOn = true;
 		for (int i = 0; i < board.length && goOn; i++) {
 			if(Integer.parseInt(board[i].getActionCommand()) == column && board[i].getIcon().equals(EMPTYFIELD))	{
+				if(hintField != -1)	{
+					board[hintField].setIcon(EMPTYFIELD);
+				}
 				board[i].setIcon(HINTFIELD);
 				goOn = false;
+				hintField = i;
 			}
 		}
 	}
@@ -323,13 +372,7 @@ public class ClientGUI implements View,Observer {
 	 * @param message
 	 */
 	public void guiMessage(String message)	{
-		chatDocument = chatTextScreen.getStyledDocument();
-		try {
-			chatDocument.insertString(0, message, null);
-		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		chatTextArea.append(message + "\n");
 	}
 
 	/**
@@ -348,6 +391,9 @@ public class ClientGUI implements View,Observer {
 			icon = YELLOWFIELD;
 		}
 		board[column + 7 * row].setIcon(icon);
+		if(hintField != (column + 7 * row) && hintField != -1)	{
+			board[hintField].setIcon(EMPTYFIELD);
+		}
 	}
 	
 	/**
@@ -375,9 +421,9 @@ public class ClientGUI implements View,Observer {
 	 * @param name
 	 * @return true if another game should be started, false if not.
 	 */
-	public boolean gameWinner(String player)	{
+	public boolean gameWinner(String player, String winner)	{
 		boolean accept = false;
-		int result = JOptionPane.showConfirmDialog(null, player + " has won the game! Would you like to play another game?", "WINNER!",JOptionPane.YES_NO_OPTION);
+		int result = JOptionPane.showConfirmDialog(null, player + " Would you like to play another game?", winner,JOptionPane.YES_NO_OPTION);
 		if(result == JOptionPane.YES_OPTION)	{
 			accept = true;
 		}
@@ -453,7 +499,7 @@ public class ClientGUI implements View,Observer {
 		gameStartGame.setEnabled(false);
 		gameHumanButton.setEnabled(false);
 		gameAIButton.setEnabled(false);
-		gameAISlider.setEnabled(true);
+		gameAISlider.setEnabled(false);
 		gameName.setEnabled(false);
 		gameEndGame.setEnabled(true);
 		hintButton.setEnabled(true);
@@ -472,5 +518,13 @@ public class ClientGUI implements View,Observer {
 	 */
 	public boolean isHumanPlayer()	{
 		return gameHumanButton.isSelected();
+	}
+	
+	/**
+	 * Gives the current value of the gameAISlider
+	 * @return
+	 */
+	public int getAIIntelligence()	{
+		return gameAISlider.getValue();
 	}
 }
