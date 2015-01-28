@@ -119,7 +119,7 @@ public class Board {
 	//@ requires column >= 0 && column <= COLUMNS - 1;
 	//@ ensures \result >= 0 && \result <= ROWS;
 	//@ pure;
-	private /*@ spec_public @*/ int nextEmptyRowInColumn(int column)	{
+	public int nextEmptyRowInColumn(int column)	{
 		int result = ROWS;
 		for (int i = 0; i < fields[column].length && result == 6; i++) {
 			if(fields[column][i].isEmpty())	{

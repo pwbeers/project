@@ -66,7 +66,7 @@ public class ClientConnectionHandler extends Thread {
 							extensions.add(command.get(i));
 						}
 						else	{
-							throw new Error("Arguments after EXTENSIONS are illegal");
+							throw new Error("Arguments after EXTENSIONS are illegal: " + line);
 						}
 					}
 					controller.addServerExtensions(extensions);
@@ -76,7 +76,7 @@ public class ClientConnectionHandler extends Thread {
 						controller.startGame(command.get(1));
 					}
 					else	{
-						throw new Error("Argument after GAME is illegal");
+						throw new Error("Argument after GAME is illegal: " + line);
 					}
 					break;
 				case "TURN": 
@@ -90,7 +90,7 @@ public class ClientConnectionHandler extends Thread {
 						controller.serverMove(arguments);
 					}
 					else	{
-						throw new Error("Argument after GAME is illegal");
+						throw new Error("Argument after MOVEUPDATE is illegal: " + line);
 					}
 					break;
 				case "GAMEEND": 
@@ -100,8 +100,16 @@ public class ClientConnectionHandler extends Thread {
 						arguments[1] = command.get(2);
 						controller.gameEnd(arguments);
 					}
+					else if(command.size() == 2 && command.get(1).equals("DRAW"))	{
+						String[] argument = new String[1];
+						argument[0] = command.get(1);
+						controller.gameEnd(argument);
+					}
+					else if(command.size() == 1)	{
+						controller.gameEnd(null);
+					}
 					else	{
-						throw new Error("Argument after GAME is illegal");
+						throw new Error("Argument after GAMEEND is illegal: " + line);
 					}
 					break;
 				case "ERROR": 
@@ -109,80 +117,87 @@ public class ClientConnectionHandler extends Thread {
 					for (int i = 2; i < command.size(); i++) {
 						error = error + " " + command.get(i);
 					}
-					controller.error(error);
+					controller.guiMessage("Server error message: " + error);
 					break;
 				case "DEBUG": 
 					if(command.size() > 1)	{
-						String debug = command.get(1);
+						String theBug = command.get(1);
 						for (int i = 2; i < command.size(); i++) {
-							debug = debug + " " + command.get(i);
+							theBug = theBug + " " + command.get(i);
 						}
-						controller.error(debug);
+						controller.guiMessage("DEBUG: " + theBug);
 					}
 					break;
 				case "LEADERBOARD": 
-					String[] leaderboard = new String[command.size()-1];
-					for (int i = 0; i < command.size() - 1; i++) {
-						leaderboard[i] = command.get(i+1);
-					}
-					controller.leaderboard(leaderboard);
-					break;
+					throw new Error("The server was told that LEADERBOARD wasn't supported: " + line);
 				case "MESSAGE": 
-					String message = "";
-					for (int i = 1; i < command.size(); i++) {
-						message = message + " " + command.get(i);
+					if(command.size() > 1)	{
+						String player = command.get(1);
+						String message = "";
+						for (int i = 2; i < command.size(); i++) {
+							message = message + " " + command.get(i);
+						}
+						controller.message(player + "(personal): " + message);
 					}
-					controller.message(message);
 					break;
 				case "BROADCAST": 
-					String broadcast = "";
-					for (int i = 1; i < command.size(); i++) {
-						broadcast = broadcast + " " + command.get(i);
+					if(command.size() > 1)	{
+						String player = command.get(1);
+						String broadcast = "";
+						for (int i = 2; i < command.size(); i++) {
+							broadcast = broadcast + " " + command.get(i);
+						}
+						controller.message(player + "(broadcast): " + broadcast);
 					}
-					controller.broadcast(broadcast);
 					break;
 				case "PLAYERUPDATE": 
-					String[] update = new String[command.size()-1];
-					for (int i = 0; i < command.size() - 1; i++) {
-						update[i] = command.get(i+1);
+					if(command.size() > 1)	{
+						String[] update = new String[command.size()-1];
+						for (int i = 0; i < command.size() - 1; i++) {
+							update[i] = command.get(i+1);
+						}
+						controller.update(update);
 					}
-					controller.update(update);
+					else	{
+						controller.update(null);
+					}
 					break;
 				case "CHALLENGE": 
+					//TODO verder implementeren
 					if(command.size() == 2)	{
 						String challengePlayer = command.get(1);
 						controller.challenged(challengePlayer);
 					}
 					else	{
-						throw new Error("Argument after CHALLENGE is illegal");
+						throw new Error("Argument after CHALLENGE is illegal: " + line);
 					}
 					break;
 				case "CHALLENGERESP": 
+					//TODO verder implementeren
 					if(command.size() == 2)	{
 						String responce = command.get(1);
 						controller.message(responce);
 					}
 					else	{
-						throw new Error("The responce on the challenge was missing");
+						throw new Error("The responce on the challenge was missing: " + line);
 					}
 					break;
 				case "DISCONNECTED": 
+					//TODO onderdeel voor chat en challenge functie
 					if(command.size() == 2)	{
 						String disconnectedPlayer = command.get(1);
 						controller.otherPlayerDisconnected(disconnectedPlayer);
 					}
 					else	{
-						throw new Error("The player in the disconnect wasn't specified");
+						throw new Error("The player in the disconnect wasn't specified: " + line);
 					}
 					break;
 				case "AUTHENTICATE": 
-					controller.authenticate();
-					break;
+					throw new Error("The server was told that AUTHENTICATE wasn't supported: " + line);
 				case "JOIN": 
-					//TODO JOIN N en JOIN Y toepassen, deze later implementeren voor authenticate
-					break;	
+					throw new Error("The server was told that JOIN wasn't supported: " + line);
 				default	:
-					throw new Error("No such command, illegal command has been send");
+					throw new Error("No such command, illegal command has been send: " + line);
 			}
 		}
 		else	{
@@ -203,12 +218,12 @@ public class ClientConnectionHandler extends Thread {
 	
 	public void closeConnection(String message)	{
 		try {
-			sendMessage("DEBUG " + message);
+			sendMessage("ERROR " + message);
 			out.close();
 			in.close();
 			socket.close();
 		} catch (IOException e) {
-			//Nothing is to be done.
+			//Nothing is to be done here.
 		}
 		controller.connectionClosed(message);
 	}

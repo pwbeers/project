@@ -24,6 +24,7 @@ public class ClientController implements ActionListener	{
 	private /*@ spec_public @*/ Model game;
 	private /*@ spec_public @*/ ClientConnectionHandler connection;
 	private AI aiSimple;
+	private AI aiSmart;
 	private boolean[] serverExtensions;
 	private String opponentName;
 	private ArrayList<String[]> otherClientExtensions;
@@ -53,22 +54,18 @@ public class ClientController implements ActionListener	{
 	public void actionPerformed(ActionEvent arg0) {
 		String command = arg0.getActionCommand();
 		if(command.matches("[0-9]+"))	{
-			//Controlleer of een game gestart is, geeft melding start game
-			if(game != null)	{
-				//number to x and y coordinate
-				int column = Integer.parseInt(command);
-				if(game.isLegalMove(column))	{
-					String message = "MOVE " + column;
-					connection.sendMessage(message);
-				}
-				else	{
-					gui.printText("Unvalid move, please make another.");
-				}
+			//number to x and y coordinate
+			int column = Integer.parseInt(command);
+			if(game.isLegalMove(column) && game.onTurn(1))	{
+				String message = "MOVE " + column;
+				connection.sendMessage(message);
+			}
+			else if(!game.onTurn(1))	{
+				gui.printText("It is not your turn yet.");
 			}
 			else	{
-				gui.printText("You must first start make a connection and start a game.");
+				gui.printText("Unvalid move, please make another.");
 			}
-			System.out.println(command);
 		}
 		else if(command.equals("Connect"))	{
 			String[] arguments = gui.getConnection();
@@ -104,9 +101,9 @@ public class ClientController implements ActionListener	{
 		else if(command.equals("Start Game"))	{
 			String name = gui.getStartGame();
 			if(name != null && !name.equals(""))	{
-				String message = "JOINREQ " + name;
+				String message = "JOINREQ " + "Player_" + name;
 				connection.sendMessage(message);
-				connection.setName(name);
+				connection.setName("Player_" + name);
 			}
 			else	{
 				gui.printText("Give a player name.");
@@ -145,6 +142,7 @@ public class ClientController implements ActionListener	{
 		connection = null;
 		game = null;
 		aiSimple = null;
+		aiSmart = null;
 		serverExtensions = null;
 		opponentName = null;
 		otherClientExtensions = null;
@@ -161,7 +159,7 @@ public class ClientController implements ActionListener	{
 			Socket socket = new Socket(ip, port);
 			gui.printText("A connection has been made to the server.");
 			//TODO Aanpassen
-			//gui.setConnectionScreen();
+			gui.setConnectionScreen();
 			connection = new ClientConnectionHandler(socket, this);
 			connection.start();
 		} catch (IOException e)	{
@@ -176,6 +174,7 @@ public class ClientController implements ActionListener	{
 	 * @param extensions contains the extensions of the server
 	 */
 	public void addServerExtensions(List<String> extensions)	{
+		//TODO change the server extensions
 		serverExtensions = new boolean[4];
 		serverExtensions[0] = extensions.contains("NONE");
 		serverExtensions[1] = extensions.contains("CHAT");
@@ -194,13 +193,13 @@ public class ClientController implements ActionListener	{
 	 */
 	public void startGame(String name)	{
 		opponentName = name;
-		game = new Game();
+		game = new Game(2);
 		aiSimple = new SimpleAI();
+		aiSmart = new SmartAI();
 		game.addObserver(gui);
 		game.addObserver(aiSimple);
-		//TODO vervangen door slimme game voor hint
-		gui.printText("A game has been started against " + name);
-		//TODO aanpassen		
+		game.addObserver(aiSmart);
+		gui.printText("A game has been started against " + name);	
 		gui.gameStartScreen();
 	}
 	
@@ -209,7 +208,25 @@ public class ClientController implements ActionListener	{
 	 * is asked to do a move.
 	 */
 	public void onTurn()	{
-		gui.printText("It's your turn.");
+		//TODO geen client verantwoordelijkheid om bij te houden
+		//wie er aan de beurt is.
+		game.setOnTurn();
+		if(gui.isHumanPlayer())	{
+			gui.printText("It's your turn.");
+		}
+		else	{
+			int intelligence = gui.getAIIntelligence();
+			String message;
+			if(intelligence == 0)	{
+				int column = aiSimple.getMove(0);
+				message = "MOVE " + column;
+			}
+			else	{
+				int column = aiSmart.getMove((intelligence - 1) * 2);
+				message = "MOVE " + column;
+			}
+			connection.sendMessage(message);
+		}
 	}
 	
 	/**
@@ -228,7 +245,6 @@ public class ClientController implements ActionListener	{
 		int player = isPlayer(arguments[0]);
 		int column = Integer.parseInt(arguments[1]);
 		game.doMove(column, player);
-		gui.printText("Player " + arguments[0] + " has placed a stone in column " + column);
 	}
 	
 	/**
@@ -237,18 +253,50 @@ public class ClientController implements ActionListener	{
 	 * @param arguments
 	 */
 	public void gameEnd(String[] arguments)	{
-		String winner = arguments[0];
-		int player = isPlayer(winner);
-		int column = Integer.parseInt(arguments[1]);
-		game.doMove(column, player);
-		boolean newGame = gui.gameWinner(winner);
-		if(newGame)	{
-			gui.setNewGame();
-			String message = "JOINREQ " + connection.getName();
-			connection.sendMessage(message);
+		if(arguments == null)	{
+			String draw = opponentName + " has left the game.";
+			boolean newGame = gui.gameWinner(draw, "DISCONNECT");
+			if(newGame)	{
+				gui.setNewGame();
+			}
+			else	{
+				System.exit(0);
+			}
 		}
-		else	{
-			gui.setNewGame();
+		else if(arguments.length == 1)	{
+			String end = arguments[0];
+			String draw = "The game has ended in a draw.";
+			boolean newGame = gui.gameWinner(draw, end);
+			if(newGame)	{
+				gui.setNewGame();
+				String message = "JOINREQ " + connection.getName();
+				connection.sendMessage(message);
+			}
+			else	{
+				gui.setNewGame();
+			}
+		}
+		else if(arguments.length == 2)	{
+			String winner = arguments[0];
+			int player = isPlayer(winner);
+			int column = Integer.parseInt(arguments[1]);
+			game.doMove(column, player);
+			String won;
+			if(player == 1)	{
+				won = "WINNER!";
+			}
+			else	{
+				won = "LOSER!";
+			}
+			boolean newGame = gui.gameWinner(winner + " has won the game!", won);
+			if(newGame)	{
+				gui.setNewGame();
+				String message = "JOINREQ " + connection.getName();
+				connection.sendMessage(message);
+			}
+			else	{
+				gui.setNewGame();
+			}
 		}
 	}
 	
@@ -257,15 +305,15 @@ public class ClientController implements ActionListener	{
 	 * client that a wrong move has been made by this client.
 	 * @param message
 	 */
-	public void error(String message)	{
-		gui.printText("Server gave the following message: " + message);
+	public void guiMessage(String message)	{
+		gui.guiMessage(message);
 	}
 	
 	/**
 	 * Gets a hint from the AI and gives this to the gui.
 	 */
 	public void hint()	{
-		gui.hint(aiSimple.getMove(3));
+		gui.hint(aiSimple.getMove(0));
 	}
 	
 	/**
@@ -298,74 +346,22 @@ public class ClientController implements ActionListener	{
 	 * @require updates.size() > 0
 	 */
 	public void update(String[] updates)	{
-		//TODO nog verder aanpassen en vooral die else if statements vervangen
-		String current = updates[0];
-		for (int i = 0; i < updates.length; i++) {
-			boolean found = false;
-			int positionFound = 0;
-			for (int j = 0; j < otherClientExtensions.size() && !found; j++) {
-				String name = otherClientExtensions.get(j)[0];
-				if(current.equals(name))	{
-					positionFound = j;
-					found = true;
+		otherClientExtensions = new ArrayList<String[]>();
+		if(updates != null)	{
+			String[] result;
+			String player;
+			String argument;
+			String[] extensions;
+			for (int i = 0; i < updates.length; i++) {
+				player = updates[i];
+				argument = updates[i++];
+				extensions = argument.split(",");
+				result = new String[extensions.length + 1];
+				result[0] = player;
+				for (int j = 0; j < extensions.length; j++) {
+					result[j + 1] = extensions[j];
 				}
-			}
-			if(found)	{
-				for (int j = 1; j < 6; j++) {
-					otherClientExtensions.get(positionFound)[j] = null;
-				}
-				String keyword = updates[i++];
-				if(updates.equals("NONE"))	{
-					otherClientExtensions.get(positionFound)[1] = "YES";
-				}
-				else	{
-					if(keyword.equals("CHAT"))	{
-						otherClientExtensions.get(positionFound)[2] = "YES";
-						keyword = updates[i++];
-					}
-					if(keyword.equals("CHALLENGE"))	{
-						otherClientExtensions.get(positionFound)[3] = "YES";
-						keyword = updates[i++];
-					}
-					if(keyword.equals("LEADERBOARD"))	{
-						otherClientExtensions.get(positionFound)[4] = "YES";
-						keyword = updates[i++];
-					}
-					if(keyword.equals("SECURITY"))	{
-						otherClientExtensions.get(positionFound)[5] = "YES";
-					}
-					i--;
-				}						
-			}
-			else	{
-				otherClientExtensions.add(otherClientExtensions.size(), new String[6]);
-				String[] player = otherClientExtensions.get(otherClientExtensions.size() - 1);
-				player[0] = current;
-				for (int j = 1; j < 6; j++) {
-					player[j] = null;
-				}
-				String keyword = updates[i++];
-				if(updates.equals("NONE"))	{
-					player[1] = "YES";
-				}
-				else	{
-					if(keyword.equals("CHAT"))	{
-						player[2] = "YES";
-						keyword = updates[i++];
-					}
-					if(keyword.equals("CHALLENGE"))	{
-						player[3] = "YES";
-						keyword = updates[i++];
-					}
-					if(keyword.equals("LEADERBOARD"))	{
-						player[4] = "YES";
-						keyword = updates[i++];
-					}
-					if(keyword.equals("SECURITY"))	{
-						player[5] = "YES";
-					}
-					i--;
-				}	
+				otherClientExtensions.add(result);
 			}
 		}
 	}
@@ -394,7 +390,8 @@ public class ClientController implements ActionListener	{
 	
 	/**
 	 * Tells if the client is the player that is given as an argument.
-	 * @return
+	 * @return 1 if the given player is the name of the clinent. And 2 if
+	 * 		   the given player is the opponent.
 	 */
 	private int isPlayer(String player)	{
 		int result;

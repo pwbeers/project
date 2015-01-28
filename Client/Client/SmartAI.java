@@ -10,21 +10,56 @@ public class SmartAI implements AI	{
 	//Start andere classes
     private Board board;
     private final int COLUMNS = 7;
+    private boolean firstMove;
 	
 	/**
 	 * Starts an implementation of SimpleAI
 	 */
 	public SmartAI() {
-		board = null;
+		board = new Board();
+		firstMove = true;
 	}
 
 	public void update(Observable arg0, Object arg1) {
-		board = (Board) arg1;
+		Integer[] changedField = (Integer[]) arg1;
+		int column = changedField[0];
+		int player = changedField[2];
+		board.doMove(column, player);
 	}
 
 	@Override
 	public int getMove(int depth) {
-		return minimax(board, depth, true);
+		int result;
+		if(!firstMove)	{
+			result = decideMove(depth);
+		}
+		else	{
+			if(board.isFiledWith(3, 0) == 2)	{
+				result = 2;
+			}
+			else	{
+				result = 3;
+			}
+			firstMove = false;
+		}
+		return result;
+	}
+	
+	
+	private int decideMove(int depth)	{
+		Integer[] moves = new Integer[COLUMNS];
+		int move = 0;
+		for (int i = 0; i < COLUMNS; i++) {
+			Board boardMove = board.copy();
+			boardMove.doMove(i, 1);
+			moves[i] = minimax(boardMove, depth - 1, false);
+		}
+		for (int i = 0; i < moves.length; i++) {
+			if(moves[move] < moves[i])	{
+				move = i;
+			}
+		}
+		return move;
 	}
 	
 	private int minimax(Board board, int depth, boolean maximizingPlayer)	{
@@ -39,25 +74,23 @@ public class SmartAI implements AI	{
 		if(depth == 0 || board.isBoardFull())	{
 			int otherPlayer = (player % 2) + 1;
 			//Add values to the situation on the board
-			if(board.horizontalWinner(player) || board.verticalWinner(player) || board.diagonalWinner(player))	{
-				result = 1000;
-			}
-			else if(board.horizontalWinner(otherPlayer) || board.verticalWinner(otherPlayer) || board.diagonalWinner(otherPlayer)){
+			if(board.horizontalWinner(otherPlayer) || board.verticalWinner(otherPlayer) || board.diagonalWinner(otherPlayer)){
 				result = -1000;
+			}
+			else if(board.horizontalWinner(player) || board.verticalWinner(player) || board.diagonalWinner(player))	{
+				result = 1000;
 			}
 			else	{
 				//three stones on a row
-				result = result + 25 * (board.diagonalStoneCount(player, 3) + board.horizontalStoneCount(player, 3) + board.verticalStoneCount(player, 3));
-				result = result - 25 * (board.diagonalStoneCount(otherPlayer, 3) + board.horizontalStoneCount(otherPlayer, 3) + board.verticalStoneCount(otherPlayer, 3));
+				result = result + 100 * (board.diagonalStoneCount(player, 3) + board.horizontalStoneCount(player, 3) + board.verticalStoneCount(player, 3));
+				result = result - 100 * (board.diagonalStoneCount(otherPlayer, 3) + board.horizontalStoneCount(otherPlayer, 3) + board.verticalStoneCount(otherPlayer, 3));
 				//two stones on a row
-				result = result + 5 * (board.diagonalStoneCount(player, 2) + board.horizontalStoneCount(player, 2) + board.verticalStoneCount(player, 2));
-				result = result - 5 * (board.diagonalStoneCount(otherPlayer, 2) + board.horizontalStoneCount(otherPlayer, 2) + board.verticalStoneCount(otherPlayer, 2));
+				result = result + 10 * (board.diagonalStoneCount(player, 2) + board.horizontalStoneCount(player, 2) + board.verticalStoneCount(player, 2));
+				result = result - 10 * (board.diagonalStoneCount(otherPlayer, 2) + board.horizontalStoneCount(otherPlayer, 2) + board.verticalStoneCount(otherPlayer, 2));
 				//single stones
-				result = result + 1 * (board.diagonalStoneCount(player, 1) + board.horizontalStoneCount(player, 1) + board.verticalStoneCount(player, 1));
-				result = result - 1 * (board.diagonalStoneCount(otherPlayer, 1) + board.horizontalStoneCount(otherPlayer, 1) + board.verticalStoneCount(otherPlayer, 1));
+				result = result + 1 * (board.horizontalStoneCount(player, 1));
+				result = result - 1 * (board.horizontalStoneCount(otherPlayer, 1));
 			}
-
-			result = 0;
 		}
 		else	{
 			if(maximizingPlayer)	{
