@@ -2,7 +2,9 @@ package View;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
 import java.awt.FlowLayout;
+
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
@@ -12,20 +14,26 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.JTextPane;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.SystemColor;
 import java.util.Observable;
 import java.util.Observer;
+
 import javax.swing.ImageIcon;
+
 import java.awt.event.ActionListener;
 import java.awt.GridLayout;
+
 import javax.swing.UIManager;
 import javax.swing.JToggleButton;
 import javax.swing.JSlider;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
+
+import Model.Board;
 
 /**
  * A ClientGUI that shows an graphical interface for the client/user to use.
@@ -141,7 +149,7 @@ public class ClientGUI implements View,Observer {
 		connectionIPLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		connectionPanel.add(connectionIPLabel);
 		
-		connectionIPText = new JTextField("130.89.95.188");
+		connectionIPText = new JTextField("192.168.178.18");
 		connectionPanel.add(connectionIPText);
 		connectionIPText.setColumns(10);
 		
@@ -183,7 +191,7 @@ public class ClientGUI implements View,Observer {
 		gamePanel.add(gameAIButton);
 		
 		gameName = new JTextField();
-		gameName.setText("Player_");
+		gameName.setText("Spelernaam...");
 		gameName.setPreferredSize(new Dimension(160, 30));
 		gamePanel.add(gameName);
 		gameName.setColumns(10);

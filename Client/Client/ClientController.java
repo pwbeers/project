@@ -206,7 +206,7 @@ public class ClientController implements ActionListener	{
 	 * is asked to do a move.
 	 */
 	public void onTurn()	{
-		//TODO remove/of niet...
+		//TODO remove
 		game.setOnTurn();
 		if(gui.isHumanPlayer())	{
 			gui.printText("It's your turn.");
