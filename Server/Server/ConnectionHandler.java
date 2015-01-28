@@ -52,7 +52,7 @@ public class ConnectionHandler extends Thread {
 		gameController = null;
 		nickName = "nickName unknown";
 		
-		System.out.println("ConnectionHandler created");
+		controller.writeToGUI("ConnectionHandler created");
 		//Create a Buffered Read and a PrintWriter
 		try {
 			bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -62,6 +62,10 @@ public class ConnectionHandler extends Thread {
 			writeToClient("EXTENSIONS " + extensions);
 			System.out.println("Extensions sned");
 		} catch (IOException e) {
+			controller.writeToGUI("player" + nickName +"is being kicked");
+			controller.deleteGame(gameController);
+			controller.removeConnectionHandler(this);
+			//TODO handle this properly
 			//TODO send error to error class
 			/*getInPutStream throws an IOException if an I/O error occurs when creating 
 			the input stream, the socket is closed, getOutPutStream throws one when creating
@@ -86,6 +90,10 @@ public class ConnectionHandler extends Thread {
 	public String getNickName() {
 		return nickName;
 	}
+	
+	public ServerController getController(){
+		return controller;
+	}
 	// ------------------ Commands --------------------------
 	/**
 	 * Waits for a new line. When one is received sends it to the commandReader.
@@ -94,11 +102,11 @@ public class ConnectionHandler extends Thread {
 	 */
 	public void run(){
 		while (listenForCommands == true){
-			System.out.println("listening for commands");
+			controller.writeToGUI("listening for commands");
 			try {
 				//Wait for new Command.
 				newLine = bufferedReader.readLine();
-				System.out.println("command recieved");
+				controller.writeToGUI("command recieved");
 			}catch (IOException e) {
 				//An I/O error occured in readLine() The thread is closed.
 				listenForCommands = false;
@@ -109,7 +117,7 @@ public class ConnectionHandler extends Thread {
 			commandReader(newLine);
 			}catch (Error commandError){
 				//There was a violation of the AMULET guidlines. The connection needs to be severed.
-				System.out.println("writing to client");
+				controller.writeToGUI("writing to client");
 				writeToClient(commandError.getMessage());
 				listenForCommands = false;
 			}
@@ -151,7 +159,7 @@ public class ConnectionHandler extends Thread {
 	 */
 	public void writeToClient(String message){
 		writer.println(message + "\n");
-		controller.writeToGUI("To [" + nickName + "]: " + message);
+		controller.writeToGUI("To [" + nickName + "]: " + message); //TODO remove this
 	}
 	
 	/**
@@ -160,19 +168,19 @@ public class ConnectionHandler extends Thread {
 	 * @param newCommand a new Command which has been detected
 	 */
 	public void commandReader(String newLine) throws Error{
-		System.out.println(newLine);
+		controller.writeToGUI(newLine);
 
-		scanner = new Scanner(newLine);
+		scanner = new Scanner(newLine);		
 		String command;
-		ArrayList <String> arguments = new ArrayList<String>();
-		
+		ArrayList <String> arguments = new ArrayList<String>();		
 		
 		//Separate the AMULET command from the arguments and put them in an ArrayList.
 		command = scanner.next();
-		System.out.println(command);
+		
+		controller.writeToGUI(command); //TODO remoive this
 
 		if (command == null){
-			System.out.println("user is beign kicked for empty command");
+			controller.writeToGUI("user is beign kicked for empty command");
 			throw new Error("ERROR COMMAND IS EMPTY YOU WILL BE TERMINATED MUTHAFUCKAAA");
 			
 
@@ -181,7 +189,7 @@ public class ConnectionHandler extends Thread {
 		int i = 0;
 		while(scanner.hasNext()){			
 			arguments.add(scanner.next());
-			System.out.println(arguments.get(i));
+			controller.writeToGUI(arguments.get(i));
 			i++;
 		}
 		

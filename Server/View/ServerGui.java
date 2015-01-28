@@ -62,6 +62,7 @@ import javax.swing.border.LineBorder;
  */
 
 //TODO repaint
+//TODO refresh buttons on lists
 
 public class ServerGui implements View {
 
@@ -196,6 +197,14 @@ public class ServerGui implements View {
 	
 	public void appendCurrentGames(String game){
 		currentGamesTextArea.append(game + "\n");	
+	}
+	
+	public void clearActivePlayers(){
+		activePlayersTextArea.setText("");
+	}
+	
+	public void clearCurrentGames(){
+		currentGamesTextArea.setText("");
 	}
 
 	public void startScherm(){

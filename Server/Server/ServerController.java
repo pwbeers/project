@@ -189,6 +189,7 @@ public class ServerController implements ActionListener{
 	
 	public synchronized void updateActivePlayers(){
 		List<String> activePlayers = new ArrayList<String>(connections.keySet());
+		((ServerGui) serverGUI).clearActivePlayers();
 		for (int i = 0; i < activePlayers.size(); i++){
 			((ServerGui) serverGUI).appendActivePlayers(activePlayers.get(i));
 		}
@@ -196,7 +197,7 @@ public class ServerController implements ActionListener{
 
 	public synchronized void updateCurrentGames(){
 		List<List <ConnectionHandler>> playersInGames = new ArrayList<List <ConnectionHandler>>(games.values());
-		
+		((ServerGui) serverGUI).clearCurrentGames();
 		for (int i = 0; i < playersInGames.size(); i++){
 			List<ConnectionHandler> game = new ArrayList<ConnectionHandler>(playersInGames.get(i));
 			String gameName = game.get(0).getNickName() + " v.s. " + game.get(1).getNickName();

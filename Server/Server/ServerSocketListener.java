@@ -34,7 +34,7 @@ public class ServerSocketListener extends Thread {
 		serverSocket = newServerSocket;
 		controller = newServerController;
 		waitForConnections = true;
-		System.out.println("ServerSocketListener created");
+		controller.writeToGUI("ServerSocketListener created");
 	}
 
 	// ------------------ Queries --------------------------
@@ -48,11 +48,11 @@ public class ServerSocketListener extends Thread {
 		while (waitForConnections == true){
 			try{
 				newSocket = serverSocket.accept(); //Waits till a new TCP connection is made on this ServerSocket
-				System.out.println("Connection accepted");
+				controller.writeToGUI("A new connection has been accepted.");
 				newConnectionHandler = new ConnectionHandler(controller, newSocket); //Create a new Connectionhandler for the socket
 				//The ConnectionHanlder notifies it's existence to the ServerController itself so that doesn't need to happen here
 				newConnectionHandler.start();
-				System.out.println("ConnectionHandler Started");
+				controller.writeToGUI("ConnectionHandler Started");
 			} catch (SocketException s){
 				//TODO find out why this exception is thrown				
 				throw new UnsupportedOperationException();
