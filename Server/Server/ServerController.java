@@ -173,15 +173,40 @@ public class ServerController implements ActionListener{
 		updateCurrentGames();
 	}
 	
-	public synchronized void deleteGame(GameController game) {		
+	public synchronized void deleteGame(GameController game) {
+		System.out.println("A game should be deleted");
 		List<ConnectionHandler> players = new ArrayList<ConnectionHandler>(game.getPlayers());
 		ConnectionHandler player1 = players.get(0);
 		ConnectionHandler player2 = players.get(1);
 		
 		addConnectionHandler(player1.getNickName(), player1);
 		addConnectionHandler(player2.getNickName(), player2);
+		updateActivePlayers();
+		
+		System.out.println("Current players:");
+		List<String> playerPlayer = new ArrayList<String>(connections.keySet());
+
+		for(int i = 0; i < playerPlayer.size();i++){
+			System.out.println(playerPlayer.get(i));
+		}
+
+		
+		System.out.println("Current games map:");
+		List<GameController> gameControllers = new ArrayList<GameController>(games.keySet());
+
+		for(int i = 0; i < gameControllers.size();i++){
+			System.out.println(gameControllers.get(i));
+		}
 		
 		games.remove(game);
+		
+		System.out.println("Game should now be removed:");
+		List<GameController> gameControllers2 = new ArrayList<GameController>(games.keySet());
+
+		for(int i = 0; i < gameControllers2.size();i++){
+			System.out.println(gameControllers.get(i));
+		}
+
 		updateCurrentGames();
 	}
 
