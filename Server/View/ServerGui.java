@@ -179,7 +179,7 @@ public class ServerGui implements View {
 	
 	public synchronized void clearCurrentGames(){
 		currentGamesTextArea.setText("refreshing...");
-		activePlayersTextArea.setText("");
+		currentGamesTextArea.setText("");
 	}
 
 	public void startScherm(){
