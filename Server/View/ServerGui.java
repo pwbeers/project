@@ -18,6 +18,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.SystemColor;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Observable;
 
 import javax.swing.ImageIcon;
@@ -51,6 +53,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import com.jgoodies.forms.factories.FormFactory;
 
 import java.awt.CardLayout;
+import javax.swing.border.LineBorder;
+
 
 /**
  * A ServerGui that shows a graphical interface for the Server/user to use.
@@ -64,15 +68,14 @@ public class ServerGui implements View {
 	private ActionListener controller;
 	
 	private JFrame serverFrame;
-	
-	private JPanel addresErrorPanel;
-	
-	private JTextField manualInTextField;
 	private JTextField portTestField;
+	private JTextField portTextField;
+	private JTextField textField;
 	
-	private JTextArea errorTextArea;
+	private JTextArea mainTextArea;
+	private JTextArea activePlayersTextArea;
 	private JTextArea currentGamesTextArea;
-	private JTextArea connectedClientsTextArea;
+	private String inet;
 
 	/**
 	 * Create the application.
@@ -81,6 +84,14 @@ public class ServerGui implements View {
 		controller = newController;
 		initialize();
 		//System.out.println("ServerGUI initialized");
+		inet = "xxx.xx.xx.x";
+		//TODO get local inet
+		try {
+			inet = InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -88,177 +99,99 @@ public class ServerGui implements View {
 	 */
 	private void initialize() {
 		serverFrame = new JFrame();
-		serverFrame.setBounds(100, 100, 713, 511);
+		serverFrame.setTitle("Captain's Mistress Server");
 		serverFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		serverFrame.getContentPane().setLayout(new GridLayout(0, 2, 0, 0));
+		serverFrame.setBounds(200, 200, 900, 570);
+		serverFrame.getContentPane().setBackground(Color.DARK_GRAY);
+		serverFrame.getContentPane().setLayout(null);
 		serverFrame.setVisible(true);
 		
-		addresErrorPanel = new JPanel();
-		serverFrame.getContentPane().add(addresErrorPanel);
+		JPanel addresTextPanel = new JPanel();
+		addresTextPanel.setBounds(10, 67, 500, 450);
+		serverFrame.getContentPane().add(addresTextPanel);
+		addresTextPanel.setLayout(new BorderLayout(0, 0));
 		
-		JPanel adressPanel = new JPanel();
-		adressPanel.setLayout(new GridLayout(0, 3, 0, 0));
+		mainTextArea = new JTextArea();
+		mainTextArea.setEditable(false);
+		mainTextArea.setLineWrap(true);
+		addresTextPanel.add(mainTextArea, BorderLayout.CENTER);
 		
-		JPanel portNumberPanel = new JPanel();
-		adressPanel.add(portNumberPanel);
+		JPanel panel = new JPanel();
+		addresTextPanel.add(panel, BorderLayout.SOUTH);
 		
-		JLabel addresFieldLabel = new JLabel("port:");
-		portNumberPanel.add(addresFieldLabel);
-		addresFieldLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		textField = new JTextField();
+		panel.add(textField);
+		textField.setColumns(30);
 		
-		portTestField = new JTextField();
-		portNumberPanel.add(portTestField);
-		portTestField.setColumns(10);
+		JButton btnNewButton = new JButton("Send In");
+		panel.add(btnNewButton);
 		
-		JPanel iNetPanel = new JPanel();
-		adressPanel.add(iNetPanel);
-		iNetPanel.setLayout(new FormLayout(new ColumnSpec[] {
-				ColumnSpec.decode("116px"),},
-			new RowSpec[] {
-				RowSpec.decode("27px"),
-				FormFactory.LINE_GAP_ROWSPEC,
-				RowSpec.decode("32px"),}));
-		iNetPanel.setLayout(null);
+		JPanel currentPlayerPanel = new JPanel();
+		currentPlayerPanel.setBounds(530, 11, 344, 210);
+		serverFrame.getContentPane().add(currentPlayerPanel);
+		currentPlayerPanel.setLayout(new BorderLayout(0, 0));
 		
-		JLabel iNetAdresLabel = new JLabel("IP adress:");
-		iNetAdresLabel.setBounds(25, 28, 49, 14);
-		iNetPanel.add(iNetAdresLabel);
-		iNetAdresLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		activePlayersTextArea = new JTextArea();
+		activePlayersTextArea.setEditable(false);
+		activePlayersTextArea.setLineWrap(true);
+		currentPlayerPanel.add(activePlayersTextArea, BorderLayout.CENTER);
 		
-		//TODO get local inet
-		JLabel iNetLabel = new JLabel("INetAdress");
-		iNetLabel.setBounds(25, 11, 54, 14);
-		iNetPanel.add(iNetLabel);
-		iNetLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		JLabel activePlayersLabel = new JLabel("Active Players:");
+		activePlayersLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		currentPlayerPanel.add(activePlayersLabel, BorderLayout.NORTH);
 		
-		JPanel openPortPanel = new JPanel();
-		adressPanel.add(openPortPanel);
-		openPortPanel.setLayout(null);
+		JPanel currentGamePanel = new JPanel();
+		currentGamePanel.setBounds(530, 252, 344, 210);
+		serverFrame.getContentPane().add(currentGamePanel);
+		currentGamePanel.setLayout(new BorderLayout(0, 0));
 		
-		JButton openPortButton = new JButton("Open Port");
-		openPortButton.setBounds(10, 11, 81, 23);
-		openPortPanel.add(openPortButton);
-		openPortButton.addActionListener(new ActionListener() {
+		JLabel currentGameLabel = new JLabel("Current Games:");
+		currentGameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		currentGamePanel.add(currentGameLabel, BorderLayout.NORTH);
+		
+		currentGamesTextArea = new JTextArea();
+		currentGamesTextArea.setEditable(false);
+		currentGamesTextArea.setLineWrap(true);
+		currentGamePanel.add(currentGamesTextArea, BorderLayout.CENTER);
+		
+		JButton leaderBoardButton = new JButton("Leaderboard");
+		leaderBoardButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 			}
 		});
-		
-		JPanel errorPanel = new JPanel();
-		GroupLayout gl_addresErrorPanel = new GroupLayout(addresErrorPanel);
-		gl_addresErrorPanel.setHorizontalGroup(
-			gl_addresErrorPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_addresErrorPanel.createSequentialGroup()
-					.addGroup(gl_addresErrorPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(adressPanel, GroupLayout.PREFERRED_SIZE, 348, GroupLayout.PREFERRED_SIZE)
-						.addComponent(errorPanel, GroupLayout.PREFERRED_SIZE, 348, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-		);
-		gl_addresErrorPanel.setVerticalGroup(
-			gl_addresErrorPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_addresErrorPanel.createSequentialGroup()
-					.addComponent(adressPanel, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(errorPanel, GroupLayout.PREFERRED_SIZE, 396, GroupLayout.PREFERRED_SIZE)
-					.addGap(1))
-		);
-		
-		errorTextArea = new JTextArea();
-		
-		JPanel manualInPanel = new JPanel();
-		
-		manualInTextField = new JTextField();
-		manualInTextField.setColumns(10);
-		
-		JButton manualInButton = new JButton("Send In");
-		GroupLayout gl_errorPanel = new GroupLayout(errorPanel);
-		gl_errorPanel.setHorizontalGroup(
-			gl_errorPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_errorPanel.createSequentialGroup()
-					.addGroup(gl_errorPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(manualInPanel, GroupLayout.PREFERRED_SIZE, 348, GroupLayout.PREFERRED_SIZE)
-						.addComponent(errorTextArea, GroupLayout.PREFERRED_SIZE, 348, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-		);
-		gl_errorPanel.setVerticalGroup(
-			gl_errorPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_errorPanel.createSequentialGroup()
-					.addComponent(errorTextArea, GroupLayout.PREFERRED_SIZE, 361, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(manualInPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(1))
-		);
-		GroupLayout gl_manualInPanel = new GroupLayout(manualInPanel);
-		gl_manualInPanel.setHorizontalGroup(
-			gl_manualInPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_manualInPanel.createSequentialGroup()
-					.addComponent(manualInTextField, GroupLayout.PREFERRED_SIZE, 259, GroupLayout.PREFERRED_SIZE)
-					.addComponent(manualInButton))
-		);
-		gl_manualInPanel.setVerticalGroup(
-			gl_manualInPanel.createParallelGroup(Alignment.LEADING)
-				.addComponent(manualInTextField, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-				.addComponent(manualInButton)
-		);
-		manualInPanel.setLayout(gl_manualInPanel);
-		errorPanel.setLayout(gl_errorPanel);
-		addresErrorPanel.setLayout(gl_addresErrorPanel);
+		leaderBoardButton.setBounds(648, 494, 156, 23);
+		serverFrame.getContentPane().add(leaderBoardButton);
 		
 		JPanel connectionsPanel = new JPanel();
+		connectionsPanel.setBounds(10, 10, 500, 56);
 		serverFrame.getContentPane().add(connectionsPanel);
-		connectionsPanel.setLayout(new BoxLayout(connectionsPanel, BoxLayout.Y_AXIS));
+		connectionsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		JPanel connectedClientsPanel = new JPanel();
-		connectionsPanel.add(connectedClientsPanel);
-		connectedClientsPanel.setLayout(null);
+		JLabel portLabel = new JLabel("port:");
+		connectionsPanel.add(portLabel);
 		
-		JLabel connectedClientsLabel = new JLabel("Connected Clients:");
-		connectedClientsLabel.setBounds(0, 0, 348, 29);
-		connectedClientsPanel.add(connectedClientsLabel);
+		portTextField = new JTextField();
+		connectionsPanel.add(portTextField);
+		portTextField.setColumns(10);
 		
-		connectedClientsTextArea = new JTextArea();
-		connectedClientsTextArea.setBounds(0, 29, 348, 128);
-		connectedClientsPanel.add(connectedClientsTextArea);
+		JLabel adressLabel = new JLabel("Ip address:");
+		connectionsPanel.add(adressLabel);
 		
-		JPanel currentGamesPanel = new JPanel();
-		connectionsPanel.add(currentGamesPanel);
-		currentGamesPanel.setLayout(null);
+		JLabel addressValueLabel = new JLabel("xxx.xx.xx");
+		addressValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		connectionsPanel.add(addressValueLabel);
 		
-		JLabel currentGamesLabel = new JLabel("Current Games:");
-		currentGamesLabel.setBounds(0, 0, 348, 24);
-		currentGamesPanel.add(currentGamesLabel);
-		
-		currentGamesTextArea = new JTextArea();
-		currentGamesTextArea.setBounds(0, 25, 348, 152);
-		currentGamesPanel.add(currentGamesTextArea);
-		
-		JPanel extensionsPanel = new JPanel();
-		connectionsPanel.add(extensionsPanel);
-		
-		JButton challengeButton = new JButton("Challenge");
-		challengeButton.setBounds(0, 0, 177, 82);
-		
-		JButton chatButton = new JButton("Chat");
-		chatButton.setBounds(176, 0, 172, 82);
-		
-		JButton leaderboardButton = new JButton("Leaderboard");
-		leaderboardButton.setBounds(0, 81, 177, 76);
-		
-		JButton securityButton = new JButton("Security");
-		securityButton.setBounds(176, 81, 172, 76);
-		extensionsPanel.setLayout(null);
-		extensionsPanel.add(challengeButton);
-		extensionsPanel.add(chatButton);
-		extensionsPanel.add(leaderboardButton);
-		extensionsPanel.add(securityButton);
-
+		JButton startButton = new JButton("Start");
+		connectionsPanel.add(startButton);
+	
 	}
 	
 	public void printText(String message){
-		errorTextArea.append(message);		
+		mainTextArea.append(message + "\n");		
 	}
 	
 	public void appendActivePlayers(String player){
-		connectedClientsTextArea.append(player + "\n");
+		activePlayersTextArea.append(player + "\n");
 	}
 	
 	public void appendCurrentGames(String game){
@@ -272,5 +205,4 @@ public class ServerGui implements View {
 	public void update(Observable arg0, Object arg1) {
 		throw new UnsupportedOperationException();
 	}
-
 }
