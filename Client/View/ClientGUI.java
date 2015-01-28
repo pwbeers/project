@@ -149,7 +149,7 @@ public class ClientGUI implements View,Observer {
 		connectionIPLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		connectionPanel.add(connectionIPLabel);
 		
-		connectionIPText = new JTextField("192.168.178.18");
+		connectionIPText = new JTextField("130.89.95.188");
 		connectionPanel.add(connectionIPText);
 		connectionIPText.setColumns(10);
 		
