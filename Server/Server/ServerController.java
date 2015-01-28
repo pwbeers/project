@@ -7,10 +7,14 @@ package Server;
  * @author Stephan
  */
 
+//TODO - relay all gui and serversocket listeners to this class
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +27,7 @@ import View.View;
 public class ServerController implements ActionListener{
 	
 	// ------------------ Instance variables ----------------
-	private View serverGUI;	
+	private ServerGui serverGUI;	
 	private ServerSocket serverSocket;
 	private ServerSocketListener serverSocketListener;
 	
@@ -36,7 +40,6 @@ public class ServerController implements ActionListener{
 	private List<ConnectionHandler> chatPlayers;
 	private List<ConnectionHandler> leaderboardPlayers;
 	private List<ConnectionHandler> securityPlayers;
-	
 	
 	// ------------------ Constructor ------------------------
 	/**
@@ -52,16 +55,6 @@ public class ServerController implements ActionListener{
 		games = new HashMap<GameController, List<ConnectionHandler>>();
 		
 		//the serverSocketListener gets made after a button is pressed in the GUI so it isn't initialized here
-		try {
-			serverSocket = new ServerSocket(2220);
-			writeToGUI("ServerSocket has been created");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		serverSocketListener = new ServerSocketListener(this, serverSocket);
-		serverSocketListener.start();
 		
 		normalPlayers = new ArrayList<ConnectionHandler>();
 		challengePlayers = new ArrayList<ConnectionHandler>();
@@ -86,8 +79,12 @@ public class ServerController implements ActionListener{
 	 * @throws IOException 
 	 */
 	public void startServerSocketListener(int portNumber) throws IOException {
-		serverSocket = new ServerSocket(portNumber);
+		serverSocket = new ServerSocket(portNumber);	
 		serverSocketListener = new ServerSocketListener(this, serverSocket);
+		writeToGUI("ServerSocket has been created");
+
+		serverSocketListener.start();
+
 	}
 
 	/**
@@ -222,21 +219,21 @@ public class ServerController implements ActionListener{
 	
 	public synchronized void updateActivePlayers(){
 		List<String> activePlayers = new ArrayList<String>(connections.keySet());
-		((ServerGui) serverGUI).clearActivePlayers();
+		serverGUI.clearActivePlayers();
 		
 		for (int i = 0; i < activePlayers.size(); i++){
-			((ServerGui) serverGUI).appendActivePlayers(activePlayers.get(i));
+			serverGUI.appendActivePlayers(activePlayers.get(i));
 		}
 	}
 
 	public synchronized void updateCurrentGames(){
 		List<List <ConnectionHandler>> playersInGames = new ArrayList<List <ConnectionHandler>>(games.values());
-		((ServerGui) serverGUI).clearCurrentGames();
+		serverGUI.clearCurrentGames();
 		
 		for (int i = 0; i < playersInGames.size(); i++){
 			List<ConnectionHandler> game = new ArrayList<ConnectionHandler>(playersInGames.get(i));
 			String gameName = game.get(0).getNickName() + " v.s. " + game.get(1).getNickName();
-			((ServerGui) serverGUI).appendCurrentGames(i + ": " + gameName);
+			serverGUI.appendCurrentGames(i + ": " + gameName);
 		}
 	}
 	
@@ -283,8 +280,34 @@ public class ServerController implements ActionListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		String command = arg0.getActionCommand();
+		if(command.equals("Start")){
+			String portNumber = serverGUI.getPortNumber();
+			if(portNumber.matches("[0-9]+") && Integer.parseInt(portNumber) >= 1025 && Integer.parseInt(portNumber) <= 65536)	{
+				int port = Integer.parseInt(portNumber);
+				try {
+					startServerSocketListener(port);
+				} catch (IOException e) {
+					writeToGUI("Port is already in use, try another port.");
+				}
+			}
+			else	{
+				writeToGUI("An illegal port has been given.");
+			}
+		}
+		if(command.equals("Close")){
+			if(serverSocketListener == null){
+				writeToGUI("No port has been opened yet.");
+			}else {
+				serverSocketListener.closeListener();
+			}
+		}
+		if(command.equals("Refresh Players")){
+			updateActivePlayers();
+		}
+		if(command.equals("Refresh Games")){
+			updateCurrentGames();
+		}
+	
 	}
-
 }

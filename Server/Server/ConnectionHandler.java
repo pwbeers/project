@@ -18,6 +18,8 @@ import Error.Error;
  */
 
 //TODO add javadoc and JML
+//TODO relay all gamecontroller errors to this class
+
 public class ConnectionHandler extends Thread {
 
 	// ------------------ Instance variables ----------------

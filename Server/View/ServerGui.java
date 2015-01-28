@@ -157,14 +157,21 @@ public class ServerGui implements View {
 		
 		JButton startButton = new JButton("Start");
 		connectionsPanel.add(startButton);
+		startButton.addActionListener(controller);
+		
+		JButton closeButton = new JButton("Close");
+		connectionsPanel.add(closeButton);
+		closeButton.addActionListener(controller);
 		
 		JButton refreshActivePlayersButton = new JButton("Refresh Players");
 		refreshActivePlayersButton.setBounds(630, 200, 155, 23);
 		serverFrame.getContentPane().add(refreshActivePlayersButton);
+		refreshActivePlayersButton.addActionListener(controller);
 		
 		JButton refreshGamesButton = new JButton("Refresh Games");
 		refreshGamesButton.setBounds(633, 441, 156, 23);
 		serverFrame.getContentPane().add(refreshGamesButton);
+		refreshGamesButton.addActionListener(controller);
 	
 	}
 	
@@ -188,7 +195,7 @@ public class ServerGui implements View {
 	
 	public synchronized void clearCurrentGames(){
 		currentGamesTextArea.setText("refreshing...");
-		activePlayersTextArea.setText("");
+		currentGamesTextArea.setText("");
 	}
 
 	public void startScherm(){
@@ -197,5 +204,10 @@ public class ServerGui implements View {
 	
 	public void update(Observable arg0, Object arg1) {
 		throw new UnsupportedOperationException();
+	}
+
+	public String getPortNumber() {
+		return portTextField.getText();
+		 
 	}
 }
