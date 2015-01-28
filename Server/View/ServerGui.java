@@ -94,10 +94,13 @@ public class ServerGui implements View {
 		serverFrame.getContentPane().add(manualPanel);
 				
 		textField = new JTextField();
+		textField.setEnabled(false);
+		textField.setEditable(false);
 		manualPanel.add(textField);
 		textField.setColumns(30);
 				
 		JButton btnNewButton = new JButton("Send In");
+		btnNewButton.setEnabled(false);
 		manualPanel.add(btnNewButton);
 		
 		JPanel playerPanel = new JPanel();
