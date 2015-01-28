@@ -59,7 +59,7 @@ public class GameController {
 	 * It sends the AMULET GAME commands to the players and the TURN command to player1
 	 */
 	public void startGame() {
-		game = new Game();
+		game = new Game(1);
 		
 		player1.writeToClient("GAME " + player2.getNickName());
 		player2.writeToClient("GAME " + player1.getNickName());
