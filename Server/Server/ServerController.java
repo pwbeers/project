@@ -2,15 +2,22 @@ package Server;
 
 /**
  * This Class initializes all other Classes and hence facilitates the creation of games,
+
  * houses the logic for the GUI, creates the ServerSocketListener for the serversocket 
  * and will implement the functionalities of any of the facultative extensions.
  * @author Stephan
  */
 
+//TODO - relay all gui and serversocket listeners to this class
+//TODO handle close event properly
+
 import java.awt.event.ActionEvent;
+
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,12 +30,12 @@ import View.View;
 public class ServerController implements ActionListener{
 	
 	// ------------------ Instance variables ----------------
-	private View serverGUI;	
+	private ServerGui serverGUI;	
 	private ServerSocket serverSocket;
 	private ServerSocketListener serverSocketListener;
 	
 	private TreeMap<String, ConnectionHandler> connections; //Keeps track of all current connections and their nicknames
-	private HashMap<GameController, List<ConnectionHandler>> games; //Keeps track of alle current games and their respective ConnectionHandlers
+	private TreeMap<String, List<ConnectionHandler>> games; //Keeps track of alle current games and their respective ConnectionHandlers
 	
 	private String extensions; //The AMULET value for which extensions are supported
 	private List<ConnectionHandler> normalPlayers;
@@ -37,31 +44,19 @@ public class ServerController implements ActionListener{
 	private List<ConnectionHandler> leaderboardPlayers;
 	private List<ConnectionHandler> securityPlayers;
 	
-	
 	// ------------------ Constructor ------------------------
 	/**
 	 * Creates a ServerSocketListener which creates a ServerGui class. 
+	 * Sets the AMULET-extensions to "NONE"
 	 * Initializes all Instance Variables.
 	 */
 	public ServerController() {
 		serverGUI = new ServerGui(this);
 		writeToGUI("ServerGUI has been created");
 		
-		extensions = "NONE"; //We hardcode the extensions for now, they can be enabled and disabled in the GUI
+		extensions = "NONE"; //We hardcode the extensions, there is not yet support to en/dis-able them
 		connections = new TreeMap<String, ConnectionHandler>();
-		games = new HashMap<GameController, List<ConnectionHandler>>();
-		
-		//the serverSocketListener gets made after a button is pressed in the GUI so it isn't initialized here
-		try {
-			serverSocket = new ServerSocket(2220);
-			writeToGUI("ServerSocket has been created");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		serverSocketListener = new ServerSocketListener(this, serverSocket);
-		serverSocketListener.start();
+		games = new TreeMap<String, List<ConnectionHandler>>();
 		
 		normalPlayers = new ArrayList<ConnectionHandler>();
 		challengePlayers = new ArrayList<ConnectionHandler>();
@@ -81,163 +76,17 @@ public class ServerController implements ActionListener{
 	
 	// ------------------ Commands --------------------------
 	/**
-	 * Creates a ServerSocketListeren object on port <code>portNumber</code>
+	 * startServerSocketListener creates a new ServerSocket and a new ServerSocketListener. 
+	 * It also starts the ServerSocketListener Thread.
 	 * @param portNumber the number on what port the listener should wait for connections
 	 * @throws IOException 
 	 */
 	public void startServerSocketListener(int portNumber) throws IOException {
-		serverSocket = new ServerSocket(portNumber);
+		serverSocket = new ServerSocket(portNumber);	
 		serverSocketListener = new ServerSocketListener(this, serverSocket);
-	}
+		writeToGUI("ServerSocket has been created");
 
-	/**
-	 * This methods handles the situation when there is a new player without challange capabilities
-	 * It looks for any other players which are not in a game and selects one randomly
-	 * It puts them both in a GameController
-	 * @param player1 the first player 
-	 * @param player2 the second player
-	 */
-	public synchronized void startGame(ConnectionHandler player1) {
-		// TODO Make thread safe
-		//TODO make sure player 1 is not selected from the list
-		//We need to select a random key from our connections TreeMap
-		Random random = new Random();
-		List<String> connectionKeys = new ArrayList<String>(connections.keySet());
-		connectionKeys.remove(player1.getNickName());
-		String randomKey = connectionKeys.get(random.nextInt(connectionKeys.size()));
-		
-		ConnectionHandler randomPlayer = connections.get(randomKey);
-		
-		GameController newGame = new GameController(player1, randomPlayer);
-		player1.setGameController(newGame);
-		randomPlayer.setGameController(newGame);
-		
-		writeToGUI("A new game has been started between players " + player1.getNickName() + "and " + randomPlayer.getNickName());
-
-		
-		List<ConnectionHandler> playerList = new ArrayList<ConnectionHandler>();
-		playerList.add(player1);
-		playerList.add(randomPlayer);
-		
-		addGame(newGame, playerList);
-
-	}
-
-	/**
-	 * Creates a GameController object which starts a game with players <code>player1</code> and <code>player2</code>
-	 * Used when both players are known.
-	 * @param player1 the first player 
-	 * @param player2 the second player
-	 */
-	public synchronized void startChallangeGame(ConnectionHandler player1, ConnectionHandler player2) {
-		GameController newGame = new GameController(player1, player2);
-		
-		List<ConnectionHandler> playerList = new ArrayList<ConnectionHandler>();
-		playerList.add(player1);
-		playerList.add(player2);
-		
-		addGame(newGame, playerList);
-	}
-	
-	/**
-	 * Adds a ConnectionHandler to the Connections Map
-	 * @param newPlayer the ConnectionHandler to be added
-	 * @param nickName the Nickname of the player
-	 */
-	public synchronized void addConnectionHandler(String nickName, ConnectionHandler newPlayer) {
-		// TODO make thread safe
-		//TODO update GUI
-		connections.put(nickName, newPlayer);
-		updateActivePlayers();
-		
-		//TODO start game properly
-		if (connections.size() > 1) {
-			startGame(newPlayer);
-		}
-	}
-
-	/**
-	 * Removes a ConnectionHandler from the Connections Map
-	 * @param removePlayer the ConnectionHandler to be removed 
-	 */
-	public synchronized void removeConnectionHandler(ConnectionHandler removePlayer) {
-		// TODO Make thread safe
-		connections.remove(removePlayer.getNickName());
-		updateActivePlayers();
-	}
-	
-	public synchronized void  addGame(GameController newGame,List<ConnectionHandler> playerList) {
-		removeConnectionHandler(playerList.get(0));
-		removeConnectionHandler(playerList.get(1));
-		games.put(newGame, playerList);
-		updateCurrentGames();
-	}
-	
-	public synchronized void deleteGame(GameController game) {
-		System.out.println("A game should be deleted");
-		List<ConnectionHandler> players = new ArrayList<ConnectionHandler>(game.getPlayers());
-		ConnectionHandler player1 = players.get(0);
-		ConnectionHandler player2 = players.get(1);
-		
-		addConnectionHandler(player1.getNickName(), player1);
-		addConnectionHandler(player2.getNickName(), player2);
-		updateActivePlayers();
-		
-		System.out.println("Current players:");
-		List<String> playerPlayer = new ArrayList<String>(connections.keySet());
-
-		for(int i = 0; i < playerPlayer.size();i++){
-			System.out.println(playerPlayer.get(i));
-		}
-
-		
-		System.out.println("Current games map:");
-		List<GameController> gameControllers = new ArrayList<GameController>(games.keySet());
-
-		for(int i = 0; i < gameControllers.size();i++){
-			System.out.println(gameControllers.get(i));
-		}
-		
-		games.remove(game);
-		
-		System.out.println("Game should now be removed:");
-		List<GameController> gameControllers2 = new ArrayList<GameController>(games.keySet());
-
-		for(int i = 0; i < gameControllers2.size();i++){
-			System.out.println(gameControllers.get(i));
-		}
-
-		updateCurrentGames();
-	}
-
-	
-	/**
-	 * Prints a message to the GUI
-	 * @param string
-	 */
-	public synchronized void writeToGUI(String message) {
-		// TODO Make thread safe
-		serverGUI.printText(message);
-	}
-	
-	public synchronized void updateActivePlayers(){
-		List<String> activePlayers = new ArrayList<String>(connections.keySet());
-		((ServerGui) serverGUI).clearActivePlayers();
-		
-		for (int i = 0; i < activePlayers.size(); i++){
-			((ServerGui) serverGUI).appendActivePlayers(activePlayers.get(i));
-		}
-	}
-
-	public synchronized void updateCurrentGames(){
-		List<List <ConnectionHandler>> playersInGames = new ArrayList<List <ConnectionHandler>>(games.values());
-		((ServerGui) serverGUI).clearCurrentGames();
-		
-		for (int i = 0; i < playersInGames.size(); i++){
-			List<ConnectionHandler> game = new ArrayList<ConnectionHandler>(playersInGames.get(i));
-			String gameName = game.get(0).getNickName() + " v.s. " + game.get(1).getNickName();
-			((ServerGui) serverGUI).appendCurrentGames(i + ": " + gameName);
-		}
+		serverSocketListener.start();
 	}
 	
 	/**
@@ -281,10 +130,211 @@ public class ServerController implements ActionListener{
 		securityPlayers.add(players);
 	}
 	
+	/**
+	 * Adds a ConnectionHandler to the Connections Map
+	 * @param newPlayer the ConnectionHandler to be added
+	 * @param nickName the Nickname of the player
+	 */
+	public synchronized void addConnectionHandler(String nickName, ConnectionHandler newPlayer) {
+		// TODO make thread safe
+
+		connections.put(nickName, newPlayer);
+		writeToGUI("A new Player with the NickName [" + nickName + "] has joined this Server.");
+		
+		//The ActivePlayers list should be updated.
+		updateActivePlayers();	
+		
+		//TODO start game properly, check if this is a Challange Playerotherwise wait for the Challange command.
+		if (connections.size() > 1) {
+			startGame(newPlayer);
+		}
+	}
+
+	/**
+	 * This methods handles the situation when there is a new player without challenge capabilities
+	 * It looks for any other players which are not in a game and selects one randomly
+	 * It puts them both in a GameController and assigns the GameController to their respective gameController Attributes
+	 * @param player1 the first player 
+	 * @param player2 the second player
+	 */
+	public synchronized void startGame(ConnectionHandler player1) {
+		// TODO Make thread safe
+		//We need to select a random key from our connections TreeMap
+		Random random = new Random();
+		List<String> connectionKeys = new ArrayList<String>(connections.keySet());
+		connectionKeys.remove(player1.getNickName());
+		String randomKey = connectionKeys.get(random.nextInt(connectionKeys.size()));
+		
+		ConnectionHandler randomPlayer = connections.get(randomKey);
+		
+		GameController newGame = new GameController(player1, randomPlayer);
+		player1.setGameController(newGame);
+		randomPlayer.setGameController(newGame);
+		
+		writeToGUI("A new game has been started between players " + player1.getNickName() + "and " + randomPlayer.getNickName());
+
+		
+		List<ConnectionHandler> playerList = new ArrayList<ConnectionHandler>();
+		playerList.add(player1);
+		playerList.add(randomPlayer);
+		
+		String gameName = player1.getNickName() + " v.s. " + randomPlayer.getNickName();	
+		newGame.setName(gameName);
+		addGame(gameName, playerList);
+	}
+
+	/**
+	 * Creates a GameController object which starts a game with players <code>player1</code> and <code>player2</code>
+	 * Used when both players are known.
+	 * @param player1 the first player 
+	 * @param player2 the second player
+	 */
+	public synchronized void startChallangeGame(ConnectionHandler player1, ConnectionHandler player2) {
+		GameController newGame = new GameController(player1, player2);
+		
+		List<ConnectionHandler> playerList = new ArrayList<ConnectionHandler>();
+		playerList.add(player1);
+		playerList.add(player2);
+
+		String gameName = player1.getNickName() + " v.s. " + player2.getNickName();		
+		newGame.setName(gameName);
+		addGame(gameName, playerList);
+
+	}
+	
+	/**
+	 * addGame removes the players of a new game from the ActivePlayers map and puts a new entry into the games map.
+	 * The CurrentGames list in the ServerGUI is updated.
+	 * @param newGame the GameController of the new game
+	 * @param playerList the List with the ConnectionHandler references of two clients
+	 */
+	public synchronized void  addGame(String nameGame,List<ConnectionHandler> playerList) {
+		removeConnectionHandler(playerList.get(0));
+		removeConnectionHandler(playerList.get(1));
+		
+		games.put(nameGame, playerList);
+		updateCurrentGames();
+	}
+
+	/**
+	 * Removes a ConnectionHandler from the Connections Map. It doesn't matter if it has been already deleted 
+	 * by a GameController because calling remove() on a Map does not throw an error.
+	 * @param removePlayer the ConnectionHandler to be removed 
+	 */
+	public synchronized void removeConnectionHandler(ConnectionHandler removePlayer) {
+		// TODO Make thread safe
+			connections.remove(removePlayer.getNickName());
+		updateActivePlayers();
+	}
+	
+	/**
+	 * deleteGame removes the entry from the games map that has <code>game</code> as a key.
+	 * It updates the CurrentGames list in the GUI.
+	 * The GameController puts the Client(s) back in the connectionsmap, so that isn't done here.
+	 * @param game the game that has ended and needs to be removed.
+	 */
+	public synchronized void deleteGame(String gameName) {
+		games.remove(gameName);
+		updateCurrentGames();
+	}
+
+	/**
+	 * Prints a message to the GUI
+	 * @param string
+	 */
+	public synchronized void writeToGUI(String message) {
+		// TODO Make thread safe
+		serverGUI.printText(message);
+	}
+	
+	/**
+	 * Because the ServerController acts as an ActionListener it receives ActionEvents for the four buttons in the ServerGui
+	 * If the Start button is pressed it checks if the port number is indeed a number and if it is between 1025 and 65536.
+	 * If the port number is legal it calls the startServerSocketListener method.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		String command = arg0.getActionCommand();
+		if(command.equals("Start")){
+			String portNumber = serverGUI.getPortNumber();
+			if(portNumber.matches("[0-9]+") && Integer.parseInt(portNumber) >= 1025 && Integer.parseInt(portNumber) <= 65536)	{
+				int port = Integer.parseInt(portNumber);
+				try {
+					startServerSocketListener(port);
+				} catch (IOException e) {
+					writeToGUI("Port is already in use, try another port.");
+				}
+			}
+			else	{
+				writeToGUI("An illegal port has been given.");
+			}
+		}
+		if(command.equals("Close")){
+			if(serverSocketListener == null){
+				writeToGUI("No port has been opened yet.");
+			}else {
+				serverSocketListener.closeListener();
+				serverSocketListener = null;
+			}
+		}
+		if(command.equals("Refresh Players")){
+			updateActivePlayers();
+		}
+		if(command.equals("Refresh Games")){
+			updateCurrentGames();
+		}
+	
 	}
+	
+	/**
+	 * updateActivePlayers updates the ActivePlayers list in the ServerGui. It retrieves the keySet from the connectionsmap
+	 * It clears the ActivePlayers TextArea. It loops over the entries in the keySet 
+	 * and appends each of them to the TextArea.
+	 * It also lists the Players in the mainTextArea
+	 */
+	//TODO loop invariant
+	public synchronized void updateActivePlayers(){
+		List<String> activePlayers = new ArrayList<String>(connections.keySet());
+		
+		serverGUI.clearActivePlayers();
+
+		if(connections.isEmpty()){
+			writeToGUI("No Players are loggedin to this Server.");	
+		}else {
+			writeToGUI("Current Players are:");
+		}
+
+		for (int i = 0; i < activePlayers.size(); i++){
+			writeToGUI(i +": [" + activePlayers.get(i) + "]");
+			serverGUI.appendActivePlayers(activePlayers.get(i));
+		}
+	}
+
+	/**
+	 * updateCurrentGames updates the CurrentGames list in the ServerGui. It retrieves the valueSet from the gamesmap
+	 * It clears the CurrentGames TextArea. It loops over the entries in the valueset, creates a game name in the format
+	 * "i: player 1 vs. player 2" and appends each of them to the TextArea.
+	 * It also lists the Players in the mainTextArea
+	 */
+	//TODO loop invariant
+	public synchronized void updateCurrentGames(){
+		List<String> gameNames = new ArrayList<String>(games.keySet());
+		
+		serverGUI.clearCurrentGames();
+		
+		if(games.isEmpty()){
+			writeToGUI("There are currently no games running on this Server");
+		}else {
+			writeToGUI("Current Games are:");
+		}
+
+		for (int i = 0; i < gameNames.size(); i++){
+			String gameName =  gameNames.get(i);
+			writeToGUI(1 + ": " + gameName);
+			serverGUI.appendCurrentGames(i + ": " + gameName);
+		}
+	}
+
+		
 
 }

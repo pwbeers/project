@@ -5,8 +5,7 @@ import java.net.Socket;
 import java.net.ServerSocket;
 import java.net.SocketException;
 
-/**
- * 
+/** 
  * The ServerSocketListener starts waiting for new connections and when they arise 
  * immediately assigns them a ConnectionHandler. The ServerSocketListener is also responsible for 
  * appropriately closing of all connections. 
@@ -41,8 +40,8 @@ public class ServerSocketListener extends Thread {
 	// ------------------ Commands --------------------------
 	/**
 	 * Waits for a new connection on the <code>ServerSocket</code>.
-	 * When one is established creates a new ConnectionHandler and adds it to 
-	 * the Connections map in the ServerController
+	 * When one is established creates a new ConnectionHandler with a socket for the connection.
+	 * Then it starts the ConnectionHandler thread.
 	 */
 	public void run(){
 		while (waitForConnections == true){
@@ -50,13 +49,12 @@ public class ServerSocketListener extends Thread {
 				newSocket = serverSocket.accept(); //Waits till a new TCP connection is made on this ServerSocket
 				controller.writeToGUI("A new connection has been accepted.");
 				newConnectionHandler = new ConnectionHandler(controller, newSocket); //Create a new Connectionhandler for the socket
-				//The ConnectionHanlder notifies it's existence to the ServerController itself so that doesn't need to happen here
-				newConnectionHandler.start();
+
+				newConnectionHandler.start(); //Start the Thread	
+				
 				controller.writeToGUI("ConnectionHandler Started");
 			} catch (SocketException s){
-				//TODO find out why this exception is thrown				
-				throw new UnsupportedOperationException();
-				
+				controller.writeToGUI("Port has been closed. ");
 			} catch (IOException i){
 				//TODO find out why this exception is thrown				
 				throw new UnsupportedOperationException();

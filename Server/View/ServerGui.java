@@ -15,11 +15,12 @@ import java.awt.Color;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Observable;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
+import javax.swing.text.DefaultCaret;
 
 
 /**
@@ -56,6 +57,8 @@ public class ServerGui implements View {
 		}
 		
 		initialize();
+		serverFrame.repaint();
+		serverFrame.revalidate();
 	}
 
 	/**
@@ -70,59 +73,100 @@ public class ServerGui implements View {
 		serverFrame.getContentPane().setLayout(null);
 		serverFrame.setVisible(true);
 		
+		JScrollPane textScrollPane = new JScrollPane();
+		textScrollPane.setBounds(10, 67, 500, 418);
+		serverFrame.getContentPane().add(textScrollPane);
+		
 		JPanel textPanel = new JPanel();
-		textPanel.setBounds(10, 67, 500, 450);
-		serverFrame.getContentPane().add(textPanel);
+		textScrollPane.setViewportView(textPanel);
 		textPanel.setLayout(new BorderLayout(0, 0));
 		
+
 		mainTextArea = new JTextArea();
 		mainTextArea.setLineWrap(true);
 		textPanel.add(mainTextArea, BorderLayout.CENTER);
-		
+				
+		DefaultCaret textCaret = (DefaultCaret)mainTextArea.getCaret();
+		textCaret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+				
 		JPanel manualPanel = new JPanel();
-		textPanel.add(manualPanel, BorderLayout.SOUTH);
-		
+		manualPanel.setBounds(10, 484, 500, 33);
+		serverFrame.getContentPane().add(manualPanel);
+				
 		textField = new JTextField();
 		manualPanel.add(textField);
 		textField.setColumns(30);
-		
+				
 		JButton btnNewButton = new JButton("Send In");
 		manualPanel.add(btnNewButton);
 		
+		JPanel playerPanel = new JPanel();
+		playerPanel.setBounds(529, 9, 345, 180);
+		serverFrame.getContentPane().add(playerPanel);
+		playerPanel.setLayout(null);
+		
+		JPanel playerLabelPanel = new JPanel();
+		playerLabelPanel.setBounds(0, 0, 344, 23);
+		playerPanel.add(playerLabelPanel);
+		playerLabelPanel.setLayout(new BorderLayout(0, 0));
+		
+		JLabel activePlayersLabel = new JLabel("Active Players:");
+		playerLabelPanel.add(activePlayersLabel, BorderLayout.NORTH);
+		activePlayersLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		JScrollPane playersScrollPane = new JScrollPane();
+		playersScrollPane.setBounds(0, 21, 345, 159);
+		playerPanel.add(playersScrollPane);
+		
 		JPanel currentPlayerPanel = new JPanel();
-		currentPlayerPanel.setBounds(530, 11, 344, 180);
-		serverFrame.getContentPane().add(currentPlayerPanel);
+		playersScrollPane.setViewportView(currentPlayerPanel);
 		currentPlayerPanel.setLayout(new BorderLayout(0, 0));
+		
 		
 		activePlayersTextArea = new JTextArea();
 		activePlayersTextArea.setEditable(false);
 		activePlayersTextArea.setLineWrap(true);
 		currentPlayerPanel.add(activePlayersTextArea, BorderLayout.CENTER);
 		
-		JLabel activePlayersLabel = new JLabel("Active Players:");
-		activePlayersLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		currentPlayerPanel.add(activePlayersLabel, BorderLayout.NORTH);
+		DefaultCaret playerCaret = (DefaultCaret)activePlayersTextArea.getCaret();
+		playerCaret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		
-		JPanel currentGamePanel = new JPanel();
-		currentGamePanel.setBounds(530, 236, 344, 180);
-		serverFrame.getContentPane().add(currentGamePanel);
-		currentGamePanel.setLayout(new BorderLayout(0, 0));
+		JPanel gamePanel = new JPanel();
+		gamePanel.setBounds(530, 236, 344, 180);
+		serverFrame.getContentPane().add(gamePanel);
+		gamePanel.setLayout(null);
+		
+		JPanel gameLabelPanel = new JPanel();
+		gameLabelPanel.setBounds(0, 0, 342, 22);
+		gamePanel.add(gameLabelPanel);
+		gameLabelPanel.setLayout(null);
 		
 		JLabel currentGameLabel = new JLabel("Current Games:");
+		currentGameLabel.setBounds(0, 0, 342, 14);
+		gameLabelPanel.add(currentGameLabel);
 		currentGameLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		currentGamePanel.add(currentGameLabel, BorderLayout.NORTH);
 		
-		currentGamesTextArea = new JTextArea();
-		currentGamesTextArea.setEditable(false);
-		currentGamesTextArea.setLineWrap(true);
-		currentGamePanel.add(currentGamesTextArea, BorderLayout.CENTER);
+					
+				JScrollPane currentGamesScrollPane = new JScrollPane();
+				currentGamesScrollPane.setBounds(-2, 21, 344, 159);
+				gamePanel.add(currentGamesScrollPane);
+				
+				JPanel currentGamePanel = new JPanel();
+				currentGamesScrollPane.setViewportView(currentGamePanel);
+				currentGamePanel.setLayout(new BorderLayout(0, 0));
+				
+				currentGamesTextArea = new JTextArea();
+				currentGamesTextArea.setEditable(false);
+				currentGamesTextArea.setLineWrap(true);
+				currentGamePanel.add(currentGamesTextArea, BorderLayout.CENTER);
+		
+		DefaultCaret gameCaret = (DefaultCaret)currentGamesTextArea.getCaret();
+		gameCaret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
 		
 		JButton leaderBoardButton = new JButton("Leaderboard");
 		leaderBoardButton.setEnabled(false);
-		leaderBoardButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
+		leaderBoardButton.addActionListener(controller);
 		leaderBoardButton.setBounds(633, 494, 156, 23);
 		serverFrame.getContentPane().add(leaderBoardButton);
 		
@@ -135,7 +179,7 @@ public class ServerGui implements View {
 		connectionsPanel.add(portLabel);
 		
 		portTextField = new JTextField();
-		portTextField.setText("2200");
+		portTextField.setText("2220");
 		connectionsPanel.add(portTextField);
 		portTextField.setColumns(10);
 		
@@ -148,14 +192,21 @@ public class ServerGui implements View {
 		
 		JButton startButton = new JButton("Start");
 		connectionsPanel.add(startButton);
+		startButton.addActionListener(controller);
+		
+		JButton closeButton = new JButton("Close");
+		connectionsPanel.add(closeButton);
+		closeButton.addActionListener(controller);
 		
 		JButton refreshActivePlayersButton = new JButton("Refresh Players");
 		refreshActivePlayersButton.setBounds(630, 200, 155, 23);
 		serverFrame.getContentPane().add(refreshActivePlayersButton);
+		refreshActivePlayersButton.addActionListener(controller);
 		
 		JButton refreshGamesButton = new JButton("Refresh Games");
 		refreshGamesButton.setBounds(633, 441, 156, 23);
 		serverFrame.getContentPane().add(refreshGamesButton);
+		refreshGamesButton.addActionListener(controller);
 	
 	}
 	
@@ -188,5 +239,10 @@ public class ServerGui implements View {
 	
 	public void update(Observable arg0, Object arg1) {
 		throw new UnsupportedOperationException();
+	}
+
+	public String getPortNumber() {
+		return portTextField.getText();
+		 
 	}
 }
