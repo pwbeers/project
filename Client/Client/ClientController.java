@@ -42,10 +42,8 @@ public class ClientController implements ActionListener	{
 		game = null;
 		connection = null;
 		otherClientExtensions = new ArrayList<String[]>();
-		clientExtension = new String[3];
-		clientExtension[0] = "CHAT";
-		clientExtension[1] = "CHALLENGE";
-		clientExtension[2] = "LEADERBOARD";
+		clientExtension = new String[1];
+		clientExtension[0] = "NONE";
 	}
 
 	/**
