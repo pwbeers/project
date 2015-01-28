@@ -13,7 +13,7 @@ public class SimpleAI implements AI,Observer	{
 	 * Starts an implementation of SimpleAI
 	 */
 	public SimpleAI() {
-		board = null;
+		board = new Board();
 	}
 	
 	/**
