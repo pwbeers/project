@@ -181,10 +181,13 @@ public class Board {
 	 * Counts the amount of times that given amount of stones of given player are next to 
 	 * eachother without interruption by an empty field or another players stones on a 
 	 * horizontal line.
-	 * @param player
-	 * @param length
-	 * @return
+	 * @param player is the player for who the stones are counted
+	 * @param amount is the amount of stones that are to be counted on one horizontal row
+	 * @return the number of times a row of the given player with a given amount of stones is found
 	 */
+	//@ requires player == 1 || player == 2;
+	//@ requires amount >= 0;
+	//@ ensures \result >= 0;
 	public int horizontalStoneCount(int player, int amount) {
 		int result = 0;
 		for (int yBegin = 0; yBegin < ROWS; yBegin++) {
@@ -207,10 +210,13 @@ public class Board {
 	 * Counts the amount of times that given amount of stones of given player are next to 
 	 * eachother without interruption by an empty field or another players stones on a vertical
 	 * line.
-	 * @param player
-	 * @param length
-	 * @return
+	 * @param player is the player for who the stones are counted
+	 * @param amount is the amount of stones that are to be counted on one vertical row
+	 * @return the number of times a row of the given player with a given amount of stones is found
 	 */
+	//@ requires player == 1 || player == 2;
+	//@ requires amount >= 0;
+	//@ ensures \result >= 0;
 	public int verticalStoneCount(int player, int amount)	{
 		int result = 0;
 		for (int xBegin = 0; xBegin < COLUMNS; xBegin++) {
@@ -233,10 +239,13 @@ public class Board {
 	 * Counts the amount of times that given amount of stones of given player are diagonal to 
 	 * eachother without interruption by an empty field or another players stones on a diagonal
 	 * line.
-	 * @param player
-	 * @param length
-	 * @return
+	 * @param player is the player for who the stones are counted
+	 * @param amount is the amount of stones that are to be counted on one diagonal row
+	 * @return the number of times a row of the given player with a given amount of stones is found
 	 */
+	//@ requires player == 1 || player == 2;
+	//@ requires amount >= 0;
+	//@ ensures \result >= 0;
 	public int diagonalStoneCount(int player, int amount)	{
 		int result = 0;
 		//Checks if there is a diagonal winner from left to right
