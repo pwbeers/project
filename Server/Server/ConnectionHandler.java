@@ -16,6 +16,8 @@ import Error.Error;
  * the ServerController and GameController with which it doesn’t do anything itself. 
  * @author Stephan
  */
+
+//TODO add javadoc and JML
 public class ConnectionHandler extends Thread {
 
 	// ------------------ Instance variables ----------------
