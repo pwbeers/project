@@ -21,10 +21,12 @@ public class SimpleAI implements AI,Observer	{
 	 * game that is on the board and legal.
 	 * @return a legal move, \result >= 0 && \result <= 6
 	 */
-	public int getMove(int dephth) {
+	public int getMove(int depth) {
 		int result = 6;
 		for (int i = 0; i < result; i++) {
-			board.legalMove(i);
+			if(board.legalMove(i))	{
+				result = i;
+			};
 		}
 		return result;
 	}
@@ -33,6 +35,9 @@ public class SimpleAI implements AI,Observer	{
 	 * Updates the board of the AI.
 	 */
 	public void update(Observable o, Object arg) {
-		this.board = (Board) arg;
+		Integer[] changedField = (Integer[]) arg;
+		int column = changedField[0];
+		int player = changedField[2];
+		board.doMove(column, player);
 	}
 }

@@ -66,6 +66,7 @@ public class ClientGUI implements View,Observer {
 	private JTextArea chatTextArea;
 	private JPanel panel;
 	private JScrollPane scrollPane;
+	private int hintField;
 
 	/**
 	 * Starts the ClientGUI and saves the given controller.
@@ -75,6 +76,7 @@ public class ClientGUI implements View,Observer {
 		initialize();
 		frmFour.setVisible(true);
 		beforeConnectionScreen();
+		hintField = -1;
 	}
 
 	/**
@@ -324,8 +326,12 @@ public class ClientGUI implements View,Observer {
 		boolean goOn = true;
 		for (int i = 0; i < board.length && goOn; i++) {
 			if(Integer.parseInt(board[i].getActionCommand()) == column && board[i].getIcon().equals(EMPTYFIELD))	{
+				if(hintField != -1)	{
+					board[hintField].setIcon(EMPTYFIELD);
+				}
 				board[i].setIcon(HINTFIELD);
 				goOn = false;
+				hintField = i;
 			}
 		}
 	}
@@ -385,6 +391,9 @@ public class ClientGUI implements View,Observer {
 			icon = YELLOWFIELD;
 		}
 		board[column + 7 * row].setIcon(icon);
+		if(hintField != (column + 7 * row) && hintField != -1)	{
+			board[hintField].setIcon(EMPTYFIELD);
+		}
 	}
 	
 	/**

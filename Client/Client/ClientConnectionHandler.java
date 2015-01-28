@@ -218,7 +218,7 @@ public class ClientConnectionHandler extends Thread {
 	
 	public void closeConnection(String message)	{
 		try {
-			sendMessage("DEBUG " + message);
+			sendMessage("ERROR " + message);
 			out.close();
 			in.close();
 			socket.close();

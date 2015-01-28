@@ -103,7 +103,7 @@ public class ClientController implements ActionListener	{
 			if(name != null && !name.equals(""))	{
 				String message = "JOINREQ " + "Player_" + name;
 				connection.sendMessage(message);
-				connection.setName(name);
+				connection.setName("Player_" + name);
 			}
 			else	{
 				gui.printText("Give a player name.");
@@ -193,7 +193,7 @@ public class ClientController implements ActionListener	{
 	 */
 	public void startGame(String name)	{
 		opponentName = name;
-		game = new Game();
+		game = new Game(2);
 		aiSimple = new SimpleAI();
 		aiSmart = new SmartAI();
 		game.addObserver(gui);
@@ -224,7 +224,6 @@ public class ClientController implements ActionListener	{
 			else	{
 				int column = aiSmart.getMove((intelligence - 1) * 2);
 				message = "MOVE " + column;
-				
 			}
 			connection.sendMessage(message);
 		}
@@ -259,11 +258,9 @@ public class ClientController implements ActionListener	{
 			boolean newGame = gui.gameWinner(draw, "DISCONNECT");
 			if(newGame)	{
 				gui.setNewGame();
-				String message = "JOINREQ " + connection.getName();
-				connection.sendMessage(message);
 			}
 			else	{
-				gui.setNewGame();
+				System.exit(0);
 			}
 		}
 		else if(arguments.length == 1)	{
