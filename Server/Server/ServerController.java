@@ -53,7 +53,7 @@ public class ServerController implements ActionListener{
 		
 		//the serverSocketListener gets made after a button is pressed in the GUI so it isn't initialized here
 		try {
-			serverSocket = new ServerSocket(2200);
+			serverSocket = new ServerSocket(2220);
 			writeToGUI("ServerSocket has been created");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

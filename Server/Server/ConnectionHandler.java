@@ -179,7 +179,7 @@ public class ConnectionHandler extends Thread {
 		try {
 			scanner = new Scanner(newLine);	
 		} catch (NullPointerException e){
-			throw new Error("ERROR COMMAND IS EMPTY YOU WILL BE TERMINATED MUTHAFUCKAAA");
+			throw new Error("ERROR COMMAND IS EMPTY YOU WILL BE TERMINATED ");
 		}
 		
 		String command;
