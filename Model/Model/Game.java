@@ -20,12 +20,12 @@ public class Game extends Observable implements Model	{
 	// ------------------ Constructor ------------------------
 	/**
 	 * Makes a new Board class and saves it
-	 * sets current Turn to 1
+	 * sets current Turn to 1. Client needs it to be 2.
 	 */
-	//@ ensures board != null && currentTurn == 1;
-	public Game() {
+	//@ ensures board != null && currentTurn == 1 || currentTurn == 2;
+	public Game(int turnInt) {
 		board = new Board();
-		currentTurn = 2;
+		currentTurn = turnInt;
 	}
 
 	// ------------------ Queries --------------------------
