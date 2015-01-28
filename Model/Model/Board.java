@@ -135,11 +135,9 @@ public class Board {
 	 * 		   then the board has no winner for the given player with a diagonal line.
 	 */
 	public boolean isBoardFull()	{
-		boolean result = false;
-		for (int x = 0; x < fields.length && !result; x++) {
-			for (int y = 0; y < fields[x].length && !result; y++) {
-				result = fields[x][y].isEmpty();
-			}
+		boolean result = true;
+		for (int x = 0; x < COLUMNS && result; x++) {
+			result = !legalMove(x);
 		}
 		return result;
 	}
