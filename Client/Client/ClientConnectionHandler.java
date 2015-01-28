@@ -90,7 +90,7 @@ public class ClientConnectionHandler extends Thread {
 						controller.serverMove(arguments);
 					}
 					else	{
-						throw new Error("Argument after GAME is illegal");
+						throw new Error("Argument after MOVEUPDATE is illegal");
 					}
 					break;
 				case "GAMEEND": 
@@ -101,7 +101,7 @@ public class ClientConnectionHandler extends Thread {
 						controller.gameEnd(arguments);
 					}
 					else	{
-						throw new Error("Argument after GAME is illegal");
+						throw new Error("Argument after GAMEEND is illegal");
 					}
 					break;
 				case "ERROR": 
