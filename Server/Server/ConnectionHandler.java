@@ -209,6 +209,16 @@ public class ConnectionHandler extends Thread {
 				gameController.newMove(this, arguments);
 				break;
 			}	
+		case "ENDGAME":
+			if(gameController == null){
+				throw new Error("ERROR YOU ARE NOT IN A GAME. YOUR CONNECTION WILL NOW BE TERMINATED");
+			}else {
+				gameController.endGame();
+			}
+			break;
+		case "ERROR":
+				controller.writeToGUI("[" +nickName+"]: ERROR" + arguments);
+				break;
 		case "DEBUG":
 			controller.writeToGUI("[" +nickName+"]: DEBUG" + arguments);
 			break;

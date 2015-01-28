@@ -14,6 +14,7 @@ public class GameController {
 	private Model game; //the game that this controller uses
 	private ConnectionHandler player1; //The ConnectionHandler object of Player 1
 	private ConnectionHandler player2; //The ConnectionHandler object of Player 2
+	private String name;
 	private final int PLAYER1 = 1; //The Integer representation of Player 1
 	private final int PLAYER2 = 2; //The Integer representation of Player 2
 
@@ -53,7 +54,15 @@ public class GameController {
 		players.add(player2);
 		return players;
 	}
+	
+	public String getName(){
+		return name;
+	}
 	// ------------------ Commands --------------------------
+	public void setName(String newName){
+		name = newName;
+	}
+	
 	/**
 	 * Creates a new Game object
 	 * It sends the AMULET GAME commands to the players and the TURN command to player1
@@ -130,12 +139,14 @@ public class GameController {
 			broadcastToPlayers("GAMEEND " + playerHandler.getNickName() + " " + column);
 			controller.writeToGUI("GAMEEND " + playerHandler.getNickName() + " " + column);
 			System.out.println("GAMEEND " + playerHandler.getNickName() + " " + column);
+			endGame();
 			break;
 		case 2:
 			//send gameEnd to bothplayers with no nicjname
 			broadcastToPlayers("GAMEEND DRAW");
 			controller.writeToGUI("GAMEEND DRAW");
 			System.out.println("GAMEEND DRAW");
+			endGame();
 			break;
 		
 		}
@@ -167,6 +178,15 @@ public class GameController {
 		player2.writeToClient(broadcast);
 	}
 	
+	public void endGame(){		
+		controller.addConnectionHandler(player1.getNickName(), player1);
+		controller.addConnectionHandler(player2.getNickName(), player2);
+		controller.updateActivePlayers();
+		controller.deleteGame(name);
+		controller.updateCurrentGames();
+
+	}
+	
 	public void endGame(ConnectionHandler clientToBeTerminated){
 		//TODO Send endgame to both participants 
 		broadcastToPlayers("GAMEEND");		
@@ -181,7 +201,7 @@ public class GameController {
 			controller.addConnectionHandler(player1.getNickName(), player1);
 		}
 		controller.updateActivePlayers();
-		controller.deleteGame(this);
+		controller.deleteGame(name);
 	}
 
 }

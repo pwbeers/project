@@ -2,14 +2,17 @@ package Server;
 
 /**
  * This Class initializes all other Classes and hence facilitates the creation of games,
+
  * houses the logic for the GUI, creates the ServerSocketListener for the serversocket 
  * and will implement the functionalities of any of the facultative extensions.
  * @author Stephan
  */
 
 //TODO - relay all gui and serversocket listeners to this class
+//TODO handle close event properly
 
 import java.awt.event.ActionEvent;
+
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -32,7 +35,7 @@ public class ServerController implements ActionListener{
 	private ServerSocketListener serverSocketListener;
 	
 	private TreeMap<String, ConnectionHandler> connections; //Keeps track of all current connections and their nicknames
-	private HashMap<GameController, List<ConnectionHandler>> games; //Keeps track of alle current games and their respective ConnectionHandlers
+	private TreeMap<String, List<ConnectionHandler>> games; //Keeps track of alle current games and their respective ConnectionHandlers
 	
 	private String extensions; //The AMULET value for which extensions are supported
 	private List<ConnectionHandler> normalPlayers;
@@ -53,7 +56,7 @@ public class ServerController implements ActionListener{
 		
 		extensions = "NONE"; //We hardcode the extensions, there is not yet support to en/dis-able them
 		connections = new TreeMap<String, ConnectionHandler>();
-		games = new HashMap<GameController, List<ConnectionHandler>>();
+		games = new TreeMap<String, List<ConnectionHandler>>();
 		
 		normalPlayers = new ArrayList<ConnectionHandler>();
 		challengePlayers = new ArrayList<ConnectionHandler>();
@@ -175,7 +178,9 @@ public class ServerController implements ActionListener{
 		playerList.add(player1);
 		playerList.add(randomPlayer);
 		
-		addGame(newGame, playerList);
+		String gameName = player1.getNickName() + " v.s. " + randomPlayer.getNickName();	
+		newGame.setName(gameName);
+		addGame(gameName, playerList);
 	}
 
 	/**
@@ -190,8 +195,11 @@ public class ServerController implements ActionListener{
 		List<ConnectionHandler> playerList = new ArrayList<ConnectionHandler>();
 		playerList.add(player1);
 		playerList.add(player2);
-		
-		addGame(newGame, playerList);
+
+		String gameName = player1.getNickName() + " v.s. " + player2.getNickName();		
+		newGame.setName(gameName);
+		addGame(gameName, playerList);
+
 	}
 	
 	/**
@@ -200,11 +208,11 @@ public class ServerController implements ActionListener{
 	 * @param newGame the GameController of the new game
 	 * @param playerList the List with the ConnectionHandler references of two clients
 	 */
-	public synchronized void  addGame(GameController newGame,List<ConnectionHandler> playerList) {
+	public synchronized void  addGame(String nameGame,List<ConnectionHandler> playerList) {
 		removeConnectionHandler(playerList.get(0));
 		removeConnectionHandler(playerList.get(1));
 		
-		games.put(newGame, playerList);
+		games.put(nameGame, playerList);
 		updateCurrentGames();
 	}
 
@@ -225,8 +233,8 @@ public class ServerController implements ActionListener{
 	 * The GameController puts the Client(s) back in the connectionsmap, so that isn't done here.
 	 * @param game the game that has ended and needs to be removed.
 	 */
-	public synchronized void deleteGame(GameController game) {
-		games.remove(game);
+	public synchronized void deleteGame(String gameName) {
+		games.remove(gameName);
 		updateCurrentGames();
 	}
 
@@ -310,7 +318,7 @@ public class ServerController implements ActionListener{
 	 */
 	//TODO loop invariant
 	public synchronized void updateCurrentGames(){
-		List<List <ConnectionHandler>> playersInGames = new ArrayList<List <ConnectionHandler>>(games.values());
+		List<String> gameNames = new ArrayList<String>(games.keySet());
 		
 		serverGUI.clearCurrentGames();
 		
@@ -319,14 +327,14 @@ public class ServerController implements ActionListener{
 		}else {
 			writeToGUI("Current Games are:");
 		}
-		
-		for (int i = 0; i < playersInGames.size(); i++){
-			//Each value in the games map is a List<ConnectionHanlder> with the two players in it.
-			List<ConnectionHandler> game = new ArrayList<ConnectionHandler>(playersInGames.get(i));
-			String gameName = game.get(0).getNickName() + " v.s. " + game.get(1).getNickName();
-			writeToGUI(i +": [" + gameName + "]");
+
+		for (int i = 0; i < gameNames.size(); i++){
+			String gameName =  gameNames.get(i);
+			writeToGUI(1 + ": " + gameName);
 			serverGUI.appendCurrentGames(i + ": " + gameName);
 		}
 	}
+
+		
 
 }
