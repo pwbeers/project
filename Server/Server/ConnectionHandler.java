@@ -63,6 +63,7 @@ public class ConnectionHandler extends Thread {
 			
 			//The client is waiting for the AMULET EXTENSIONS command to begin communication
 			writeToClient("EXTENSIONS " + extensions);
+			
 		} catch (IOException e) {
 			controller.writeToGUI("player" + nickName +" is being kicked");
 			listenForCommands = false;
@@ -98,19 +99,21 @@ public class ConnectionHandler extends Thread {
 	// ------------------ Commands --------------------------
 	/**
 	 * Waits for a new line. When one is received sends it to the commandReader.
-	 * Is only active when listenForCommands == true. If it is set to false the bufferedReader, 
-	 * writer and socket are closed and the connection is removed from the ServerController
+	 * Is only active when listenForCommands == true. If it is set to false the kick() method is used to free up
+	 * resources.
 	 */
 	public void run(){
 		while (listenForCommands == true){
 			try {
 				//Wait for new Command.
 				newLine = bufferedReader.readLine();
+				
 			}catch (IOException e) {
 				//An I/O error occured in readLine() The thread is closed.
 				listenForCommands = false;
 				//TODO send error to error class
 			}
+			
 			//Pass the newCommand to the commandReader.
 			try {
 			commandReader(newLine);
@@ -123,12 +126,110 @@ public class ConnectionHandler extends Thread {
 		}
 		
 		controller.writeToGUI("Player [" + nickName +"] is being kicked");
+		kick();
+	}
+	/**
+	 * Sets the GameController attribute for referencing when in a game
+	 * @param newGameController the current GameController
+	 */
+	public void setGameController(GameController newGameController) {
+		gameController = newGameController;
+	}
+
+	/**
+	 * Sets the NickName for this Player
+	 * @param name the NickName
+	 */
+	public void setNickName(String name) {
+		nickName = name;
+	}
+	
+	/**writeToClient uses the native printWriter of the ConnectionHandler object to send a line to its client. 
+	 * It also displays the message on the ServerGui
+	 * @param message the message to be send
+	 */
+	public void writeToClient(String message){
+		writer.println(message + "\n");
+		controller.writeToGUI("To [" + nickName + "]: " + message);
+	}
+	
+	/**
+	 * Switches all the commands in the AMULET protocol to the right parts of the system using a switch
+	 * If there is a violation of the AMULET protocol it throws an Error with a descriptive message.
+	 * The Closing of the thread and of any games is handled in the run method.
+	 * 
+	 * @param newCommand a new Command which has been detected
+	 */
+	public void commandReader(String newLine) throws Error{
+		//All incoming lines should be printed in the GUI
+		controller.writeToGUI("From [" + nickName + "]: " + newLine);
+		
+		try {
+			scanner = new Scanner(newLine);	
+		} catch (NullPointerException e){
+			//TODO handle this properly
+			throw new Error("ERROR COMMAND IS EMPTY YOU WILL BE TERMINATED ");
+		}
+		
+		//Local Variables for storing the AMULET command and arguments
+		String command;
+		ArrayList <String> arguments = new ArrayList<String>();		
+		
+		//Separate the AMULET command from the arguments and put them in an ArrayList.
+		command = scanner.next();		
+		while(scanner.hasNext()){			
+			arguments.add(scanner.next());
+		}
+		
+		/*All possible AMULET client responses are handled here.
+		If there is any deviation from the established patterns an error is thrown.
+		The errors should be handled in the run method*/
+		switch (command){
+		case "EXTENSIONS":
+			//The ServerController handles the logic for matching which extensions can be used 
+			controller.matchExtensions(arguments, this);
+			break;
+		case "JOINREQ":
+			//We now know the NickName of this client. This should also be be made known to the ServerController
+			nickName = arguments.get(0);
+			controller.addConnectionHandler(nickName, this);
+			if (!nickName.startsWith("Player_")){
+				controller.addSecurityPlayer(this);
+			}
+
+			break;
+		case "MOVE":
+			/*We pass any Move commands through to the GameController.
+			If there is no gameController the client is kicked
+			GameController throws his own exceptions to kick the user*/
+			if(gameController == null){
+				throw new Error("ERROR YOU ARE NOT IN A GAME. YOUR CONNECTION WILL NOW BE TERMINATED");
+			}else {
+				//If newMove cannot be completed an error will be thrown which is handled in the run method
+				gameController.newMove(this, arguments);
+				break;
+			}	
+		case "DEBUG":
+			controller.writeToGUI("[" +nickName+"]: DEBUG" + arguments);
+			break;
+		default:
+			//Any other commands are illegal in AMULET and the connection will be severed
+			throw new Error("ERROR COMMAND NOT RECOGNIZED. YOUR CONNECTION WILL NOW BE TERMINATED");
+		}
+	}
+	
+	/**
+	 * This Client is being kicked. Too free up resources the bufferedReader, writer and socket are closed 
+	 * and the connection is removed from the ServerController
+
+	 */
+	public void kick(){
+		listenForCommands = false;
+		
 		//TODO do this properly
-		/*if listenForCommands has been set to false the thread needs to be closed
-		and the resources must be freed*/
 		
 		if (gameController != null){
-			gameController.endGame();
+			gameController.endGame(this);
 			gameController = null;
 		}
 		
@@ -147,94 +248,6 @@ public class ConnectionHandler extends Thread {
 					+ " or skip() invocation on a closed BufferedReader or an I/O error has occured"
 					+ " while closing the socket in the  thread of "+ nickName);
 		}
-	}
-	/**
-	 * Sets the GameController attribute for referencing when in a game
-	 * @param newGameController the current GameController
-	 */
-	public void setGameController(GameController newGameController) {
-		gameController = newGameController;
-	}
 
-	/**
-	 * Sets the NickName for this Player
-	 * @param name the NickName
-	 */
-	public void setNickName(String name) {
-		nickName = name;
-	}
-	
-	/** Send a message to the client
-	 * @param message the messeage to be send
-	 */
-	public void writeToClient(String message){
-		writer.println(message + "\n");
-		controller.writeToGUI("To [" + nickName + "]: " + message); //TODO remove this
-	}
-	
-	/**
-	 * Switches all the commands in the AMULET protocol to the right parts of the system using a switch
-	 * 
-	 * @param newCommand a new Command which has been detected
-	 */
-	public void commandReader(String newLine) throws Error{
-		controller.writeToGUI(newLine);
-		
-		try {
-			scanner = new Scanner(newLine);	
-		} catch (NullPointerException e){
-			throw new Error("ERROR COMMAND IS EMPTY YOU WILL BE TERMINATED ");
-		}
-		
-		String command;
-		ArrayList <String> arguments = new ArrayList<String>();		
-		
-		//Separate the AMULET command from the arguments and put them in an ArrayList.
-		command = scanner.next();		
-		controller.writeToGUI(command); //TODO remoive this
-		
-		int i = 0;
-		while(scanner.hasNext()){			
-			arguments.add(scanner.next());
-			i++;
-		}
-		
-		switch (command){
-		case "EXTENSIONS":
-			//The ServerController handles the logic for matching which extensions can be used 
-			controller.matchExtensions(arguments, this);
-			break;
-		case "JOINREQ":
-			//We now now the NickName of this client. This should also be be made known to the ServerController
-			//TODO check if player is a security player and communicate this to ServerController
-			nickName = arguments.get(0);
-			controller.addConnectionHandler(nickName, this);
-			if (!nickName.startsWith("Player_")){
-				controller.addSecurityPlayer(this);
-			}
-
-			break;
-		case "MOVE":
-			/*We pass any Move commands through to the GameController.
-			If there is no gameController the client is kicked
-			GameController throws his own exceptions to kick the user*/
-			if(gameController == null){
-				throw new Error("ERROR YOU ARE NOT IN A GAME. YOUR CONNECTION WILL NOW BE TERMINATED");
-			}else {
-				//If newMove cannot be completed an error wil be thrown which is handled in the run method
-				try {
-					gameController.newMove(this, arguments);
-				} catch (Error e){
-					//move was wrong
-				}
-				break;
-			}	
-		case "DEBUG":
-			controller.writeToGUI("[" +nickName+"]: DEBUG" + arguments);
-			break;
-		default:
-			//Any other commands are illegal in AMULET and the connection will be severed
-			throw new Error("ERROR COMMAND NOT RECOGNIZED. YOUR CONNECTION WILL NOW BE TERMINATED");
-		}
 	}
 }

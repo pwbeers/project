@@ -4,8 +4,28 @@ Here I will describe all the actions that take place from starting the applicati
 1. The Server/Server/Starter.java class is run. This Class creates a ServerController.
 2. In the Constructor of the ServerController Class a new ServerGui is created. The Instance variables of the ServerController class are initialized. 
 3. The View/ServerGui.java Class is initialized by the ServerController. It initializes its graphical elements and displays the current ip-address of the system.
-[USER] The user enters a port number in the JTextField next to the label which says “Port: “ or does not change the default value 2220 and pushes the “Start” button.
+[SERVERUSER] The user enters a port number in the JTextField next to the label which says “Port: “ or does not change the default value 2220 and pushes the “Start” button.
 1. The ServerController acts as an ActionListener and receives and ActionPerformed ActionEvent. It checks if the port number is indeed a number and if it is between 1025 and 65536. Then it calls the startServerSocketListener() method.
 2. startServerSocketListener creates a new ServerSocket and a new ServerSocketListener. It also starts the ServerSocketListener Thread.
-3. The ServerSocketListener initialized it’s instance variables and assigns the flag for the run method to true 
+3. The ServerSocketListener initialized its instance variables and assigns the flag for the run method to true.
+[CLIENT1] A client tries to make a TCP connection on the specified port of this server.
+1. The ServerSocketListener run method tries to accept the connection and create a socket for it. It starts the ConnectionHandler thread.  The loop has ended, and it starts waiting for a new connection.
+2. The ConnectionHandler constructor initializes its instance variables and sets its flag for the run method to true. It tries to create a BufferedReader and a PrintWriter. The Client is waiting for the AMULET EXTENSIONS command, so the ConnectionHandler sends it. 
+[CLIENT1] Sends back the AMULET EXTENSIONS response
+1. The run method in ConnectionHandler uses the readLine() method to wait for new lines send over the connection. After the bufferedReader detects a new line the line is passed to the commandReader. 
+2. The commandReader uses a scanner to separate the AMULET command and it arguments and stores them in appropriate local variables. 
+3. A switch handles the different AMULET client responses. If there is any deviation from the established patterns an error is thrown. For the EXTENSIONS case the ConnectionHandler calls the matchExtensions method in ServerController
+4. The matchExtensions method puts the ConnectionHandler reference in different Lists so they can be used to support extensions. If there is any deviation from the established patterns an error is thrown. The system now waits for an AMULET JOINREQ command.
+[CLIENT1] Sends JOINREQ <<player1name>>
+1. As before this line finds its way to the commandReader. For the JOINREQ case in the switch the addConnectionHandler method is called in ServerController. Alse the “Player_” prefix gets checked and if it isn’t part of the argument after JOINREQ the player is sorted into the securityPlayers list through the ServerController addSecurityPlayer method.
+2. The addConnectionHandler method adds the nickname of client1 and the reference to its ConnectionHandler object in the connections map. To update the ActiveClients list in the gui the updateActivePlayers method is called. Because Challenge isn’t yet implemented a game should be automatically started if there is at least one other client logged in to the server.
+a. updateActivePlayers updateActivePlayers updates the ActivePlayers list in the ServerGui. It retrieves the keySet from the connectionsmap and it clears the TextArea. It loops over the entries in the keySet and appends each of them to the TextArea. It also lists the Players in the mainTextArea.
+b. startGame selects a random player from the ActivePlayers map. It creates a new GameController with the two selected Clients as parameters. It sets the gameController attributes for the Clients. It calls addGame to handle putting the game into the CurrentGames map and removing them from the ActivePlayers map.
+i. GameController initializes its instance variables and calls the startGame method.
+ii. addGame addGame removes the players of a new game from the ActivePlayers map and puts a new entry into the games map using the removeConnectionHandler method which updates the ServerGui.
+3. GameController.java/startGame() creates a new Game object. It sends the AMULET GAME commands and the TURN command to the player that is first in its constructor using the ConnectionHandler writeToClient method.
+a. writeToClient uses the native printWriter of the ConnectionHandler object to send a line to its client. It also displays the message on the ServerGui
+
+
+
 

@@ -56,54 +56,60 @@ public class GameController {
 	// ------------------ Commands --------------------------
 	/**
 	 * Creates a new Game object
-	 * Sends AMULET TURN command to player1
+	 * It sends the AMULET GAME commands to the players and the TURN command to player1
 	 */
 	public void startGame() {
 		game = new Game();
-		player1.writeToClient("GAME " + player2.getNickName());
-		controller.writeToGUI("GAME " + player2.getNickName());
-		System.out.println("GAME " + player2.getNickName());
 		
+		player1.writeToClient("GAME " + player2.getNickName());
 		player2.writeToClient("GAME " + player1.getNickName());
-		controller.writeToGUI("GAME " + player1.getNickName());
-		System.out.println("GAME " + player1.getNickName());
 		
 		player1.writeToClient("TURN");
-		controller.writeToGUI("TURN " + player1.getNickName());
-		System.out.println("TURN " + player1.getNickName());
+		
+		//TODO add turn waitingtime guard.
 		}
 
 	/**
 	 * Handles the AMULET protocol for doing a move
 	 * If the player isn't on turn or the move is illegal
+	 * It pulls the integer of the column of the move from the AMULET arguments list it is handed by 
+	 * the ConnectionHandler that calls the method and parses it to a String. It uses the convertHandlertoInt method 
+	 * to convert the ConnectionHandler reference into an integer representation of the player. 
+	 * This is needed because the Game Model uses integers 1 & 2 to keep track of players and not 
+	 * ConnectionHandler references.
+	 * 
 	 * @param connectionHandler
 	 * @param arguments
 	 */
-	public void newMove(ConnectionHandler playerHandler, ArrayList<String> arguments) throws Error {
-		controller.writeToGUI("Move recieved from " + playerHandler.getNickName());
-		System.out.println();
+	//TODO handle game ending here
+	public void newMove(ConnectionHandler playerHandler, ArrayList<String> arguments) {
 
+		//Isolate the String of the column of the move
 		String columnString = arguments.get(0);
-		//Convert from String to Integer
+		System.out.println("ColumnString from " + playerHandler.getNickName() + " :" + columnString);
+		//parse from String to Integer
 		int column = Integer.parseInt(columnString);
+		System.out.println("ColumnInt from " + playerHandler.getNickName() + " :" + column);
 		
 		//Convert the handler object to the Integer representation
 		int player = convertHandlerToInt(playerHandler);
+		System.out.println("Player on turn :" + player);
+		
 		
 		//Check if player is on turn
 		if (game.onTurn(player) == false){
-			broadcastToPlayers("GAMEEND");
-			controller.writeToGUI("GAMEEND");
-			System.out.println("GAMEEND");
-			throw new Error("ERROR YOU ARE NOT ON TURN. THE CONNECTION WILL BE TERMINATED.");
+			controller.writeToGUI("Player [" + playerHandler.getNickName() + "] has send a MOVE command while"
+					+ " they were not on turn. Their Game will be ended");
+			playerHandler.writeToClient("ERROR YOU ARE NOT ON TURN. THE CONNECTION WILL BE TERMINATED.");
+			endGame(playerHandler);
 		}
 
 		//Check if move is legal
-		if(column > 6 || column < 0 ||game.isLegalMove(column) == false){
-			broadcastToPlayers("GAMEEND");
-			controller.writeToGUI("GAMEEND"); //TODO remove this
-			System.out.println("GAMEEND");
-			throw new Error("ERROR ILLEGAL MOVE. THE CONNECTION WILL BE TERMINATED.");
+		if(column > 6 || column < 0 || game.isLegalMove(column) == false){
+			controller.writeToGUI("Player [" + playerHandler.getNickName() + "] has send a MOVE command while"
+					+ " they were not on turn. Their Game will be ended");
+			playerHandler.writeToClient("ERROR ILLEGAL MOVE. THE CONNECTION WILL BE TERMINATED.");
+			endGame(playerHandler);
 		}
 		
 		/*There are three possibilities that can occur, either:
@@ -161,9 +167,20 @@ public class GameController {
 		player2.writeToClient(broadcast);
 	}
 	
-	public void endGame(){
-		//TODO Send endgame to both participants
-		//TODO remove game from game controlleer
+	public void endGame(ConnectionHandler clientToBeTerminated){
+		//TODO Send endgame to both participants 
+		broadcastToPlayers("GAMEEND");		
+		/*The player that has been kicked isn't in the connections map. To kick him from the server all we need to do is
+		not put him back into the connections map from the games map.*/
+
+		if(player1 == clientToBeTerminated){
+			player1.kick();
+			controller.addConnectionHandler(player2.getNickName(), player2);
+		}else {
+			player2.kick();
+			controller.addConnectionHandler(player1.getNickName(), player1);
+		}
+		controller.updateActivePlayers();
 		controller.deleteGame(this);
 	}
 

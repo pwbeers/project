@@ -166,10 +166,7 @@ public class ServerGui implements View {
 		
 		JButton leaderBoardButton = new JButton("Leaderboard");
 		leaderBoardButton.setEnabled(false);
-		leaderBoardButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
+		leaderBoardButton.addActionListener(controller);
 		leaderBoardButton.setBounds(633, 494, 156, 23);
 		serverFrame.getContentPane().add(leaderBoardButton);
 		
