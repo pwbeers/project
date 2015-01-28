@@ -36,7 +36,6 @@ public class ServerSocketListener extends Thread {
 		controller.writeToGUI("ServerSocketListener created");
 	}
 
-	// ------------------ Queries --------------------------
 	// ------------------ Commands --------------------------
 	/**
 	 * Waits for a new connection on the <code>ServerSocket</code>.
@@ -72,7 +71,6 @@ public class ServerSocketListener extends Thread {
 			serverSocket.close();
 		} catch (IOException i){
 			//TODO find out why this exception is thrown				
-			throw new UnsupportedOperationException();
 		}
 
 	}

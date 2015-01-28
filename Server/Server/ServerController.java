@@ -2,47 +2,40 @@ package Server;
 
 /**
  * This Class initializes all other Classes and hence facilitates the creation of games,
-
- * houses the logic for the GUI, creates the ServerSocketListener for the serversocket 
- * and will implement the functionalities of any of the facultative extensions.
+ * houses the logic for the ServerGUI, creates the ServerSocketListener for the serversocket 
+ * and would implement the functionalities of any of the facultative extensions.
  * @author Stephan
  */
 
-//TODO - relay all gui and serversocket listeners to this class
-//TODO handle close event properly
+//TODO handle close events properly
 
 import java.awt.event.ActionEvent;
-
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.TreeMap;
-
 import View.ServerGui;
-import View.View;
+
 
 public class ServerController implements ActionListener{
 	
 	// ------------------ Instance variables ----------------
-	private ServerGui serverGUI;	
-	private ServerSocket serverSocket;
-	private ServerSocketListener serverSocketListener;
+	private ServerGui serverGUI; //the ServerGui for this Server
+	private ServerSocket serverSocket; //The serverSocket this server is on
+	private ServerSocketListener serverSocketListener; //The ServerSocketListener of this server
 	
 	private TreeMap<String, ConnectionHandler> connections; //Keeps track of all current connections and their nicknames
-	private TreeMap<String, List<ConnectionHandler>> games; //Keeps track of alle current games and their respective ConnectionHandlers
+	private TreeMap<String, List<ConnectionHandler>> games; //Keeps track of all current games and their respective ConnectionHandlers
 	
 	private String extensions; //The AMULET value for which extensions are supported
-	private List<ConnectionHandler> normalPlayers;
-	private List<ConnectionHandler> challengePlayers;
-	private List<ConnectionHandler> chatPlayers;
-	private List<ConnectionHandler> leaderboardPlayers;
-	private List<ConnectionHandler> securityPlayers;
+	private List<ConnectionHandler> normalPlayers; //Lists players with no extensions
+	private List<ConnectionHandler> challengePlayers;//Lists players who support the AMULET Challenge extension
+	private List<ConnectionHandler> chatPlayers;//Lists players who support the AMULET chat extension
+	private List<ConnectionHandler> leaderboardPlayers;//Lists players who support the AMULET leaderboard extension
+	private List<ConnectionHandler> securityPlayers;//Lists players who support the AMULET security extension
 	
 	// ------------------ Constructor ------------------------
 	/**
@@ -67,7 +60,7 @@ public class ServerController implements ActionListener{
 	// ------------------ Queries --------------------------
 	/**
 	 * Returns the AMULET value for which extensions are supported.
-	 * @return
+	 * @return string containg the AMULET value for the extensions
 	 */
 	public String getExtensions(){
 		// TODO Make thread safe
@@ -79,7 +72,7 @@ public class ServerController implements ActionListener{
 	 * startServerSocketListener creates a new ServerSocket and a new ServerSocketListener. 
 	 * It also starts the ServerSocketListener Thread.
 	 * @param portNumber the number on what port the listener should wait for connections
-	 * @throws IOException 
+	 * @throws IOException when there is an error on the ServerSocket constructor
 	 */
 	public void startServerSocketListener(int portNumber) throws IOException {
 		serverSocket = new ServerSocket(portNumber);	
@@ -91,9 +84,9 @@ public class ServerController implements ActionListener{
 	
 	/**
 	 * Because of the AMULET protocol the extensions which a client supports must be kept track of.
-	 * The ServerController puts the connectionHandler in the  different extention sets
+	 * The ServerController puts the connectionHandler in the  different extension sets
 	 * @param extensions the ArrayList housing the extensions
-	 * @param connectionHandler
+	 * @param connectionHandler the player to be matched
 	 */
 	public synchronized void matchExtensions(ArrayList<String> extensions, ConnectionHandler player) throws Error {
 		if(extensions.get(0).equals("NONE") && extensions.size() == 1){ //no extensions are supported and no more arguments should follow
@@ -126,8 +119,12 @@ public class ServerController implements ActionListener{
 		}
 	}
 	
-	public synchronized void addSecurityPlayer(ConnectionHandler players){
-		securityPlayers.add(players);
+	/**
+	 * Because of AMULET the security players need to be added separately.
+	 * @param player the player to be added to the Security list
+	 */
+	public synchronized void addSecurityPlayer(ConnectionHandler player){
+		securityPlayers.add(player);
 	}
 	
 	/**
@@ -223,7 +220,8 @@ public class ServerController implements ActionListener{
 	 */
 	public synchronized void removeConnectionHandler(ConnectionHandler removePlayer) {
 		// TODO Make thread safe
-			connections.remove(removePlayer.getNickName());
+		//TODO remove the ConnectionHandler from the lists
+		connections.remove(removePlayer.getNickName());
 		updateActivePlayers();
 	}
 	
@@ -240,7 +238,7 @@ public class ServerController implements ActionListener{
 
 	/**
 	 * Prints a message to the GUI
-	 * @param string
+	 * @param string the message to be printed
 	 */
 	public synchronized void writeToGUI(String message) {
 		// TODO Make thread safe
@@ -251,6 +249,7 @@ public class ServerController implements ActionListener{
 	 * Because the ServerController acts as an ActionListener it receives ActionEvents for the four buttons in the ServerGui
 	 * If the Start button is pressed it checks if the port number is indeed a number and if it is between 1025 and 65536.
 	 * If the port number is legal it calls the startServerSocketListener method.
+	 * @param arg0 the ActionEvent that has taken place
 	 */
 	@Override
 	public void actionPerformed(ActionEvent arg0) {

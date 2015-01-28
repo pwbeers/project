@@ -5,16 +5,15 @@ import java.util.List;
 
 import Model.Game;
 import Model.Model;
-import Error.Error;
 
 public class GameController {
 
 	// ------------------ Instance variables ----------------
-	private ServerController controller;
+	private ServerController controller; //The ServerController of this Server
 	private Model game; //the game that this controller uses
 	private ConnectionHandler player1; //The ConnectionHandler object of Player 1
 	private ConnectionHandler player2; //The ConnectionHandler object of Player 2
-	private String name;
+	private String name; //The name if this GameController
 	private final int PLAYER1 = 1; //The Integer representation of Player 1
 	private final int PLAYER2 = 2; //The Integer representation of Player 2
 
@@ -48,6 +47,10 @@ public class GameController {
 		}
 	}
 	
+	/**
+	 * Returns the players associated with this GameController
+	 * @return List<ConnectionHandler> players
+	 */
 	public List<ConnectionHandler> getPlayers(){
 		List<ConnectionHandler> players = new ArrayList<ConnectionHandler>();
 		players.add(player1);
@@ -55,10 +58,18 @@ public class GameController {
 		return players;
 	}
 	
+	/**
+	 * Returns the name of this GameCOntroller
+	 * @return the name of this GameCOntroller
+	 */
 	public String getName(){
 		return name;
 	}
 	// ------------------ Commands --------------------------
+	/**
+	 * Sets the name of this GameCOntroller
+	 * @param the name of this GameCOntroller
+	 */
 	public void setName(String newName){
 		name = newName;
 	}
@@ -87,10 +98,9 @@ public class GameController {
 	 * This is needed because the Game Model uses integers 1 & 2 to keep track of players and not 
 	 * ConnectionHandler references.
 	 * 
-	 * @param connectionHandler
-	 * @param arguments
+	 * @param connectionHandler the player trying to do a move
+	 * @param arguments the AMULET arguments associated with the move
 	 */
-	//TODO handle game ending here
 	public void newMove(ConnectionHandler playerHandler, ArrayList<String> arguments) {
 
 		//Isolate the String of the column of the move
@@ -178,6 +188,13 @@ public class GameController {
 		player2.writeToClient(broadcast);
 	}
 	
+	/**
+	 * Handles properly ending the game if the game ends wthout a player being kicked.
+	 * Puts the ConnectionHandlers back into the ActivePlayers list
+	 * Updates the ActivePlayers list in the GUI
+	 * Deletes the game from the gui
+	 * Updates the CurrentGames list in the GUI
+	 */
 	public void endGame(){		
 		controller.addConnectionHandler(player1.getNickName(), player1);
 		controller.addConnectionHandler(player2.getNickName(), player2);
@@ -187,6 +204,16 @@ public class GameController {
 
 	}
 	
+	/**
+	 * Handles properly ending the game if the game ends with a player being kicked.
+	 * Puts the ConnectionHandler of the non-offending back into the ActivePlayers list
+	 * kicks the offending client
+	 * Updates the ActivePlayers list in the GUI
+	 * Deletes the game from the gui
+	 * Updates the CurrentGames list in the GUI
+
+	 * @param clientToBeTerminated the client that needs to be kicked
+	 */
 	public void endGame(ConnectionHandler clientToBeTerminated){
 		//TODO Send endgame to both participants 
 		broadcastToPlayers("GAMEEND");		

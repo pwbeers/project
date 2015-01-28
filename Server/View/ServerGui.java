@@ -2,20 +2,16 @@ package View;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
 import java.awt.FlowLayout;
-
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Observable;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JTextArea;
@@ -24,28 +20,31 @@ import javax.swing.text.DefaultCaret;
 
 
 /**
- * A ServerGui that shows a graphical interface for the Server/user to use.
+ * A ServerGui that shows a graphical interface for the Server/user to use. Displays all the communication that takes place
+ * and displays lists of connected clients and current games
  * @author Stephan
  */
 
-//TODO repaint
-//TODO refresh buttons on lists
-
 public class ServerGui implements View {
+	// ------------------ Instance variables ----------------
 
-	private ActionListener controller;
+	private ActionListener controller; //The ServerController of the Server
 	
-	private JFrame serverFrame;
-	private JTextField portTextField;
-	private JTextField textField;
-	
-	private JTextArea mainTextArea;
-	private JTextArea activePlayersTextArea;
-	private JTextArea currentGamesTextArea;
-	private String inet;
+	private JFrame serverFrame; //The Frame of the Gui
+	private JTextField portTextField; //The TextField that contains the portnumber
+	private JTextField manualInTextField; //the TextField for sending manual commands	
+	private JTextArea mainTextArea; //The Text Area where all the communication is printed
+	private JTextArea activePlayersTextArea; // The TextArea where the list of ActivePlayers is displayed
+	private JTextArea currentGamesTextArea; //The TextArea where the list of CurrentGames is displayed
+	private String inet; //The string that contains the IP address of the system
+
+	// ------------------ Constructor ------------------------
 
 	/**
-	 * Create the application.
+	 * Initalizes the Gui and controller attribute.
+	 * Finds the value for the ip address.
+	 * Repaints and revalidates the GUI for proper displayment
+	 * @param newController the ServerController that will handle the ActionEvents
 	 */
 	public ServerGui(ActionListener newController) {
 		controller = newController;
@@ -60,6 +59,18 @@ public class ServerGui implements View {
 		serverFrame.repaint();
 		serverFrame.revalidate();
 	}
+	// ------------------ Queries --------------------------
+	
+	/**
+	 * Returns the text in the textfield for the portnumber
+	 * @return the text in the <code>portTextField</code>
+	 */
+	public String getPortNumber() {
+		return portTextField.getText();
+ 
+	}
+	
+	// ------------------ Commands --------------------------
 
 	/**
 	 * Initialize the contents of the frame.
@@ -93,11 +104,11 @@ public class ServerGui implements View {
 		manualPanel.setBounds(10, 484, 500, 33);
 		serverFrame.getContentPane().add(manualPanel);
 				
-		textField = new JTextField();
-		textField.setEnabled(false);
-		textField.setEditable(false);
-		manualPanel.add(textField);
-		textField.setColumns(30);
+		manualInTextField = new JTextField();
+		manualInTextField.setEnabled(false);
+		manualInTextField.setEditable(false);
+		manualPanel.add(manualInTextField);
+		manualInTextField.setColumns(30);
 				
 		JButton btnNewButton = new JButton("Send In");
 		btnNewButton.setEnabled(false);
@@ -149,19 +160,18 @@ public class ServerGui implements View {
 		gameLabelPanel.add(currentGameLabel);
 		currentGameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		
-					
-				JScrollPane currentGamesScrollPane = new JScrollPane();
-				currentGamesScrollPane.setBounds(-2, 21, 344, 159);
-				gamePanel.add(currentGamesScrollPane);
+		JScrollPane currentGamesScrollPane = new JScrollPane();
+		currentGamesScrollPane.setBounds(-2, 21, 344, 159);
+		gamePanel.add(currentGamesScrollPane);
 				
-				JPanel currentGamePanel = new JPanel();
-				currentGamesScrollPane.setViewportView(currentGamePanel);
-				currentGamePanel.setLayout(new BorderLayout(0, 0));
+		JPanel currentGamePanel = new JPanel();
+		currentGamesScrollPane.setViewportView(currentGamePanel);
+		currentGamePanel.setLayout(new BorderLayout(0, 0));
 				
-				currentGamesTextArea = new JTextArea();
-				currentGamesTextArea.setEditable(false);
-				currentGamesTextArea.setLineWrap(true);
-				currentGamePanel.add(currentGamesTextArea, BorderLayout.CENTER);
+		currentGamesTextArea = new JTextArea();
+		currentGamesTextArea.setEditable(false);
+		currentGamesTextArea.setLineWrap(true);
+		currentGamePanel.add(currentGamesTextArea, BorderLayout.CENTER);
 		
 		DefaultCaret gameCaret = (DefaultCaret)currentGamesTextArea.getCaret();
 		gameCaret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
@@ -213,39 +223,60 @@ public class ServerGui implements View {
 	
 	}
 	
+	/**
+	 * Prints a message on the maintext area
+	 * @param message the message to be created
+	 */
 	public synchronized void printText(String message){
 		mainTextArea.append(message + "\n");		
 	}
 	
+	/**
+	 * Appends the ActivePlayers list
+	 * @param player the player to be added
+	 */
 	public synchronized void appendActivePlayers(String player){
 		activePlayersTextArea.append(player + "\n");
 	}
 	
+	/**
+	 * Appends the CurrentGames list
+	 * @param game the game to be added
+	 */
 	public synchronized void appendCurrentGames(String game){
 		currentGamesTextArea.append(game + "\n");	
 	}
 	
+	/**
+	 * Clears the ActivePlayers TextArea
+	 */
 	public synchronized void clearActivePlayers(){
 		activePlayersTextArea.setText("refreshing...");
 		activePlayersTextArea.setText("");
 		
 	}
 	
+	/**
+	 * Clears the CurrentGames TextArea
+	 */
 	public synchronized void clearCurrentGames(){
 		currentGamesTextArea.setText("refreshing...");
 		currentGamesTextArea.setText("");
 	}
 
+	/**
+	 * Unused method from the interface
+	 */
 	public void startScherm(){
 		throw new UnsupportedOperationException();
 	}
 	
+	/**
+	 * Unused method from the interface
+	 */
 	public void update(Observable arg0, Object arg1) {
 		throw new UnsupportedOperationException();
 	}
 
-	public String getPortNumber() {
-		return portTextField.getText();
-		 
-	}
+
 }

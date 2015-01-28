@@ -17,9 +17,6 @@ import Error.Error;
  * @author Stephan
  */
 
-//TODO add javadoc and JML
-//TODO relay all gamecontroller errors to this class
-
 public class ConnectionHandler extends Thread {
 
 	// ------------------ Instance variables ----------------
@@ -93,6 +90,10 @@ public class ConnectionHandler extends Thread {
 		return nickName;
 	}
 	
+	/**
+	 * Returns the controller of this ConnectionHandler object
+	 * @return the controller of this ConnectionHandler object
+	 */
 	public ServerController getController(){
 		return controller;
 	}
@@ -128,6 +129,7 @@ public class ConnectionHandler extends Thread {
 		controller.writeToGUI("Player [" + nickName +"] is being kicked");
 		kick();
 	}
+	
 	/**
 	 * Sets the GameController attribute for referencing when in a game
 	 * @param newGameController the current GameController
