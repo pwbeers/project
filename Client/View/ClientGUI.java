@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 import java.awt.FlowLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -67,6 +68,7 @@ public class ClientGUI implements View,Observer {
 	private JToggleButton gameHumanButton;
 	private JToggleButton gameAIButton;
 	private JSlider gameAISlider;
+	private JPanel boardButtons;
 
 	/**
 	 * Starts the ClientGUI and saves the given controller.
@@ -75,7 +77,7 @@ public class ClientGUI implements View,Observer {
 		this.controller = controller;
 		initialize();
 		frmFour.setVisible(true);
-		//beforeConnectionScreen();
+		beforeConnectionScreen();
 	}
 
 	/**
@@ -109,7 +111,7 @@ public class ClientGUI implements View,Observer {
 		frmFour.getContentPane().add(boardPanel);
 		boardPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		JPanel boardButtons = new JPanel();
+		boardButtons = new JPanel();
 		boardButtons.setForeground(UIManager.getColor("textHighlight"));
 		boardButtons.setBackground(UIManager.getColor("textHighlight"));
 		boardPanel.add(boardButtons);
@@ -147,7 +149,7 @@ public class ClientGUI implements View,Observer {
 		connectionIPLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		connectionPanel.add(connectionIPLabel);
 		
-		connectionIPText = new JTextField("130.89.95.239");
+		connectionIPText = new JTextField("192.168.178.18");
 		connectionPanel.add(connectionIPText);
 		connectionIPText.setColumns(10);
 		
@@ -232,6 +234,11 @@ public class ClientGUI implements View,Observer {
 		message.setForeground(Color.RED);
 		messagePanel.add(message);
 
+		ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup.add(gameHumanButton);
+		gameHumanButton.setSelected(true);
+		buttonGroup.add(gameAIButton);
+		gameAIButton.setSelected(false);
 	}
 
 	public void printText(String message) {
@@ -329,13 +336,18 @@ public class ClientGUI implements View,Observer {
 	 * Updates the board with a new field
 	 */
 	public void update(Observable o, Object arg) {
-		Board newBoard = (Board) arg;
-		for (int i = 0; i < this.board.length; i++) {
-			//TODO onderstaande afmaken
-			if(this.board[i].getIcon().equals(EMPTYFIELD))	{
-				
-			}
+		Integer[] changedField = (Integer[]) arg;
+		int column = changedField[0];
+		int row = changedField[1];
+		int player = changedField[2];
+		Icon icon;
+		if(player == 1)	{
+			icon = REDFIELD;
 		}
+		else	{
+			icon = YELLOWFIELD;
+		}
+		board[column + 7 * row].setIcon(icon);
 	}
 	
 	/**
@@ -448,5 +460,17 @@ public class ClientGUI implements View,Observer {
 		connectionButton.setEnabled(false);
 		connectionIPText.setEnabled(false);
 		connectionPortText.setEnabled(false);
+		for (int i = 0; i < board.length; i++) {
+			board[i].setEnabled(true);
+			board[i].setIcon(EMPTYFIELD);
+		}
+	}
+	
+	/**
+	 * Looks up if it is a human player or the articifical intelligence playing
+	 * @return
+	 */
+	public boolean isHumanPlayer()	{
+		return gameHumanButton.isSelected();
 	}
 }

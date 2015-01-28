@@ -53,22 +53,18 @@ public class ClientController implements ActionListener	{
 	public void actionPerformed(ActionEvent arg0) {
 		String command = arg0.getActionCommand();
 		if(command.matches("[0-9]+"))	{
-			//Controlleer of een game gestart is, geeft melding start game
-			if(game != null)	{
-				//number to x and y coordinate
-				int column = Integer.parseInt(command);
-				if(game.isLegalMove(column))	{
-					String message = "MOVE " + column;
-					connection.sendMessage(message);
-				}
-				else	{
-					gui.printText("Unvalid move, please make another.");
-				}
+			//number to x and y coordinate
+			int column = Integer.parseInt(command);
+			if(game.isLegalMove(column) && game.onTurn(1))	{
+				String message = "MOVE " + column;
+				connection.sendMessage(message);
+			}
+			else if(!game.onTurn(1))	{
+				gui.printText("It is not your turn yet.");
 			}
 			else	{
-				gui.printText("You must first start make a connection and start a game.");
+				gui.printText("Unvalid move, please make another.");
 			}
-			System.out.println(command);
 		}
 		else if(command.equals("Connect"))	{
 			String[] arguments = gui.getConnection();
@@ -161,7 +157,7 @@ public class ClientController implements ActionListener	{
 			Socket socket = new Socket(ip, port);
 			gui.printText("A connection has been made to the server.");
 			//TODO Aanpassen
-			//gui.setConnectionScreen();
+			gui.setConnectionScreen();
 			connection = new ClientConnectionHandler(socket, this);
 			connection.start();
 		} catch (IOException e)	{
@@ -195,7 +191,8 @@ public class ClientController implements ActionListener	{
 	public void startGame(String name)	{
 		opponentName = name;
 		game = new Game();
-		aiSimple = new SimpleAI();
+		//TODO verander dat dit wordt ingesteld door de gui
+		aiSimple = new SmartAI();
 		game.addObserver(gui);
 		game.addObserver(aiSimple);
 		//TODO vervangen door slimme game voor hint
@@ -209,7 +206,17 @@ public class ClientController implements ActionListener	{
 	 * is asked to do a move.
 	 */
 	public void onTurn()	{
-		gui.printText("It's your turn.");
+		//TODO remove
+		game.setOnTurn();
+		if(gui.isHumanPlayer())	{
+			gui.printText("It's your turn.");
+		}
+		else	{
+			//TODO aanpassen 4
+			int column = aiSimple.getMove(4);
+			String message = "MOVE " + column;
+			connection.sendMessage(message);
+		}
 	}
 	
 	/**
@@ -394,7 +401,8 @@ public class ClientController implements ActionListener	{
 	
 	/**
 	 * Tells if the client is the player that is given as an argument.
-	 * @return
+	 * @return 1 if the given player is the name of the clinent. And 2 if
+	 * 		   the given player is the opponent.
 	 */
 	private int isPlayer(String player)	{
 		int result;
