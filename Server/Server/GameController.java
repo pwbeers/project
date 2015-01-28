@@ -24,6 +24,7 @@ public class GameController {
 	 * @param player1
 	 * @param player2
 	 */
+	
 	public GameController(ConnectionHandler newPlayer1, ConnectionHandler newPlayer2) {
 		controller = newPlayer1.getController();
 		player1 = newPlayer1;
@@ -61,10 +62,15 @@ public class GameController {
 		game = new Game();
 		player1.writeToClient("GAME " + player2.getNickName());
 		controller.writeToGUI("GAME " + player2.getNickName());
+		System.out.println("GAME " + player2.getNickName());
+		
 		player2.writeToClient("GAME " + player1.getNickName());
 		controller.writeToGUI("GAME " + player1.getNickName());
+		System.out.println("GAME " + player1.getNickName());
+		
 		player1.writeToClient("TURN");
 		controller.writeToGUI("TURN " + player1.getNickName());
+		System.out.println("TURN " + player1.getNickName());
 		}
 
 	/**
@@ -75,6 +81,7 @@ public class GameController {
 	 */
 	public void newMove(ConnectionHandler playerHandler, ArrayList<String> arguments) throws Error {
 		controller.writeToGUI("Move recieved from " + playerHandler.getNickName());
+		System.out.println();
 
 		String columnString = arguments.get(0);
 		//Convert from String to Integer
@@ -87,13 +94,15 @@ public class GameController {
 		if (game.onTurn(player) == false){
 			broadcastToPlayers("GAMEEND");
 			controller.writeToGUI("GAMEEND");
+			System.out.println("GAMEEND");
 			throw new Error("ERROR YOU ARE NOT ON TURN. THE CONNECTION WILL BE TERMINATED.");
 		}
 
 		//Check if move is legal
-		if(game.isLegalMove(column) == false){
+		if(column > 6 || column < 0 ||game.isLegalMove(column) == false){
 			broadcastToPlayers("GAMEEND");
 			controller.writeToGUI("GAMEEND"); //TODO remove this
+			System.out.println("GAMEEND");
 			throw new Error("ERROR ILLEGAL MOVE. THE CONNECTION WILL BE TERMINATED.");
 		}
 		
@@ -107,17 +116,20 @@ public class GameController {
 			//and a new turn needs to be assigned
 			broadcastToPlayers("MOVEUPDATE " + playerHandler.getNickName() + " " +columnString);
 			controller.writeToGUI("MOVEUPDATE " + playerHandler.getNickName() + " " +columnString);
+			System.out.println("MOVEUPDATE " + playerHandler.getNickName() + " " +columnString);
 			assignTurn(player);
 			break;
 		case 1:
 			//send gameend to both players with nickname of playerHandler
 			broadcastToPlayers("GAMEEND " + playerHandler.getNickName() + " " + column);
 			controller.writeToGUI("GAMEEND " + playerHandler.getNickName() + " " + column);
+			System.out.println("GAMEEND " + playerHandler.getNickName() + " " + column);
 			break;
 		case 2:
 			//send gameEnd to bothplayers with no nicjname
 			broadcastToPlayers("GAMEEND DRAW");
 			controller.writeToGUI("GAMEEND DRAW");
+			System.out.println("GAMEEND DRAW");
 			break;
 		
 		}
@@ -132,9 +144,11 @@ public class GameController {
 		if(player == 1){
 			player2.writeToClient("TURN");
 			controller.writeToGUI(player2.getNickName() + " is on turn");
+			System.out.println(player2.getNickName() + " is on turn");
 		}else {
 			player1.writeToClient("TURN");
 			controller.writeToGUI(player1.getNickName() + " is on turn");
+			System.out.println(player1.getNickName() + " is on turn");
 		}
 	}
 
