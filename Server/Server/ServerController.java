@@ -98,7 +98,7 @@ public class ServerController implements ActionListener{
 	 * @param player1 the first player 
 	 * @param player2 the second player
 	 */
-	public void startGame(ConnectionHandler player1) {
+	public synchronized void startGame(ConnectionHandler player1) {
 		// TODO Make thread safe
 		//TODO make sure player 1 is not selected from the list
 		//We need to select a random key from our connections TreeMap
@@ -130,7 +130,7 @@ public class ServerController implements ActionListener{
 	 * @param player1 the first player 
 	 * @param player2 the second player
 	 */
-	public void startChallangeGame(ConnectionHandler player1, ConnectionHandler player2) {
+	public synchronized void startChallangeGame(ConnectionHandler player1, ConnectionHandler player2) {
 		GameController newGame = new GameController(player1, player2);
 		
 		List<ConnectionHandler> playerList = new ArrayList<ConnectionHandler>();
@@ -145,7 +145,7 @@ public class ServerController implements ActionListener{
 	 * @param newPlayer the ConnectionHandler to be added
 	 * @param nickName the Nickname of the player
 	 */
-	public void addConnectionHandler(String nickName, ConnectionHandler newPlayer) {
+	public synchronized void addConnectionHandler(String nickName, ConnectionHandler newPlayer) {
 		// TODO make thread safe
 		//TODO update GUI
 		connections.put(nickName, newPlayer);
@@ -161,18 +161,18 @@ public class ServerController implements ActionListener{
 	 * Removes a ConnectionHandler from the Connections Map
 	 * @param removePlayer the ConnectionHandler to be removed 
 	 */
-	public void removeConnectionHandler(ConnectionHandler removePlayer) {
+	public synchronized void removeConnectionHandler(ConnectionHandler removePlayer) {
 		// TODO Make thread safe
 		connections.remove(removePlayer.getNickName());
 		updateActivePlayers();
 	}
 	
-	public void addGame(GameController newGame,List<ConnectionHandler> playerList) {
+	public synchronized void  addGame(GameController newGame,List<ConnectionHandler> playerList) {
 		games.put(newGame, playerList);
 		updateCurrentGames();
 	}
 	
-	public void deleteGame(GameController game) {
+	public synchronized void deleteGame(GameController game) {
 		games.remove(game);
 		updateCurrentGames();
 	}
@@ -182,19 +182,19 @@ public class ServerController implements ActionListener{
 	 * Prints a message to the GUI
 	 * @param string
 	 */
-	public void writeToGUI(String message) {
+	public synchronized void writeToGUI(String message) {
 		// TODO Make thread safe
 		serverGUI.printText(message + "\n");
 	}
 	
-	public void updateActivePlayers(){
+	public synchronized void updateActivePlayers(){
 		List<String> activePlayers = new ArrayList<String>(connections.keySet());
 		for (int i = 0; i < activePlayers.size(); i++){
 			((ServerGui) serverGUI).appendActivePlayers(activePlayers.get(i));
 		}
 	}
 
-	public void updateCurrentGames(){
+	public synchronized void updateCurrentGames(){
 		List<List <ConnectionHandler>> playersInGames = new ArrayList<List <ConnectionHandler>>(games.values());
 		
 		for (int i = 0; i < playersInGames.size(); i++){
@@ -210,7 +210,7 @@ public class ServerController implements ActionListener{
 	 * @param extensions the ArrayList housing the extensions
 	 * @param connectionHandler
 	 */
-	public void matchExtensions(ArrayList<String> extensions, ConnectionHandler player) throws Error {
+	public synchronized void matchExtensions(ArrayList<String> extensions, ConnectionHandler player) throws Error {
 		// TODO Make thread safe
 		// TODO Auto-generated method stub
 		// sort the connection handler into the differen extention sets
