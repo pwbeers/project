@@ -208,12 +208,15 @@ public class ClientController implements ActionListener	{
 	public void onTurn()	{
 		//TODO remove
 		game.setOnTurn();
-
+		if(gui.isHumanPlayer())	{
+			gui.printText("It's your turn.");
+		}
+		else	{
 			//TODO aanpassen 4
 			int column = aiSimple.getMove(4);
 			String message = "MOVE " + column;
 			connection.sendMessage(message);
-
+		}
 	}
 	
 	/**

@@ -182,8 +182,7 @@ public class ClientConnectionHandler extends Thread {
 					//TODO JOIN N en JOIN Y toepassen, deze later implementeren voor authenticate
 					break;	
 				default	:
-					System.out.println(command.get(0));
-					//throw new Error("No such command, illegal command has been send");
+					throw new Error("No such command, illegal command has been send");
 			}
 		}
 		else	{
