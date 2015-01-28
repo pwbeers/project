@@ -44,17 +44,16 @@ public class ServerController implements ActionListener{
 	// ------------------ Constructor ------------------------
 	/**
 	 * Creates a ServerSocketListener which creates a ServerGui class. 
+	 * Sets the AMULET-extensions to "NONE"
 	 * Initializes all Instance Variables.
 	 */
 	public ServerController() {
 		serverGUI = new ServerGui(this);
 		writeToGUI("ServerGUI has been created");
 		
-		extensions = "NONE"; //We hardcode the extensions for now, they can be enabled and disabled in the GUI
+		extensions = "NONE"; //We hardcode the extensions, there is not yet support to en/dis-able them
 		connections = new TreeMap<String, ConnectionHandler>();
 		games = new HashMap<GameController, List<ConnectionHandler>>();
-		
-		//the serverSocketListener gets made after a button is pressed in the GUI so it isn't initialized here
 		
 		normalPlayers = new ArrayList<ConnectionHandler>();
 		challengePlayers = new ArrayList<ConnectionHandler>();
@@ -74,7 +73,8 @@ public class ServerController implements ActionListener{
 	
 	// ------------------ Commands --------------------------
 	/**
-	 * Creates a ServerSocketListeren object on port <code>portNumber</code>
+	 * startServerSocketListener creates a new ServerSocket and a new ServerSocketListener. 
+	 * It also starts the ServerSocketListener Thread.
 	 * @param portNumber the number on what port the listener should wait for connections
 	 * @throws IOException 
 	 */
@@ -84,7 +84,6 @@ public class ServerController implements ActionListener{
 		writeToGUI("ServerSocket has been created");
 
 		serverSocketListener.start();
-
 	}
 
 	/**
@@ -278,6 +277,11 @@ public class ServerController implements ActionListener{
 		securityPlayers.add(players);
 	}
 	
+	/**
+	 * Because the ServerController acts as an ActionListener it receives ActionEvents for the four buttons in the ServerGui
+	 * If the Start button is pressed it checks if the port number is indeed a number and if it is between 1025 and 65536.
+	 * If the port number is legal it calls the startServerSocketListener method.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		String command = arg0.getActionCommand();
@@ -300,6 +304,9 @@ public class ServerController implements ActionListener{
 				writeToGUI("No port has been opened yet.");
 			}else {
 				serverSocketListener.closeListener();
+				serverSocketListener = null;
+				writeToGUI("Port has been closed");
+
 			}
 		}
 		if(command.equals("Refresh Players")){

@@ -1,0 +1,11 @@
+Starting and Ending a game in the Server
+
+Here I will describe all the actions that take place from starting the application, 2 players joining and the game ending in one of three ways.
+1. The Server/Server/Starter.java class is run. This Class creates a ServerController.
+2. In the Constructor of the ServerController Class a new ServerGui is created. The Instance variables of the ServerController class are initialized. 
+3. The View/ServerGui.java Class is initialized by the ServerController. It initializes its graphical elements and displays the current ip-address of the system.
+[USER] The user enters a port number in the JTextField next to the label which says “Port: “ or does not change the default value 2220 and pushes the “Start” button.
+1. The ServerController acts as an ActionListener and receives and ActionPerformed ActionEvent. It checks if the port number is indeed a number and if it is between 1025 and 65536. Then it calls the startServerSocketListener() method.
+2. startServerSocketListener creates a new ServerSocket and a new ServerSocketListener. It also starts the ServerSocketListener Thread.
+3. The ServerSocketListener initialized it’s instance variables and assigns the flag for the run method to true 
+

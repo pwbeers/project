@@ -5,8 +5,7 @@ import java.net.Socket;
 import java.net.ServerSocket;
 import java.net.SocketException;
 
-/**
- * 
+/** 
  * The ServerSocketListener starts waiting for new connections and when they arise 
  * immediately assigns them a ConnectionHandler. The ServerSocketListener is also responsible for 
  * appropriately closing of all connections. 
