@@ -192,7 +192,6 @@ public class ConnectionHandler extends Thread {
 		int i = 0;
 		while(scanner.hasNext()){			
 			arguments.add(scanner.next());
-			controller.writeToGUI(arguments.get(i));
 			i++;
 		}
 		
@@ -219,7 +218,11 @@ public class ConnectionHandler extends Thread {
 				throw new Error("ERROR YOU ARE NOT IN A GAME. YOUR CONNECTION WILL NOW BE TERMINATED");
 			}else {
 				//If newMove cannot be completed an error wil be thrown which is handled in the run method
-				gameController.newMove(this, arguments);
+				try {
+					gameController.newMove(this, arguments);
+				} catch (Error e){
+					//move was wrong
+				}
 				break;
 			}	
 		case "DEBUG":
