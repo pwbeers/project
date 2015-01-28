@@ -28,6 +28,5 @@ public interface Model {
 	public boolean isLegalMove(int column);
 	
 	public boolean onTurn(int player);
-	
-	public Board deepCopyBoard(); 
+
 }

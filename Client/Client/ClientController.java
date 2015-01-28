@@ -403,7 +403,8 @@ public class ClientController implements ActionListener	{
 	
 	/**
 	 * Tells if the client is the player that is given as an argument.
-	 * @return
+	 * @return 1 if the given player is the name of the clinent. And 2 if
+	 * 		   the given player is the opponent.
 	 */
 	private int isPlayer(String player)	{
 		int result;
