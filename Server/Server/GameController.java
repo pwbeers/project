@@ -1,6 +1,7 @@
 package Server;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import Model.Game;
 import Model.Model;
@@ -43,6 +44,13 @@ public class GameController {
 		}else {
 			return PLAYER2;
 		}
+	}
+	
+	public List<ConnectionHandler> getPlayers(){
+		List<ConnectionHandler> players = new ArrayList<ConnectionHandler>();
+		players.add(player1);
+		players.add(player2);
+		return players;
 	}
 	// ------------------ Commands --------------------------
 	/**
@@ -103,8 +111,8 @@ public class GameController {
 			break;
 		case 1:
 			//send gameend to both players with nickname of playerHandler
-			broadcastToPlayers("GAMEEND " + playerHandler.getNickName());
-			controller.writeToGUI("GAMEEND " + playerHandler.getNickName());
+			broadcastToPlayers("GAMEEND " + playerHandler.getNickName() + " " + column);
+			controller.writeToGUI("GAMEEND " + playerHandler.getNickName() + " " + column);
 			break;
 		case 2:
 			//send gameEnd to bothplayers with no nicjname
@@ -123,10 +131,10 @@ public class GameController {
 	private void assignTurn(int player) {
 		if(player == 1){
 			player2.writeToClient("TURN");
-			System.out.println(player2.getNickName() + " is on turn");
+			controller.writeToGUI(player2.getNickName() + " is on turn");
 		}else {
 			player1.writeToClient("TURN");
-			System.out.println(player1.getNickName() + " is on turn");
+			controller.writeToGUI(player1.getNickName() + " is on turn");
 		}
 	}
 
@@ -137,6 +145,12 @@ public class GameController {
 	private void broadcastToPlayers(String broadcast) {
 		player1.writeToClient(broadcast);
 		player2.writeToClient(broadcast);
+	}
+	
+	public void endGame(){
+		//TODO Send endgame to both participants
+		//TODO remove game from game controlleer
+		controller.deleteGame(this);
 	}
 
 }
