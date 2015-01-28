@@ -14,7 +14,6 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
@@ -168,11 +167,20 @@ public class ServerController implements ActionListener{
 	}
 	
 	public synchronized void  addGame(GameController newGame,List<ConnectionHandler> playerList) {
+		removeConnectionHandler(playerList.get(0));
+		removeConnectionHandler(playerList.get(1));
 		games.put(newGame, playerList);
 		updateCurrentGames();
 	}
 	
-	public synchronized void deleteGame(GameController game) {
+	public synchronized void deleteGame(GameController game) {		
+		List<ConnectionHandler> players = new ArrayList<ConnectionHandler>(game.getPlayers());
+		ConnectionHandler player1 = players.get(0);
+		ConnectionHandler player2 = players.get(1);
+		
+		addConnectionHandler(player1.getNickName(), player1);
+		addConnectionHandler(player2.getNickName(), player2);
+		
 		games.remove(game);
 		updateCurrentGames();
 	}
@@ -184,12 +192,13 @@ public class ServerController implements ActionListener{
 	 */
 	public synchronized void writeToGUI(String message) {
 		// TODO Make thread safe
-		serverGUI.printText(message + "\n");
+		serverGUI.printText(message);
 	}
 	
 	public synchronized void updateActivePlayers(){
 		List<String> activePlayers = new ArrayList<String>(connections.keySet());
 		((ServerGui) serverGUI).clearActivePlayers();
+		
 		for (int i = 0; i < activePlayers.size(); i++){
 			((ServerGui) serverGUI).appendActivePlayers(activePlayers.get(i));
 		}
@@ -198,6 +207,7 @@ public class ServerController implements ActionListener{
 	public synchronized void updateCurrentGames(){
 		List<List <ConnectionHandler>> playersInGames = new ArrayList<List <ConnectionHandler>>(games.values());
 		((ServerGui) serverGUI).clearCurrentGames();
+		
 		for (int i = 0; i < playersInGames.size(); i++){
 			List<ConnectionHandler> game = new ArrayList<ConnectionHandler>(playersInGames.get(i));
 			String gameName = game.get(0).getNickName() + " v.s. " + game.get(1).getNickName();
@@ -212,10 +222,6 @@ public class ServerController implements ActionListener{
 	 * @param connectionHandler
 	 */
 	public synchronized void matchExtensions(ArrayList<String> extensions, ConnectionHandler player) throws Error {
-		// TODO Make thread safe
-		// TODO Auto-generated method stub
-		// sort the connection handler into the differen extention sets
-		//write extensions reader
 		if(extensions.get(0).equals("NONE") && extensions.size() == 1){ //no extensions are supported and no more arguments should follow
 			normalPlayers.add(player);
 		} else if (extensions.get(0).equals("CHAT") && extensions.get(1).equals("CHALLENGE") 
@@ -244,6 +250,10 @@ public class ServerController implements ActionListener{
 		} else { //Extensions aren't given following the format
 			throw new Error("ERROR AMULET EXTENSION PROTOCOL NOT FOLLOWED. YOUR CONNECTION WILL BE TERMINATED");
 		}
+	}
+	
+	public synchronized void addSecurityPlayer(ConnectionHandler players){
+		securityPlayers.add(players);
 	}
 	
 	@Override
