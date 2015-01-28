@@ -25,7 +25,7 @@ public class Game extends Observable implements Model	{
 	//@ ensures board != null && currentTurn == 1;
 	public Game() {
 		board = new Board();
-		currentTurn = 1;
+		currentTurn = 2;
 	}
 
 	// ------------------ Queries --------------------------
@@ -91,6 +91,7 @@ public class Game extends Observable implements Model	{
 		field[0] = column;
 		field[1] = board.nextEmptyRowInColumn(column) - 1;
 		field[2] = player;
+		setChanged();
 		notifyObservers(field);
 		if (isWinner(player)){ 
 			//Check if after the move there is a winner.
@@ -124,5 +125,10 @@ public class Game extends Observable implements Model	{
 	 */
 	public void addObserver(Observer newGUI){
 		super.addObserver(newGUI);
+	}
+
+	//TODO remove
+	public void setOnTurn() {
+		currentTurn = 1;
 	}
 }

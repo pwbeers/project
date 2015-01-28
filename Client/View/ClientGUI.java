@@ -340,8 +340,6 @@ public class ClientGUI implements View,Observer {
 		int column = changedField[0];
 		int row = changedField[1];
 		int player = changedField[2];
-		//TODO verwijderen system.out.println
-		System.out.println(column + " " + row + " " + player);
 		Icon icon;
 		if(player == 1)	{
 			icon = REDFIELD;
@@ -349,11 +347,7 @@ public class ClientGUI implements View,Observer {
 		else	{
 			icon = YELLOWFIELD;
 		}
-		board[column + 7 * row].setIcon(null);
-		//TODO één van de onderstaande moet overblijven
-		boardButtons.repaint();
-		boardButtons.validate();
-		boardButtons.revalidate();
+		board[column + 7 * row].setIcon(icon);
 	}
 	
 	/**
@@ -468,6 +462,15 @@ public class ClientGUI implements View,Observer {
 		connectionPortText.setEnabled(false);
 		for (int i = 0; i < board.length; i++) {
 			board[i].setEnabled(true);
+			board[i].setIcon(EMPTYFIELD);
 		}
+	}
+	
+	/**
+	 * Looks up if it is a human player or the articifical intelligence playing
+	 * @return
+	 */
+	public boolean isHumanPlayer()	{
+		return gameHumanButton.isSelected();
 	}
 }

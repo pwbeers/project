@@ -28,7 +28,6 @@ public class ClientController implements ActionListener	{
 	private String opponentName;
 	private ArrayList<String[]> otherClientExtensions;
 	private String[] clientExtension;
-	private boolean turn;
 
 	/*@public invariant gui != null; @*/ //class invariant
 	/*@public invariant game != null; @*/ //class invariant
@@ -46,7 +45,6 @@ public class ClientController implements ActionListener	{
 		clientExtension[0] = "CHAT";
 		clientExtension[1] = "CHALLENGE";
 		clientExtension[2] = "LEADERBOARD";
-		turn = false;
 	}
 
 	/**
@@ -55,20 +53,17 @@ public class ClientController implements ActionListener	{
 	public void actionPerformed(ActionEvent arg0) {
 		String command = arg0.getActionCommand();
 		if(command.matches("[0-9]+"))	{
-			//Controlleer of een game gestart is, geeft melding start game
-			if(game != null)	{
-				//number to x and y coordinate
-				int column = Integer.parseInt(command);
-				if(game.isLegalMove(column))	{
-					String message = "MOVE " + column;
-					connection.sendMessage(message);
-				}
-				else	{
-					gui.printText("Unvalid move, please make another.");
-				}
+			//number to x and y coordinate
+			int column = Integer.parseInt(command);
+			if(game.isLegalMove(column) && game.onTurn(1))	{
+				String message = "MOVE " + column;
+				connection.sendMessage(message);
+			}
+			else if(!game.onTurn(1))	{
+				gui.printText("It is not your turn yet.");
 			}
 			else	{
-				gui.printText("You must first start make a connection and start a game.");
+				gui.printText("Unvalid move, please make another.");
 			}
 		}
 		else if(command.equals("Connect"))	{
@@ -211,13 +206,16 @@ public class ClientController implements ActionListener	{
 	 * is asked to do a move.
 	 */
 	public void onTurn()	{
-		turn = true;
-		//TODO
-		if(/*ai is aangezet*/false)	{
-			
+		//TODO remove
+		game.setOnTurn();
+		if(gui.isHumanPlayer())	{
+			gui.printText("It's your turn.");
 		}
 		else	{
-			gui.printText("It's your turn.");
+			//TODO aanpassen 4
+			int column = aiSimple.getMove(4);
+			String message = "MOVE " + column;
+			connection.sendMessage(message);
 		}
 	}
 	
