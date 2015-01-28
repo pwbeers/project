@@ -15,11 +15,12 @@ import java.awt.Color;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Observable;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
+import javax.swing.text.DefaultCaret;
 
 
 /**
@@ -70,14 +71,22 @@ public class ServerGui implements View {
 		serverFrame.getContentPane().setLayout(null);
 		serverFrame.setVisible(true);
 		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 67, 500, 450);
+		serverFrame.getContentPane().add(scrollPane);
+		
 		JPanel textPanel = new JPanel();
-		textPanel.setBounds(10, 67, 500, 450);
-		serverFrame.getContentPane().add(textPanel);
+		scrollPane.setViewportView(textPanel);
 		textPanel.setLayout(new BorderLayout(0, 0));
+		
 		
 		mainTextArea = new JTextArea();
 		mainTextArea.setLineWrap(true);
 		textPanel.add(mainTextArea, BorderLayout.CENTER);
+		
+		DefaultCaret caret = (DefaultCaret)mainTextArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
 		
 		JPanel manualPanel = new JPanel();
 		textPanel.add(manualPanel, BorderLayout.SOUTH);
@@ -135,7 +144,7 @@ public class ServerGui implements View {
 		connectionsPanel.add(portLabel);
 		
 		portTextField = new JTextField();
-		portTextField.setText("2200");
+		portTextField.setText("2220");
 		connectionsPanel.add(portTextField);
 		portTextField.setColumns(10);
 		
